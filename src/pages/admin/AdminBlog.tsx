@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface BlogPost {
   id: string;
@@ -229,15 +230,12 @@ export default function AdminBlog() {
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="image_url">Image URL</Label>
-                  <Input
-                    id="image_url"
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                </div>
+                <ImageUpload
+                  bucket="blog-images"
+                  currentUrl={formData.image_url}
+                  onImageChange={(url) => setFormData({ ...formData, image_url: url })}
+                  label="Featured Image"
+                />
                 <div className="flex items-center gap-2">
                   <Switch
                     id="published"
