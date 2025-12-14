@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Phone, Search } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone, Search, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -18,6 +19,7 @@ const navLinks = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { getItemCount, setIsCartOpen } = useCart();
+  const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
   const itemCount = getItemCount();
 
@@ -67,7 +69,7 @@ export function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <Button variant="ghost" size="icon" className="hidden md:flex">
               <Search className="h-5 w-5" />
             </Button>
@@ -86,7 +88,31 @@ export function Header() {
               )}
             </Button>
 
-            <Button asChild className="hidden md:flex btn-shine">
+            {/* Admin/User Actions */}
+            {user ? (
+              <div className="hidden md:flex items-center gap-2">
+                {isAdmin && (
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/admin">
+                      <User className="h-4 w-4 mr-2" />
+                      Admin
+                    </Link>
+                  </Button>
+                )}
+                <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
+                  <LogOut className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <Button asChild variant="ghost" size="sm" className="hidden md:flex">
+                <Link to="/auth">
+                  <User className="h-4 w-4 mr-2" />
+                  Login
+                </Link>
+              </Button>
+            )}
+
+            <Button asChild className="hidden lg:flex btn-shine">
               <Link to="/contact">Get Quote</Link>
             </Button>
 
@@ -121,6 +147,31 @@ export function Header() {
                   {link.name}
                 </Link>
               ))}
+              {user ? (
+                <>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center gap-2"
+                    >
+                      <User className="h-4 w-4" />
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <Button variant="outline" onClick={() => { signOut(); setIsMenuOpen(false); }} className="mt-2">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <Button asChild variant="outline" className="mt-2">
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                    <User className="h-4 w-4 mr-2" />
+                    Admin Login
+                  </Link>
+                </Button>
+              )}
               <Button asChild className="mt-2 btn-shine">
                 <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
                   Get Quote
