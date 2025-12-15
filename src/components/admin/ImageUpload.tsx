@@ -7,7 +7,7 @@ import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImageUploadProps {
-  bucket: 'product-images' | 'blog-images';
+  bucket: 'product-images' | 'blog-images' | 'site-images';
   currentUrl: string;
   onImageChange: (url: string) => void;
   label?: string;

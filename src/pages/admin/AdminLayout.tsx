@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Package, FileText, ShoppingCart, LayoutDashboard, LogOut, Home } from 'lucide-react';
+import { Package, FileText, ShoppingCart, LayoutDashboard, LogOut, Home, Settings } from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -36,6 +36,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/products', icon: Package, label: 'Products' },
     { path: '/admin/blog', icon: FileText, label: 'Blog Posts' },
     { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
+    { path: '/admin/settings', icon: Settings, label: 'Site Settings' },
   ];
 
   const handleSignOut = async () => {
