@@ -1,19 +1,87 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/products/ProductCard';
-import { products, categories } from '@/data/products';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SEOHead } from '@/components/seo/SEOHead';
+
+interface Product {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  original_price: number | null;
+  image_url: string | null;
+  category: string;
+  features: string[] | null;
+  in_stock: boolean;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const Products = () => {
   const [activeCategory, setActiveCategory] = useState('All');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // Fetch categories
+      const { data: catData } = await supabase
+        .from('categories')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      // Fetch products
+      const { data: prodData } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (catData) setCategories(catData);
+      if (prodData) setProducts(prodData);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const allCategories = ['All', ...categories.map(c => c.name)];
+  
+  // Also include categories from products that might not be in categories table yet
+  const productCategories = [...new Set(products.map(p => p.category))];
+  const combinedCategories = ['All', ...new Set([...categories.map(c => c.name), ...productCategories])];
 
   const filteredProducts = activeCategory === 'All' 
     ? products 
     : products.filter(p => p.category === activeCategory);
 
+  const scrollSlider = (direction: 'left' | 'right') => {
+    if (sliderRef.current) {
+      const scrollAmount = 200;
+      sliderRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <Layout>
+      <SEOHead
+        title="Medical Equipment & Hospital Stretchers | BEDMED Products"
+        description="Explore our complete range of premium medical stretchers and hospital equipment. Emergency, ICU, transport, and recovery stretchers."
+        canonicalUrl={`${window.location.origin}/products`}
+      />
+
       <section className="py-16 md:py-24">
         <div className="container">
           <div className="text-center mb-12">
@@ -23,24 +91,73 @@ const Products = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {categories.map(cat => (
-              <Button
-                key={cat}
-                variant={activeCategory === cat ? 'default' : 'outline'}
-                onClick={() => setActiveCategory(cat)}
-                className={cn('btn-shine', activeCategory === cat && 'shadow-lg')}
-              >
-                {cat}
-              </Button>
-            ))}
+          {/* Category Slider */}
+          <div className="relative mb-12">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 shadow-md"
+              onClick={() => scrollSlider('left')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div
+              ref={sliderRef}
+              className="flex gap-3 overflow-x-auto scrollbar-hide px-10 py-2"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {combinedCategories.map(cat => (
+                <Button
+                  key={cat}
+                  variant={activeCategory === cat ? 'default' : 'outline'}
+                  onClick={() => setActiveCategory(cat)}
+                  className={cn('btn-shine whitespace-nowrap flex-shrink-0', activeCategory === cat && 'shadow-lg')}
+                >
+                  {cat}
+                </Button>
+              ))}
+            </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 shadow-md"
+              onClick={() => scrollSlider('right')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">Loading products...</div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No products found in this category.
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={{
+                    id: product.id,
+                    name: product.name,
+                    description: product.description || '',
+                    price: product.price,
+                    originalPrice: product.original_price || undefined,
+                    image: product.image_url || '/placeholder.svg',
+                    category: product.category,
+                    features: product.features || [],
+                    inStock: product.in_stock,
+                    rating: 4.5,
+                    reviews: 0
+                  }} 
+                  index={index} 
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </Layout>
