@@ -16,6 +16,7 @@ import ImageUpload from '@/components/admin/ImageUpload';
 interface BlogPost {
   id: string;
   title: string;
+  slug: string | null;
   excerpt: string | null;
   content: string;
   image_url: string | null;
@@ -23,7 +24,14 @@ interface BlogPost {
   author: string;
   published: boolean;
   created_at: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  meta_keywords: string | null;
+  canonical_url: string | null;
+  read_time: string | null;
 }
+
+const generateSlug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 export default function AdminBlog() {
   const { isAdmin } = useAuth();
@@ -33,12 +41,18 @@ export default function AdminBlog() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [formData, setFormData] = useState({
     title: '',
+    slug: '',
     excerpt: '',
     content: '',
     image_url: '',
     category: 'Industry News',
     author: 'BEDMED Team',
-    published: false
+    published: false,
+    meta_title: '',
+    meta_description: '',
+    meta_keywords: '',
+    canonical_url: '',
+    read_time: '5 min read'
   });
 
   useEffect(() => {
