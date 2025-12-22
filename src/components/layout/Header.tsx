@@ -109,25 +109,20 @@ export function Header() {
                     Hospital Beds
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-[600px] p-4 bg-card border rounded-lg shadow-lg">
-                      <div className="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto">
+                    <div className="w-[400px] p-4 bg-card border rounded-lg shadow-lg">
+                      <div className="grid grid-cols-2 gap-1 max-h-[400px] overflow-y-auto">
                         {hospitalBedCategories.map((category) => (
                           <NavigationMenuLink key={category.slug} asChild>
                             <Link
                               to={`/category/${category.slug}`}
-                              className="block p-3 rounded-lg hover:bg-accent transition-colors group"
+                              className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
-                              <div className="font-medium text-sm group-hover:text-primary transition-colors">
-                                {category.name}
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                                {category.description}
-                              </p>
+                              {category.name}
                             </Link>
                           </NavigationMenuLink>
                         ))}
                       </div>
-                      <div className="mt-4 pt-4 border-t">
+                      <div className="mt-3 pt-3 border-t">
                         <Link
                           to="/products"
                           className="text-sm font-medium text-primary hover:underline"
