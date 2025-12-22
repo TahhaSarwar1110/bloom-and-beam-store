@@ -1,14 +1,44 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Phone, Search, User, LogOut } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
+
+const hospitalBedCategories = [
+  { name: 'Manual Hospital Beds', slug: 'manual-hospital-beds', description: 'Traditional hand-crank operated beds for basic patient care needs' },
+  { name: 'Semi-Electric Hospital Beds', slug: 'semi-electric-hospital-beds', description: 'Combination of electric head/foot controls with manual height adjustment' },
+  { name: 'Fully Electric Hospital Beds', slug: 'fully-electric-hospital-beds', description: 'Complete electric controls for all bed positions and height' },
+  { name: 'ICU / Critical Care Beds', slug: 'icu-critical-care-beds', description: 'Advanced beds designed for intensive care unit requirements' },
+  { name: 'Low Beds (Fall Prevention)', slug: 'low-beds-fall-prevention', description: 'Ultra-low height beds to minimize fall injury risks' },
+  { name: 'Bariatric Hospital Beds', slug: 'bariatric-hospital-beds', description: 'Heavy-duty beds designed for larger patients with higher weight capacity' },
+  { name: 'Pediatric Hospital Beds', slug: 'pediatric-hospital-beds', description: 'Specially designed beds for infants and children' },
+  { name: 'Maternity / OB-GYN Beds', slug: 'maternity-ob-gyn-beds', description: 'Specialized beds for labor, delivery, and postpartum care' },
+  { name: 'Fowler Beds', slug: 'fowler-beds', description: 'Adjustable beds with backrest elevation for patient comfort' },
+  { name: 'Orthopedic Hospital Beds', slug: 'orthopedic-hospital-beds', description: 'Beds with traction frames and specialized orthopedic features' },
+  { name: 'Adjustable Hospital Beds', slug: 'adjustable-hospital-beds', description: 'Versatile beds with multiple positioning options' },
+  { name: 'Air Therapy Beds', slug: 'air-therapy-beds', description: 'Pressure-relieving beds using air technology for wound care' },
+  { name: 'Specialty Therapy Beds', slug: 'specialty-therapy-beds', description: 'Therapeutic beds for specific medical conditions' },
+  { name: 'Examination Beds', slug: 'examination-beds', description: 'Beds designed for medical examinations and procedures' },
+  { name: 'Recovery Beds', slug: 'recovery-beds', description: 'Post-operative recovery beds with essential monitoring features' },
+  { name: 'Stretchers & Trolleys', slug: 'stretchers-trolleys', description: 'Mobile patient transport beds and emergency stretchers' },
+  { name: 'Homecare Hospital Beds', slug: 'homecare-hospital-beds', description: 'Hospital-grade beds designed for home healthcare settings' },
+  { name: 'Isolation Beds', slug: 'isolation-beds', description: 'Specialized beds for infectious disease isolation protocols' },
+  { name: 'Psychiatric Beds', slug: 'psychiatric-beds', description: 'Safety-focused beds for mental health care facilities' },
+  { name: 'Convertible / Chair Beds', slug: 'convertible-chair-beds', description: 'Multi-functional beds that convert to chair positions' },
+];
 
 const navLinks = [
   { name: 'Home', path: '/' },
-  { name: 'Products', path: '/products' },
   { name: 'Services', path: '/services' },
   { name: 'Parts', path: '/parts' },
   { name: 'Blog', path: '/blog' },
@@ -18,6 +48,7 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
   const { getItemCount, setIsCartOpen } = useCart();
   const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
@@ -52,8 +83,65 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
+          <nav className="hidden lg:flex items-center gap-6">
+            <Link
+              to="/"
+              className={cn(
+                'relative font-medium transition-colors hover:text-primary',
+                'after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full',
+                location.pathname === '/' && 'text-primary after:w-full'
+              )}
+            >
+              Home
+            </Link>
+
+            {/* Hospital Beds Dropdown */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger 
+                    className={cn(
+                      'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                      'font-medium transition-colors hover:text-primary px-0',
+                      location.pathname.startsWith('/category/') && 'text-primary'
+                    )}
+                  >
+                    Hospital Beds
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[600px] p-4 bg-card border rounded-lg shadow-lg">
+                      <div className="grid grid-cols-2 gap-2 max-h-[400px] overflow-y-auto">
+                        {hospitalBedCategories.map((category) => (
+                          <NavigationMenuLink key={category.slug} asChild>
+                            <Link
+                              to={`/category/${category.slug}`}
+                              className="block p-3 rounded-lg hover:bg-accent transition-colors group"
+                            >
+                              <div className="font-medium text-sm group-hover:text-primary transition-colors">
+                                {category.name}
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                {category.description}
+                              </p>
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                      <div className="mt-4 pt-4 border-t">
+                        <Link
+                          to="/products"
+                          className="text-sm font-medium text-primary hover:underline"
+                        >
+                          View All Products →
+                        </Link>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {navLinks.slice(1).map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
@@ -132,7 +220,54 @@ export function Header() {
         {isMenuOpen && (
           <nav className="lg:hidden border-t bg-card animate-fade-in">
             <div className="container py-4 flex flex-col gap-2">
-              {navLinks.map((link, index) => (
+              <Link
+                to="/"
+                onClick={() => setIsMenuOpen(false)}
+                className={cn(
+                  'py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent',
+                  'animate-fade-in-up',
+                  location.pathname === '/' && 'bg-accent text-primary'
+                )}
+              >
+                Home
+              </Link>
+
+              {/* Mobile Hospital Beds Accordion */}
+              <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
+                <button
+                  onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
+                  className={cn(
+                    'w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between',
+                    location.pathname.startsWith('/category/') && 'bg-accent text-primary'
+                  )}
+                >
+                  Hospital Beds
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileCategoriesOpen && 'rotate-180')} />
+                </button>
+                {isMobileCategoriesOpen && (
+                  <div className="ml-4 mt-2 space-y-1 max-h-60 overflow-y-auto">
+                    {hospitalBedCategories.map((category) => (
+                      <Link
+                        key={category.slug}
+                        to={`/category/${category.slug}`}
+                        onClick={() => { setIsMenuOpen(false); setIsMobileCategoriesOpen(false); }}
+                        className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                    <Link
+                      to="/products"
+                      onClick={() => { setIsMenuOpen(false); setIsMobileCategoriesOpen(false); }}
+                      className="block py-2 px-4 text-sm text-primary font-medium rounded-lg hover:bg-accent transition-colors"
+                    >
+                      View All Products →
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {navLinks.slice(1).map((link, index) => (
                 <Link
                   key={link.path}
                   to={link.path}
@@ -142,7 +277,7 @@ export function Header() {
                     'animate-fade-in-up',
                     location.pathname === link.path && 'bg-accent text-primary'
                   )}
-                  style={{ animationDelay: `${index * 50}ms` }}
+                  style={{ animationDelay: `${(index + 2) * 50}ms` }}
                 >
                   {link.name}
                 </Link>
@@ -184,3 +319,5 @@ export function Header() {
     </header>
   );
 }
+
+export { hospitalBedCategories };

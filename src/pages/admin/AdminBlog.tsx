@@ -76,12 +76,18 @@ export default function AdminBlog() {
   const resetForm = () => {
     setFormData({
       title: '',
+      slug: '',
       excerpt: '',
       content: '',
       image_url: '',
       category: 'Industry News',
       author: 'BEDMED Team',
-      published: false
+      published: false,
+      meta_title: '',
+      meta_description: '',
+      meta_keywords: '',
+      canonical_url: '',
+      read_time: '5 min read'
     });
     setEditingPost(null);
   };
@@ -90,12 +96,18 @@ export default function AdminBlog() {
     setEditingPost(post);
     setFormData({
       title: post.title,
+      slug: post.slug || '',
       excerpt: post.excerpt || '',
       content: post.content,
       image_url: post.image_url || '',
       category: post.category,
       author: post.author,
-      published: post.published
+      published: post.published,
+      meta_title: post.meta_title || '',
+      meta_description: post.meta_description || '',
+      meta_keywords: post.meta_keywords || '',
+      canonical_url: post.canonical_url || '',
+      read_time: post.read_time || '5 min read'
     });
     setDialogOpen(true);
   };
@@ -110,12 +122,18 @@ export default function AdminBlog() {
 
     const postData = {
       title: formData.title,
+      slug: formData.slug || generateSlug(formData.title),
       excerpt: formData.excerpt || null,
       content: formData.content,
       image_url: formData.image_url || null,
       category: formData.category,
       author: formData.author,
-      published: formData.published
+      published: formData.published,
+      meta_title: formData.meta_title || null,
+      meta_description: formData.meta_description || null,
+      meta_keywords: formData.meta_keywords || null,
+      canonical_url: formData.canonical_url || null,
+      read_time: formData.read_time || null
     };
 
     if (editingPost) {
