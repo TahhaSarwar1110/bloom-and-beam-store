@@ -12,6 +12,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
 import ImageUpload from '@/components/admin/ImageUpload';
+import MultiImageUpload from '@/components/admin/MultiImageUpload';
 
 interface Product {
   id: string;
@@ -20,6 +21,7 @@ interface Product {
   price: number;
   original_price: number | null;
   image_url: string | null;
+  image_urls: string[] | null;
   category: string;
   features: string[];
   in_stock: boolean;
@@ -38,6 +40,7 @@ export default function AdminProducts() {
     price: '',
     original_price: '',
     image_url: '',
+    image_urls: [] as string[],
     category: 'Stretchers',
     features: '',
     in_stock: true
@@ -68,6 +71,7 @@ export default function AdminProducts() {
       price: '',
       original_price: '',
       image_url: '',
+      image_urls: [],
       category: 'Stretchers',
       features: '',
       in_stock: true
@@ -83,6 +87,7 @@ export default function AdminProducts() {
       price: product.price.toString(),
       original_price: product.original_price?.toString() || '',
       image_url: product.image_url || '',
+      image_urls: product.image_urls || [],
       category: product.category,
       features: product.features?.join(', ') || '',
       in_stock: product.in_stock
@@ -104,6 +109,7 @@ export default function AdminProducts() {
       price: parseFloat(formData.price) || 0,
       original_price: formData.original_price ? parseFloat(formData.original_price) : null,
       image_url: formData.image_url || null,
+      image_urls: formData.image_urls,
       category: formData.category,
       features: formData.features.split(',').map(f => f.trim()).filter(Boolean),
       in_stock: formData.in_stock
@@ -235,7 +241,14 @@ export default function AdminProducts() {
                   bucket="product-images"
                   currentUrl={formData.image_url}
                   onImageChange={(url) => setFormData({ ...formData, image_url: url })}
-                  label="Product Image"
+                  label="Main Product Image"
+                />
+                <MultiImageUpload
+                  bucket="product-images"
+                  currentUrls={formData.image_urls}
+                  onImagesChange={(urls) => setFormData({ ...formData, image_urls: urls })}
+                  label="Additional Images (Gallery)"
+                  maxImages={10}
                 />
                 <div className="space-y-2">
                   <Label htmlFor="features">Features (comma separated)</Label>
