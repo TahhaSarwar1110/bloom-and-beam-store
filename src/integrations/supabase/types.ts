@@ -239,6 +239,7 @@ export type Database = {
           features: string[] | null
           id: string
           image_url: string | null
+          image_urls: string[] | null
           in_stock: boolean
           meta_description: string | null
           meta_title: string | null
@@ -256,6 +257,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           in_stock?: boolean
           meta_description?: string | null
           meta_title?: string | null
@@ -273,6 +275,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           image_url?: string | null
+          image_urls?: string[] | null
           in_stock?: boolean
           meta_description?: string | null
           meta_title?: string | null

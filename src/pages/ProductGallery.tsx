@@ -10,6 +10,7 @@ interface Product {
   id: string;
   name: string;
   image_url: string | null;
+  image_urls: string[] | null;
   price: number;
   category: string;
   slug: string | null;
@@ -48,7 +49,7 @@ const ProductGallery = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('products')
-        .select('id, name, image_url, price, category, slug')
+        .select('id, name, image_url, image_urls, price, category, slug')
         .ilike('category', `%${categoryFilter}%`);
       
       if (error) throw error;
@@ -99,43 +100,61 @@ const ProductGallery = () => {
             </div>
           )}
 
-          {/* Products Grid */}
+          {/* Products Grid - Show all images from all products */}
           {!isLoading && products && products.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.map((product, index) => (
-                <div
-                  key={product.id}
-                  onClick={() => handleImageClick(product)}
-                  className={cn(
-                    "group cursor-pointer bg-card rounded-xl border overflow-hidden",
-                    "transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:border-primary/50",
-                    "opacity-0 animate-fade-in"
-                  )}
-                  style={{ 
-                    animationDelay: `${index * 50}ms`, 
-                    animationFillMode: 'forwards' 
-                  }}
-                >
-                  {/* Image Container */}
-                  <div className="aspect-square bg-muted overflow-hidden">
-                    <img
-                      src={product.image_url || '/placeholder.svg'}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
+              {products.flatMap((product) => {
+                // Combine main image with additional images
+                const allImages = [
+                  product.image_url,
+                  ...(product.image_urls || [])
+                ].filter(Boolean) as string[];
+                
+                // If no images, show placeholder
+                if (allImages.length === 0) {
+                  allImages.push('/placeholder.svg');
+                }
+
+                return allImages.map((imageUrl, imgIndex) => (
+                  <div
+                    key={`${product.id}-${imgIndex}`}
+                    onClick={() => handleImageClick(product)}
+                    className={cn(
+                      "group cursor-pointer bg-card rounded-xl border overflow-hidden",
+                      "transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:border-primary/50",
+                      "opacity-0 animate-fade-in"
+                    )}
+                    style={{ 
+                      animationDelay: `${imgIndex * 50}ms`, 
+                      animationFillMode: 'forwards' 
+                    }}
+                  >
+                    {/* Image Container */}
+                    <div className="aspect-square bg-muted overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={`${product.name} - View ${imgIndex + 1}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                    
+                    {/* Product Info */}
+                    <div className="p-4">
+                      <h3 className="font-display font-semibold text-sm md:text-base line-clamp-2 group-hover:text-primary transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-primary font-bold mt-2">
+                        ${product.price.toLocaleString()}
+                      </p>
+                      {allImages.length > 1 && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          View {imgIndex + 1} of {allImages.length}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  
-                  {/* Product Info */}
-                  <div className="p-4">
-                    <h3 className="font-display font-semibold text-sm md:text-base line-clamp-2 group-hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
-                    <p className="text-primary font-bold mt-2">
-                      ${product.price.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                ));
+              })}
             </div>
           )}
 
