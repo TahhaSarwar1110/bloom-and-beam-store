@@ -1,12 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, ZoomIn, Maximize2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Product {
@@ -26,6 +26,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -87,13 +88,54 @@ const ProductDetail = () => {
     toast({ title: 'Added to cart', description: `${quantity}x ${product.name} added.` });
   };
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+  }, [allImages.length]);
+
+  const prevImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  }, [allImages.length]);
+
+  const openLightbox = (index?: number) => {
+    if (typeof index === 'number') {
+      setCurrentImageIndex(index);
+    }
+    setIsLightboxOpen(true);
   };
 
-  const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  const closeLightbox = () => {
+    setIsLightboxOpen(false);
   };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+      
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, nextImage, prevImage]);
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLightboxOpen]);
 
   return (
     <Layout>
@@ -106,7 +148,10 @@ const ProductDetail = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Image Carousel */}
             <div className="space-y-4">
-              <div className="relative bg-muted rounded-2xl p-8 aspect-square overflow-hidden group">
+              <div 
+                className="relative bg-muted rounded-2xl p-8 aspect-square overflow-hidden group cursor-zoom-in"
+                onClick={() => openLightbox()}
+              >
                 {allImages.length > 0 ? (
                   <img 
                     src={allImages[currentImageIndex]} 
@@ -121,17 +166,22 @@ const ProductDetail = () => {
                   />
                 )}
                 
+                {/* Zoom Indicator */}
+                <div className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Maximize2 className="h-5 w-5" />
+                </div>
+                
                 {/* Navigation Arrows */}
                 {allImages.length > 1 && (
                   <>
                     <button
-                      onClick={prevImage}
+                      onClick={(e) => { e.stopPropagation(); prevImage(); }}
                       className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-background transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <ChevronLeft className="h-6 w-6" />
                     </button>
                     <button
-                      onClick={nextImage}
+                      onClick={(e) => { e.stopPropagation(); nextImage(); }}
                       className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-background transition-colors opacity-0 group-hover:opacity-100"
                     >
                       <ChevronRight className="h-6 w-6" />
@@ -241,6 +291,91 @@ const ProductDetail = () => {
           </div>
         </div>
       </section>
+
+      {/* Fullscreen Lightbox */}
+      {isLightboxOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center animate-fade-in"
+          onClick={closeLightbox}
+        >
+          {/* Close Button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+
+          {/* Image Counter */}
+          {allImages.length > 1 && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium">
+              {currentImageIndex + 1} / {allImages.length}
+            </div>
+          )}
+
+          {/* Navigation Arrows */}
+          {allImages.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="h-8 w-8 text-white" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="h-8 w-8 text-white" />
+              </button>
+            </>
+          )}
+
+          {/* Main Image */}
+          <div 
+            className="max-w-[90vw] max-h-[85vh] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={allImages[currentImageIndex] || '/placeholder.svg'}
+              alt={product?.name}
+              className="max-w-full max-h-[80vh] object-contain mx-auto animate-scale-in"
+            />
+          </div>
+
+          {/* Thumbnail Strip */}
+          {allImages.length > 1 && (
+            <div 
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-white/10 backdrop-blur-sm p-2 rounded-xl max-w-[90vw] overflow-x-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {allImages.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={cn(
+                    "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all",
+                    currentImageIndex === index 
+                      ? "border-white ring-2 ring-white/50" 
+                      : "border-transparent opacity-60 hover:opacity-100"
+                  )}
+                >
+                  <img 
+                    src={img} 
+                    alt={`View ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Keyboard Hint */}
+          <div className="absolute bottom-4 right-4 text-white/50 text-sm hidden md:block">
+            Use ← → to navigate • ESC to close
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
