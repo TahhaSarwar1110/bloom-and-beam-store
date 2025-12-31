@@ -11,6 +11,7 @@ import ProductDetail from "./pages/ProductDetail";
 import CategoryDetail from "./pages/CategoryDetail";
 import Services from "./pages/Services";
 import Parts from "./pages/Parts";
+import PartDetail from "./pages/PartDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import FAQ from "./pages/FAQ";
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/category/:slug" element={<CategoryDetail />} />
               <Route path="/services" element={<Services />} />
               <Route path="/parts" element={<Parts />} />
+              <Route path="/part/:id" element={<PartDetail />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/faq" element={<FAQ />} />

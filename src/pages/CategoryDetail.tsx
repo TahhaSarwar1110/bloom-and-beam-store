@@ -319,6 +319,130 @@ const categoryDetails: Record<string, CategoryInfo> = {
     benefits: ['Versatility', 'Patient mobility', 'Space efficiency', 'Respiratory support'],
     useCases: ['Dialysis centers', 'Outpatient procedures', 'Cardiac care', 'Rehabilitation']
   },
+  // New categories for Services Cards
+  'fully-electric-bed': {
+    overview: [
+      'Fully electric hospital beds represent the pinnacle of patient care technology, offering complete motorized control over all bed positions.',
+      'With the touch of a button, caregivers and patients can adjust height, head, foot, and Trendelenburg positions.'
+    ],
+    whyChoose: [
+      { icon: 'check', title: 'Maximum Convenience' },
+      { icon: 'clock', title: 'Quick Position Changes' },
+      { icon: 'settings', title: 'Advanced Safety Features' },
+      { icon: 'award', title: 'Premium Construction' }
+    ],
+    features: ['Full electric controls', 'Programmable positions', 'Trendelenburg capability', 'Low height function'],
+    benefits: ['Maximum convenience', 'Reduced injury risk', 'Patient independence'],
+    useCases: ['Acute care hospitals', 'ICU settings', 'Post-surgical care']
+  },
+  'semi-electric-bed': {
+    overview: [
+      'Semi-electric hospital beds combine the convenience of electric controls with manual reliability.',
+      'Perfect for facilities seeking to upgrade from fully manual beds with balanced functionality and cost.'
+    ],
+    whyChoose: [
+      { icon: 'check', title: 'Balanced Cost & Features' },
+      { icon: 'clock', title: 'Patient-Controlled Comfort' },
+      { icon: 'settings', title: 'Reduced Caregiver Strain' },
+      { icon: 'award', title: 'Energy Efficient Design' }
+    ],
+    features: ['Electric head and foot controls', 'Manual crank height adjustment', 'Pendant controller'],
+    benefits: ['Balance of cost and convenience', 'Patient-controlled positioning'],
+    useCases: ['Nursing homes', 'Rehabilitation centers', 'Home healthcare']
+  },
+  'bariatric-bed': {
+    overview: [
+      'Bariatric hospital beds are engineered to safely accommodate larger patients with weight capacities ranging from 600 to 1000+ pounds.',
+      'These heavy-duty beds feature reinforced frames and specialized motors designed for extended durability.'
+    ],
+    whyChoose: [
+      { icon: 'check', title: 'High Weight Capacity' },
+      { icon: 'clock', title: 'Patient Dignity Focus' },
+      { icon: 'settings', title: 'Heavy-Duty Construction' },
+      { icon: 'award', title: 'Caregiver Safety Design' }
+    ],
+    features: ['High weight capacity (600-1000 lbs)', 'Extra-wide sleep surface', 'Reinforced frame'],
+    benefits: ['Patient dignity', 'Caregiver safety', 'Durability'],
+    useCases: ['Bariatric care units', 'General hospitals', 'Long-term care']
+  },
+  'burning-bed': {
+    overview: [
+      'Specialized burn care beds designed for patients with severe burns requiring specialized therapeutic surfaces.',
+      'Features advanced air therapy and pressure relief technology for optimal wound healing.'
+    ],
+    whyChoose: [
+      { icon: 'check', title: 'Burn Care Specialized' },
+      { icon: 'clock', title: 'Rapid Healing Support' },
+      { icon: 'settings', title: 'Air Therapy Technology' },
+      { icon: 'award', title: 'Clinical Excellence' }
+    ],
+    features: ['Air therapy surface', 'Temperature control', 'Low friction design', 'Easy patient access'],
+    benefits: ['Optimal wound healing', 'Reduced pressure points', 'Temperature regulation'],
+    useCases: ['Burn units', 'Trauma centers', 'Wound care facilities']
+  },
+  'ems-stretcher': {
+    overview: ['Professional EMS stretchers designed for emergency medical services and ambulance transport.'],
+    whyChoose: [{ icon: 'check', title: 'Emergency Ready' }, { icon: 'clock', title: 'Quick Deploy' }, { icon: 'settings', title: 'Lightweight' }, { icon: 'award', title: 'Durable' }],
+    features: ['Lightweight aluminum', 'Quick-fold mechanism', 'Ambulance compatible'],
+    benefits: ['Rapid deployment', 'Easy handling', 'Patient safety'],
+    useCases: ['Ambulances', 'Emergency response', 'Field operations']
+  },
+  'er-stretcher': {
+    overview: ['Emergency room stretchers built for high-volume hospital emergency departments.'],
+    whyChoose: [{ icon: 'check', title: 'ER Optimized' }, { icon: 'clock', title: 'Quick Access' }, { icon: 'settings', title: 'Easy Clean' }, { icon: 'award', title: 'Durable' }],
+    features: ['IV pole mounts', 'O2 tank holder', 'Side rail controls'],
+    benefits: ['Fast patient care', 'Multi-functional', 'Easy maintenance'],
+    useCases: ['Emergency departments', 'Urgent care', 'Trauma centers']
+  },
+  'surgery-stretcher': {
+    overview: ['Surgical stretchers designed for operating room patient transport and pre/post-op care.'],
+    whyChoose: [{ icon: 'check', title: 'Surgical Grade' }, { icon: 'clock', title: 'OR Compatible' }, { icon: 'settings', title: 'Sterile Design' }, { icon: 'award', title: 'Precision' }],
+    features: ['X-ray translucent', 'Easy transfer', 'Sterile surfaces'],
+    benefits: ['OR compatibility', 'Safe transfers', 'Infection control'],
+    useCases: ['Operating rooms', 'Pre-op', 'Post-op recovery']
+  },
+  'bariatric-stretcher': {
+    overview: ['Heavy-duty stretchers for larger patients with high weight capacity and reinforced construction.'],
+    whyChoose: [{ icon: 'check', title: 'High Capacity' }, { icon: 'clock', title: 'Safe Handling' }, { icon: 'settings', title: 'Reinforced' }, { icon: 'award', title: 'Dignified Care' }],
+    features: ['1000+ lb capacity', 'Extra-wide platform', 'Heavy-duty wheels'],
+    benefits: ['Patient safety', 'Caregiver safety', 'Durability'],
+    useCases: ['Bariatric care', 'Emergency transport', 'Hospital transfers']
+  },
+  'evac-stretcher': {
+    overview: ['Emergency evacuation stretchers for rapid patient evacuation during emergencies.'],
+    whyChoose: [{ icon: 'check', title: 'Rapid Evac' }, { icon: 'clock', title: 'Quick Deploy' }, { icon: 'settings', title: 'Compact Storage' }, { icon: 'award', title: 'Safety Certified' }],
+    features: ['Compact fold', 'Stair-capable', 'Multiple handles'],
+    benefits: ['Emergency ready', 'Easy storage', 'Versatile use'],
+    useCases: ['Emergency evacuation', 'Disaster response', 'Building safety']
+  },
+  'bed-side-table': {
+    overview: ['Hospital bedside tables for patient convenience and comfort during their stay.'],
+    whyChoose: [{ icon: 'check', title: 'Patient Comfort' }, { icon: 'clock', title: 'Easy Access' }, { icon: 'settings', title: 'Adjustable' }, { icon: 'award', title: 'Durable' }],
+    features: ['Height adjustable', 'Tilt top', 'Lockable wheels'],
+    benefits: ['Patient independence', 'Easy meals', 'Organized space'],
+    useCases: ['Patient rooms', 'Long-term care', 'Home healthcare']
+  },
+  'bed-over-table': {
+    overview: ['Overbed tables that position over the bed for eating, reading, and activities.'],
+    whyChoose: [{ icon: 'check', title: 'Versatile Use' }, { icon: 'clock', title: 'Easy Adjust' }, { icon: 'settings', title: 'Stable Design' }, { icon: 'award', title: 'Quality Built' }],
+    features: ['Height adjustable', 'Tilting surface', 'Easy clean top'],
+    benefits: ['Meal support', 'Activity surface', 'Patient comfort'],
+    useCases: ['Hospitals', 'Nursing homes', 'Home care']
+  },
+  'wheel-chair': {
+    overview: ['Medical wheelchairs for patient mobility and transport within healthcare facilities.'],
+    whyChoose: [{ icon: 'check', title: 'Mobility Support' }, { icon: 'clock', title: 'Easy Transport' }, { icon: 'settings', title: 'Comfortable' }, { icon: 'award', title: 'Durable' }],
+    features: ['Foldable frame', 'Padded armrests', 'Footrests included'],
+    benefits: ['Patient mobility', 'Easy storage', 'Comfortable transport'],
+    useCases: ['Hospitals', 'Clinics', 'Home care', 'Rehabilitation']
+  },
+  'patient-recliner': {
+    overview: ['Medical recliners for patient comfort during treatments, recovery, and extended stays.'],
+    whyChoose: [{ icon: 'check', title: 'Comfort Focused' }, { icon: 'clock', title: 'Multiple Positions' }, { icon: 'settings', title: 'Easy Clean' }, { icon: 'award', title: 'Durable Fabric' }],
+    features: ['Multiple recline positions', 'Padded comfort', 'Easy-clean vinyl'],
+    benefits: ['Patient comfort', 'Treatment support', 'Versatile use'],
+    useCases: ['Infusion centers', 'Dialysis', 'Recovery rooms', 'Patient rooms']
+  },
 };
 
 const defaultDetails: CategoryInfo = {

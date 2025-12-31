@@ -190,8 +190,11 @@ export type Database = {
           id: string
           image_urls: string[] | null
           in_stock: boolean
+          make: string | null
+          model: string | null
           name: string
           price: number
+          sku: string | null
           sort_order: number | null
           updated_at: string
         }
@@ -202,8 +205,11 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           in_stock?: boolean
+          make?: string | null
+          model?: string | null
           name: string
           price?: number
+          sku?: string | null
           sort_order?: number | null
           updated_at?: string
         }
@@ -214,8 +220,11 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           in_stock?: boolean
+          make?: string | null
+          model?: string | null
           name?: string
           price?: number
+          sku?: string | null
           sort_order?: number | null
           updated_at?: string
         }

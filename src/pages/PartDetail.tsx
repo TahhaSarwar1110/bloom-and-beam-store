@@ -1,0 +1,281 @@
+import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Layout } from '@/components/layout/Layout';
+import { Button } from '@/components/ui/button';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { ShoppingCart, Minus, Plus, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SEOHead } from '@/components/seo/SEOHead';
+
+interface Part {
+  id: string;
+  name: string;
+  description: string | null;
+  price: number;
+  category: string;
+  image_urls: string[];
+  in_stock: boolean;
+  make: string | null;
+  model: string | null;
+  sku: string | null;
+}
+
+const PartDetail = () => {
+  const { id } = useParams();
+  const [part, setPart] = useState<Part | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPart = async () => {
+      if (!id) return;
+      
+      const { data, error } = await supabase
+        .from('parts')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (!error && data) {
+        setPart(data);
+      }
+      setLoading(false);
+    };
+
+    fetchPart();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="container py-20 text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-muted-foreground">Loading part details...</p>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!part) {
+    return (
+      <Layout>
+        <div className="container py-20 text-center">
+          <h1 className="text-2xl font-bold mb-4">Part not found</h1>
+          <Button asChild variant="outline">
+            <Link to="/parts">Back to Parts</Link>
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+
+  const handleAddToCart = () => {
+    addToCart(
+      {
+        id: part.id,
+        name: part.name,
+        price: part.price,
+        image: part.image_urls?.[0] || '',
+        description: part.description || '',
+        category: part.category,
+        features: [],
+        inStock: part.in_stock,
+        rating: 4.5,
+        reviews: 0,
+      },
+      quantity
+    );
+    toast({ title: 'Added to cart', description: `${quantity}x ${part.name} added.` });
+  };
+
+  const images = part.image_urls || [];
+  const prevImage = () => setCurrentImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+  const nextImage = () => setCurrentImageIndex((i) => (i === images.length - 1 ? 0 : i + 1));
+
+  return (
+    <Layout>
+      <SEOHead
+        title={`${part.name} | BEDMED Parts`}
+        description={part.description || `${part.name} - OEM replacement part from BEDMED`}
+        canonicalUrl={`${window.location.origin}/part/${part.id}`}
+      />
+
+      <section className="py-12 md:py-20">
+        <div className="container">
+          <Link to="/parts" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8">
+            <ArrowLeft className="h-4 w-4" /> Back to Parts
+          </Link>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Images Section */}
+            <div className="space-y-4">
+              {/* Main Image */}
+              <div className="relative bg-white rounded-2xl p-8 border group">
+                {images.length > 0 ? (
+                  <>
+                    <img
+                      src={images[currentImageIndex]}
+                      alt={`${part.name} - Image ${currentImageIndex + 1}`}
+                      className="w-full h-96 object-contain"
+                    />
+                    {images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-full h-96 flex items-center justify-center text-muted-foreground">
+                    No image available
+                  </div>
+                )}
+              </div>
+
+              {/* Thumbnail Gallery */}
+              {images.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setCurrentImageIndex(i)}
+                      className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
+                        i === currentImageIndex ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
+                      }`}
+                    >
+                      <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Details Section */}
+            <div className="space-y-6">
+              {/* Make & Model Badges */}
+              {(part.make || part.model) && (
+                <div className="flex items-center gap-2">
+                  {part.make && (
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
+                      {part.make}
+                    </span>
+                  )}
+                  {part.model && (
+                    <span className="bg-muted px-3 py-1 rounded-full text-sm font-medium">
+                      {part.model}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* SKU */}
+              {part.sku && (
+                <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
+              )}
+
+              {/* Category */}
+              <span className="text-primary font-medium uppercase text-sm">{part.category}</span>
+
+              {/* Name */}
+              <h1 className="font-display text-3xl md:text-4xl font-bold">{part.name}</h1>
+
+              {/* Price */}
+              <div className="flex items-center gap-4">
+                <span className="font-display text-3xl font-bold text-primary">
+                  ${part.price.toFixed(2)}
+                </span>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    part.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                  }`}
+                >
+                  {part.in_stock ? 'In Stock' : 'Out of Stock'}
+                </span>
+              </div>
+
+              {/* Description */}
+              {part.description && (
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-muted-foreground text-lg">{part.description}</p>
+                </div>
+              )}
+
+              {/* Add to Cart */}
+              <div className="flex items-center gap-4 pt-6 border-t">
+                <div className="flex items-center gap-3 bg-muted rounded-lg p-2">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </button>
+                  <span className="w-10 text-center font-bold">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                <Button
+                  onClick={handleAddToCart}
+                  size="lg"
+                  className="flex-1 btn-shine"
+                  disabled={!part.in_stock}
+                >
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Add to Cart
+                </Button>
+              </div>
+
+              {/* Additional Info */}
+              <div className="bg-muted/50 rounded-xl p-6 mt-6">
+                <h3 className="font-display font-bold mb-4">Product Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  {part.make && (
+                    <div>
+                      <span className="text-muted-foreground">Manufacturer:</span>
+                      <p className="font-medium">{part.make}</p>
+                    </div>
+                  )}
+                  {part.model && (
+                    <div>
+                      <span className="text-muted-foreground">Model:</span>
+                      <p className="font-medium">{part.model}</p>
+                    </div>
+                  )}
+                  {part.sku && (
+                    <div>
+                      <span className="text-muted-foreground">SKU:</span>
+                      <p className="font-medium">{part.sku}</p>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-muted-foreground">Category:</span>
+                    <p className="font-medium">{part.category}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+};
+
+export default PartDetail;

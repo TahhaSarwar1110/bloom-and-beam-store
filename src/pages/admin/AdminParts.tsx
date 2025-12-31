@@ -21,6 +21,9 @@ interface Part {
   image_urls: string[];
   in_stock: boolean;
   sort_order: number;
+  make: string | null;
+  model: string | null;
+  sku: string | null;
 }
 
 export default function AdminParts() {
@@ -37,7 +40,10 @@ export default function AdminParts() {
     category: 'General',
     image_urls: [] as string[],
     in_stock: true,
-    sort_order: 0
+    sort_order: 0,
+    make: '',
+    model: '',
+    sku: ''
   });
 
   useEffect(() => {
@@ -66,7 +72,10 @@ export default function AdminParts() {
       category: 'General',
       image_urls: [],
       in_stock: true,
-      sort_order: parts.length
+      sort_order: parts.length,
+      make: '',
+      model: '',
+      sku: ''
     });
     setEditingPart(null);
   };
@@ -80,7 +89,10 @@ export default function AdminParts() {
       category: part.category,
       image_urls: part.image_urls || [],
       in_stock: part.in_stock,
-      sort_order: part.sort_order
+      sort_order: part.sort_order,
+      make: part.make || '',
+      model: part.model || '',
+      sku: part.sku || ''
     });
     setDialogOpen(true);
   };
@@ -138,7 +150,10 @@ export default function AdminParts() {
       category: formData.category,
       image_urls: formData.image_urls,
       in_stock: formData.in_stock,
-      sort_order: formData.sort_order
+      sort_order: formData.sort_order,
+      make: formData.make || null,
+      model: formData.model || null,
+      sku: formData.sku || null
     };
 
     if (editingPart) {
@@ -228,6 +243,37 @@ export default function AdminParts() {
                       id="category"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    />
+                  </div>
+                </div>
+                
+                {/* Make, Model, SKU Fields */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="make">Manufacturer</Label>
+                    <Input
+                      id="make"
+                      value={formData.make}
+                      onChange={(e) => setFormData({ ...formData, make: e.target.value })}
+                      placeholder="e.g., Stryker"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="model">Model</Label>
+                    <Input
+                      id="model"
+                      value={formData.model}
+                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                      placeholder="e.g., InTouch"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku">SKU</Label>
+                    <Input
+                      id="sku"
+                      value={formData.sku}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      placeholder="e.g., STR-001"
                     />
                   </div>
                 </div>
