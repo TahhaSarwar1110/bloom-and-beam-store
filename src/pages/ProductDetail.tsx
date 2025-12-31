@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +6,7 @@ import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, ZoomIn, Maximize2 } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, Maximize2, MessageSquareQuote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Product {
@@ -24,6 +24,7 @@ interface Product {
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -43,6 +44,23 @@ const ProductDetail = () => {
       return data as Product | null;
     },
     enabled: !!id,
+  });
+
+  // Fetch related products from the same category
+  const { data: relatedProducts } = useQuery({
+    queryKey: ['relatedProducts', product?.category, id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, image_url, price, category, slug')
+        .eq('category', product!.category)
+        .neq('id', id)
+        .limit(4);
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!product?.category && !!id,
   });
 
   if (isLoading) {
@@ -261,34 +279,74 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              <div className="flex items-center gap-4 pt-6 border-t">
-                <div className="flex items-center gap-3 bg-muted rounded-lg p-2">
-                  <button 
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))} 
-                    className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
+              <div className="flex flex-col gap-4 pt-6 border-t">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 bg-muted rounded-lg p-2">
+                    <button 
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))} 
+                      className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="w-10 text-center font-bold">{quantity}</span>
+                    <button 
+                      onClick={() => setQuantity(quantity + 1)} 
+                      className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <Button 
+                    onClick={handleAddToCart} 
+                    size="lg" 
+                    className="flex-1 btn-shine"
+                    disabled={!product.in_stock}
                   >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <span className="w-10 text-center font-bold">{quantity}</span>
-                  <button 
-                    onClick={() => setQuantity(quantity + 1)} 
-                    className="w-10 h-10 flex items-center justify-center rounded hover:bg-background transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    Add to Cart
+                  </Button>
                 </div>
                 <Button 
-                  onClick={handleAddToCart} 
+                  onClick={() => navigate(`/contact?product=${encodeURIComponent(product.name)}`)}
                   size="lg" 
-                  className="flex-1 btn-shine"
-                  disabled={!product.in_stock}
+                  variant="outline"
+                  className="w-full"
                 >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
-                  Add to Cart
+                  <MessageSquareQuote className="mr-2 h-5 w-5" />
+                  Get Quote
                 </Button>
               </div>
             </div>
           </div>
+
+          {/* Related Products Section */}
+          {relatedProducts && relatedProducts.length > 0 && (
+            <div className="mt-16 pt-12 border-t">
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-8">Related Products</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {relatedProducts.map((relProduct) => (
+                  <div 
+                    key={relProduct.id}
+                    className="group cursor-pointer"
+                    onClick={() => navigate(`/product/${relProduct.id}`)}
+                  >
+                    <div className="bg-muted rounded-xl overflow-hidden aspect-square mb-3 relative">
+                      <img 
+                        src={relProduct.image_url || '/placeholder.svg'} 
+                        alt={relProduct.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                    </div>
+                    <h3 className="font-medium text-sm md:text-base line-clamp-2 group-hover:text-primary transition-colors">
+                      {relProduct.name}
+                    </h3>
+                    <p className="text-primary font-bold mt-1">${relProduct.price.toLocaleString()}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

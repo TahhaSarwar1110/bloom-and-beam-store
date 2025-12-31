@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,10 +9,23 @@ import { useToast } from '@/hooks/use-toast';
 
 const Contact = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const productName = searchParams.get('product');
+    if (productName) {
+      setSubject(`Quote Request: ${productName}`);
+      setMessage(`I am interested in getting a quote for the "${productName}". Please provide pricing and availability information.\n\nAdditional details:\n`);
+    }
+  }, [searchParams]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({ title: 'Message Sent!', description: 'We\'ll get back to you within 24 hours.' });
+    setSubject('');
+    setMessage('');
   };
 
   return (
@@ -42,8 +57,25 @@ const Contact = () => {
                 <div><label className="text-sm font-medium mb-2 block">Name</label><Input placeholder="Your name" required /></div>
                 <div><label className="text-sm font-medium mb-2 block">Email</label><Input type="email" placeholder="your@email.com" required /></div>
               </div>
-              <div><label className="text-sm font-medium mb-2 block">Subject</label><Input placeholder="How can we help?" required /></div>
-              <div><label className="text-sm font-medium mb-2 block">Message</label><Textarea placeholder="Tell us more..." rows={5} required /></div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Subject</label>
+                <Input 
+                  placeholder="How can we help?" 
+                  required 
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Message</label>
+                <Textarea 
+                  placeholder="Tell us more..." 
+                  rows={5} 
+                  required 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
               <Button type="submit" className="w-full btn-shine" size="lg">Send Message</Button>
             </form>
           </div>
