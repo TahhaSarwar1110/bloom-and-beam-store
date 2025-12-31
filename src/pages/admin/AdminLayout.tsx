@@ -2,7 +2,18 @@ import { ReactNode, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Package, FileText, ShoppingCart, LayoutDashboard, LogOut, Home, Settings } from 'lucide-react';
+import { 
+  Package, 
+  FileText, 
+  ShoppingCart, 
+  LayoutDashboard, 
+  LogOut, 
+  Home, 
+  Settings,
+  FolderOpen,
+  Wrench,
+  HelpCircle
+} from 'lucide-react';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -34,7 +45,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/products', icon: Package, label: 'Products' },
+    { path: '/admin/categories', icon: FolderOpen, label: 'Categories' },
+    { path: '/admin/parts', icon: Wrench, label: 'Parts' },
     { path: '/admin/blog', icon: FileText, label: 'Blog Posts' },
+    { path: '/admin/faqs', icon: HelpCircle, label: 'FAQs' },
     { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
     { path: '/admin/settings', icon: Settings, label: 'Site Settings' },
   ];
