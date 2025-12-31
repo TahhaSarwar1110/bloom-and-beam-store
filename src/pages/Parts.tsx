@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, ShoppingCart, Filter } from 'lucide-react';
 import { SEOHead } from '@/components/seo/SEOHead';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Part {
   id: string;
@@ -14,6 +24,9 @@ interface Part {
   category: string;
   image_urls: string[];
   in_stock: boolean;
+  make: string | null;
+  model: string | null;
+  sku: string | null;
 }
 
 const PartImageCarousel = ({ images, name }: { images: string[]; name: string }) => {
@@ -21,8 +34,8 @@ const PartImageCarousel = ({ images, name }: { images: string[]; name: string })
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-24 h-24 bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">
-        No image
+      <div className="w-full h-48 bg-muted rounded-lg flex items-center justify-center text-muted-foreground text-sm">
+        No image available
       </div>
     );
   }
@@ -31,31 +44,31 @@ const PartImageCarousel = ({ images, name }: { images: string[]; name: string })
   const next = () => setCurrentIndex((i) => (i === images.length - 1 ? 0 : i + 1));
 
   return (
-    <div className="relative w-24 h-24 group">
+    <div className="relative w-full h-48 group">
       <img
         src={images[currentIndex]}
         alt={`${name} - Image ${currentIndex + 1}`}
-        className="w-24 h-24 object-cover rounded"
+        className="w-full h-48 object-contain rounded-lg bg-white"
       />
       {images.length > 1 && (
         <>
           <button
             onClick={(e) => { e.stopPropagation(); prev(); }}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-background/80 p-1 rounded-r opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/90 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
           >
-            <ChevronLeft className="h-3 w-3" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); next(); }}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-background/80 p-1 rounded-l opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/90 p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
           >
-            <ChevronRight className="h-3 w-3" />
+            <ChevronRight className="h-4 w-4" />
           </button>
-          <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-1">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
             {images.map((_, i) => (
               <span
                 key={i}
-                className={`w-1.5 h-1.5 rounded-full ${i === currentIndex ? 'bg-primary' : 'bg-muted-foreground/50'}`}
+                className={`w-2 h-2 rounded-full transition-colors ${i === currentIndex ? 'bg-primary' : 'bg-muted-foreground/50'}`}
               />
             ))}
           </div>
@@ -67,7 +80,13 @@ const PartImageCarousel = ({ images, name }: { images: string[]; name: string })
 
 const Parts = () => {
   const [parts, setParts] = useState<Part[]>([]);
+  const [filteredParts, setFilteredParts] = useState<Part[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedMake, setSelectedMake] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const { addToCart } = useCart();
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchParts = async () => {
@@ -78,6 +97,7 @@ const Parts = () => {
 
       if (!error && data) {
         setParts(data);
+        setFilteredParts(data);
       }
       setLoading(false);
     };
@@ -85,66 +105,224 @@ const Parts = () => {
     fetchParts();
   }, []);
 
-  // Group parts by category
-  const categories = [...new Set(parts.map(p => p.category))];
+  useEffect(() => {
+    let result = parts;
+
+    // Filter by search
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (part) =>
+          part.name.toLowerCase().includes(query) ||
+          part.description?.toLowerCase().includes(query) ||
+          part.make?.toLowerCase().includes(query) ||
+          part.model?.toLowerCase().includes(query) ||
+          part.sku?.toLowerCase().includes(query)
+      );
+    }
+
+    // Filter by make
+    if (selectedMake !== 'all') {
+      result = result.filter((part) => part.make === selectedMake);
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      result = result.filter((part) => part.category === selectedCategory);
+    }
+
+    setFilteredParts(result);
+  }, [searchQuery, selectedMake, selectedCategory, parts]);
+
+  const makes = [...new Set(parts.map((p) => p.make).filter(Boolean))] as string[];
+  const categories = [...new Set(parts.map((p) => p.category))];
+
+  const handleAddToCart = (part: Part) => {
+    addToCart(
+      {
+        id: part.id,
+        name: part.name,
+        price: part.price,
+        image: part.image_urls?.[0] || '',
+        description: part.description || '',
+        category: part.category,
+        features: [],
+        inStock: part.in_stock,
+        rating: 4.5,
+        reviews: 0,
+      },
+      1
+    );
+    toast({ title: 'Added to cart', description: `${part.name} added.` });
+  };
 
   return (
     <Layout>
       <SEOHead
         title="Spare Parts - OEM Replacement Parts | BEDMED"
-        description="OEM replacement parts for all BEDMED medical equipment. Caster wheels, side rails, mattress covers, and more."
+        description="OEM replacement parts for all BEDMED medical equipment. Search by manufacturer, model, or part number."
         canonicalUrl={`${window.location.origin}/parts`}
       />
 
-      <section className="py-16 md:py-24">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-12">
         <div className="container">
-          <div className="text-center mb-16">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Spare Parts</h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">OEM replacement parts for all BEDMED equipment.</p>
-          </div>
+          <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">Shop by Device</h1>
+          <p className="text-primary-foreground/80 max-w-2xl">
+            Find OEM replacement parts for your medical equipment. Search by manufacturer, model, or part number.
+          </p>
+        </div>
+      </section>
 
+      {/* Search & Filter Section */}
+      <section className="bg-card border-b sticky top-[80px] z-40">
+        <div className="container py-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            {/* Search */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Search Keyword or Item Number"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-12 text-base"
+              />
+            </div>
+
+            {/* Manufacturer Filter */}
+            <Select value={selectedMake} onValueChange={setSelectedMake}>
+              <SelectTrigger className="w-full md:w-48 h-12">
+                <SelectValue placeholder="Manufacturer" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Manufacturers</SelectItem>
+                {makes.map((make) => (
+                  <SelectItem key={make} value={make}>
+                    {make}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Model/Category Filter */}
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full md:w-48 h-12">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Button className="h-12 px-8 btn-shine">
+              <Filter className="mr-2 h-4 w-4" />
+              Find
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Parts Grid */}
+      <section className="py-12">
+        <div className="container">
           {loading ? (
-            <div className="text-center py-8">Loading...</div>
-          ) : parts.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No parts available yet.
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+              <p className="mt-4 text-muted-foreground">Loading parts...</p>
+            </div>
+          ) : filteredParts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">No parts found matching your criteria.</p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedMake('all');
+                  setSelectedCategory('all');
+                }}
+              >
+                Clear Filters
+              </Button>
             </div>
           ) : (
-            <div className="space-y-12">
-              {categories.map((category) => (
-                <div key={category}>
-                  <h2 className="text-2xl font-bold mb-6 text-primary">{category}</h2>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {parts
-                      .filter((part) => part.category === category)
-                      .map((part, i) => (
-                        <div
-                          key={part.id}
-                          className="bg-card p-6 rounded-xl border card-hover flex gap-4 items-start opacity-0 animate-fade-in-up"
-                          style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'forwards' }}
-                        >
-                          <PartImageCarousel images={part.image_urls} name={part.name} />
-                          <div className="flex-1">
-                            <h3 className="font-display font-bold text-lg">{part.name}</h3>
-                            {part.description && (
-                              <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
-                            )}
-                            <p className="text-primary font-bold mt-2">${part.price}</p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className={`text-xs px-2 py-0.5 rounded ${part.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                {part.in_stock ? 'In Stock' : 'Out of Stock'}
-                              </span>
-                              <Button size="sm" className="btn-shine" disabled={!part.in_stock}>
-                                Order
-                              </Button>
-                            </div>
-                          </div>
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <p className="text-muted-foreground">
+                  Showing <span className="font-semibold text-foreground">{filteredParts.length}</span> parts
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {filteredParts.map((part, i) => (
+                  <div
+                    key={part.id}
+                    className="bg-card rounded-xl border overflow-hidden card-hover opacity-0 animate-fade-in-up"
+                    style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'forwards' }}
+                  >
+                    {/* Image */}
+                    <Link to={`/part/${part.id}`}>
+                      <PartImageCarousel images={part.image_urls} name={part.name} />
+                    </Link>
+
+                    {/* Content */}
+                    <div className="p-4 space-y-3">
+                      {/* Make & Model */}
+                      {(part.make || part.model) && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {part.make && <span className="bg-muted px-2 py-0.5 rounded">{part.make}</span>}
+                          {part.model && <span className="bg-muted px-2 py-0.5 rounded">{part.model}</span>}
                         </div>
-                      ))}
+                      )}
+
+                      {/* SKU */}
+                      {part.sku && (
+                        <p className="text-xs text-muted-foreground">SKU: {part.sku}</p>
+                      )}
+
+                      {/* Name */}
+                      <Link to={`/part/${part.id}`}>
+                        <h3 className="font-display font-bold text-lg hover:text-primary transition-colors line-clamp-2">
+                          {part.name}
+                        </h3>
+                      </Link>
+
+                      {/* Description */}
+                      {part.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-2">{part.description}</p>
+                      )}
+
+                      {/* Price & Stock */}
+                      <div className="flex items-center justify-between pt-2 border-t">
+                        <div>
+                          <p className="text-xl font-bold text-primary">${part.price.toFixed(2)}</p>
+                          <span
+                            className={`text-xs font-medium ${
+                              part.in_stock ? 'text-green-600' : 'text-red-600'
+                            }`}
+                          >
+                            {part.in_stock ? 'In Stock' : 'Out of Stock'}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          className="btn-shine"
+                          disabled={!part.in_stock}
+                          onClick={() => handleAddToCart(part)}
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
 
           <div className="text-center mt-12">

@@ -15,26 +15,10 @@ import {
 } from '@/components/ui/navigation-menu';
 
 const hospitalBedCategories = [
-  { name: 'Manual Hospital Beds', slug: 'manual-hospital-beds', description: 'Traditional hand-crank operated beds for basic patient care needs' },
-  { name: 'Semi-Electric Hospital Beds', slug: 'semi-electric-hospital-beds', description: 'Combination of electric head/foot controls with manual height adjustment' },
-  { name: 'Fully Electric Hospital Beds', slug: 'fully-electric-hospital-beds', description: 'Complete electric controls for all bed positions and height' },
-  { name: 'ICU / Critical Care Beds', slug: 'icu-critical-care-beds', description: 'Advanced beds designed for intensive care unit requirements' },
-  { name: 'Low Beds (Fall Prevention)', slug: 'low-beds-fall-prevention', description: 'Ultra-low height beds to minimize fall injury risks' },
-  { name: 'Bariatric Hospital Beds', slug: 'bariatric-hospital-beds', description: 'Heavy-duty beds designed for larger patients with higher weight capacity' },
-  { name: 'Pediatric Hospital Beds', slug: 'pediatric-hospital-beds', description: 'Specially designed beds for infants and children' },
-  { name: 'Maternity / OB-GYN Beds', slug: 'maternity-ob-gyn-beds', description: 'Specialized beds for labor, delivery, and postpartum care' },
-  { name: 'Fowler Beds', slug: 'fowler-beds', description: 'Adjustable beds with backrest elevation for patient comfort' },
-  { name: 'Orthopedic Hospital Beds', slug: 'orthopedic-hospital-beds', description: 'Beds with traction frames and specialized orthopedic features' },
-  { name: 'Adjustable Hospital Beds', slug: 'adjustable-hospital-beds', description: 'Versatile beds with multiple positioning options' },
-  { name: 'Air Therapy Beds', slug: 'air-therapy-beds', description: 'Pressure-relieving beds using air technology for wound care' },
-  { name: 'Specialty Therapy Beds', slug: 'specialty-therapy-beds', description: 'Therapeutic beds for specific medical conditions' },
-  { name: 'Examination Beds', slug: 'examination-beds', description: 'Beds designed for medical examinations and procedures' },
-  { name: 'Recovery Beds', slug: 'recovery-beds', description: 'Post-operative recovery beds with essential monitoring features' },
-  { name: 'Stretchers & Trolleys', slug: 'stretchers-trolleys', description: 'Mobile patient transport beds and emergency stretchers' },
-  { name: 'Homecare Hospital Beds', slug: 'homecare-hospital-beds', description: 'Hospital-grade beds designed for home healthcare settings' },
-  { name: 'Isolation Beds', slug: 'isolation-beds', description: 'Specialized beds for infectious disease isolation protocols' },
-  { name: 'Psychiatric Beds', slug: 'psychiatric-beds', description: 'Safety-focused beds for mental health care facilities' },
-  { name: 'Convertible / Chair Beds', slug: 'convertible-chair-beds', description: 'Multi-functional beds that convert to chair positions' },
+  { name: 'Fully Electric Bed', slug: 'fully-electric-bed' },
+  { name: 'Semi-Electric Bed', slug: 'semi-electric-bed' },
+  { name: 'Bariatric Bed', slug: 'bariatric-bed' },
+  { name: 'Burning Bed', slug: 'burning-bed' },
 ];
 
 const navLinks = [
@@ -109,8 +93,8 @@ export function Header() {
                     Hospital Beds
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-[400px] p-4 bg-card border rounded-lg shadow-lg">
-                      <div className="grid grid-cols-2 gap-1 max-h-[400px] overflow-y-auto">
+                    <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
+                      <div className="space-y-1">
                         {hospitalBedCategories.map((category) => (
                           <NavigationMenuLink key={category.slug} asChild>
                             <Link
