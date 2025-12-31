@@ -95,10 +95,10 @@ export function Header() {
                   <NavigationMenuContent>
                     <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
                       <div className="space-y-1">
-                        {hospitalBedCategories.map((category) => (
+                      {hospitalBedCategories.map((category) => (
                           <NavigationMenuLink key={category.slug} asChild>
                             <Link
-                              to={`/category/${category.slug}`}
+                              to={`/gallery/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
                               {category.name}
@@ -107,12 +107,14 @@ export function Header() {
                         ))}
                       </div>
                       <div className="mt-3 pt-3 border-t">
-                        <Link
-                          to="/products"
-                          className="text-sm font-medium text-primary hover:underline"
-                        >
-                          View All Products →
-                        </Link>
+                        <NavigationMenuLink asChild>
+                          <Link
+                            to="/products"
+                            className="text-sm font-medium text-primary hover:underline"
+                          >
+                            View All Products →
+                          </Link>
+                        </NavigationMenuLink>
                       </div>
                     </div>
                   </NavigationMenuContent>
@@ -228,7 +230,7 @@ export function Header() {
                     {hospitalBedCategories.map((category) => (
                       <Link
                         key={category.slug}
-                        to={`/category/${category.slug}`}
+                        to={`/gallery/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileCategoriesOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
