@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { ProductCard } from '@/components/products/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,27 @@ interface Category {
   slug: string;
 }
 
+// Hospital bed category names to filter by when type=hospital-beds
+const hospitalBedCategories = [
+  'Fully Electric Bed',
+  'Semi Electric Bed',
+  'Bariatric Bed',
+  'Low Bed',
+  'ICU Bed',
+  'Pediatric Bed',
+  'Trendelenburg Bed',
+  'Adjustable Height Bed',
+  'Home Care Bed',
+  'Long Term Care Bed',
+  'Med-Surg Bed',
+  'Birthing Bed',
+  'Stretchers'
+];
+
 const Products = () => {
+  const [searchParams] = useSearchParams();
+  const isHospitalBedsFilter = searchParams.get('type') === 'hospital-beds';
+  
   const [activeCategory, setActiveCategory] = useState('All');
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -54,15 +75,20 @@ const Products = () => {
     fetchData();
   }, []);
 
-  const allCategories = ['All', ...categories.map(c => c.name)];
-  
-  // Also include categories from products that might not be in categories table yet
-  const productCategories = [...new Set(products.map(p => p.category))];
-  const combinedCategories = ['All', ...new Set([...categories.map(c => c.name), ...productCategories])];
+  // Filter products based on hospital beds type if specified
+  const baseProducts = isHospitalBedsFilter
+    ? products.filter(p => hospitalBedCategories.includes(p.category))
+    : products;
+
+  // Get categories for the filtered products
+  const productCategories = [...new Set(baseProducts.map(p => p.category))];
+  const combinedCategories = ['All', ...new Set([...categories.map(c => c.name).filter(name => 
+    !isHospitalBedsFilter || hospitalBedCategories.includes(name)
+  ), ...productCategories])];
 
   const filteredProducts = activeCategory === 'All' 
-    ? products 
-    : products.filter(p => p.category === activeCategory);
+    ? baseProducts 
+    : baseProducts.filter(p => p.category === activeCategory);
 
   const scrollSlider = (direction: 'left' | 'right') => {
     if (sliderRef.current) {
@@ -77,17 +103,25 @@ const Products = () => {
   return (
     <Layout>
       <SEOHead
-        title="Medical Equipment & Hospital Stretchers | BEDMED Products"
-        description="Explore our complete range of premium medical stretchers and hospital equipment. Emergency, ICU, transport, and recovery stretchers."
-        canonicalUrl={`${window.location.origin}/products`}
+        title={isHospitalBedsFilter 
+          ? "Hospital Beds & Medical Beds | BEDMED Products" 
+          : "Medical Equipment & Hospital Stretchers | BEDMED Products"}
+        description={isHospitalBedsFilter
+          ? "Browse our complete range of hospital beds including electric, ICU, bariatric, and home care beds."
+          : "Explore our complete range of premium medical stretchers and hospital equipment. Emergency, ICU, transport, and recovery stretchers."}
+        canonicalUrl={`${window.location.origin}/products${isHospitalBedsFilter ? '?type=hospital-beds' : ''}`}
       />
 
       <section className="py-16 md:py-24">
         <div className="container">
           <div className="text-center mb-12">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Our Products</h1>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+              {isHospitalBedsFilter ? 'Hospital Beds' : 'Our Products'}
+            </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Explore our complete range of premium medical stretchers and hospital equipment.
+              {isHospitalBedsFilter 
+                ? 'Browse our complete range of hospital beds for every medical need.'
+                : 'Explore our complete range of premium medical stretchers and hospital equipment.'}
             </p>
           </div>
 
