@@ -109,7 +109,7 @@ export function Header() {
                       <div className="mt-3 pt-3 border-t">
                         <NavigationMenuLink asChild>
                           <Link
-                            to="/products"
+                            to="/products?type=hospital-beds"
                             className="text-sm font-medium text-primary hover:underline"
                           >
                             View All Products →
