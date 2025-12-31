@@ -120,7 +120,7 @@ export function ServicesCards() {
                     {category.items.map((item) => (
                       <Link
                         key={item.slug}
-                        to={`/category/${item.slug}`}
+                        to={`/gallery/${item.slug}`}
                         className="block py-2 px-4 rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors font-medium"
                       >
                         {item.name}
