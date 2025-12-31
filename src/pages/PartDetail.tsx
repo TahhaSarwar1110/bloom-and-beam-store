@@ -1,12 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { ShoppingCart, Minus, Plus, ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, ArrowLeft, ChevronLeft, ChevronRight, X, Maximize2 } from 'lucide-react';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { cn } from '@/lib/utils';
 
 interface Part {
   id: string;
@@ -27,6 +28,7 @@ const PartDetail = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -38,7 +40,7 @@ const PartDetail = () => {
         .from('parts')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (!error && data) {
         setPart(data);
@@ -48,6 +50,51 @@ const PartDetail = () => {
 
     fetchPart();
   }, [id]);
+
+  const images = part?.image_urls || [];
+
+  const prevImage = useCallback(() => {
+    if (images.length === 0) return;
+    setCurrentImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
+  }, [images.length]);
+
+  const nextImage = useCallback(() => {
+    if (images.length === 0) return;
+    setCurrentImageIndex((i) => (i === images.length - 1 ? 0 : i + 1));
+  }, [images.length]);
+
+  const openLightbox = () => setIsLightboxOpen(true);
+  const closeLightbox = () => setIsLightboxOpen(false);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+      
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, nextImage, prevImage]);
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLightboxOpen]);
 
   if (loading) {
     return (
@@ -92,10 +139,6 @@ const PartDetail = () => {
     toast({ title: 'Added to cart', description: `${quantity}x ${part.name} added.` });
   };
 
-  const images = part.image_urls || [];
-  const prevImage = () => setCurrentImageIndex((i) => (i === 0 ? images.length - 1 : i - 1));
-  const nextImage = () => setCurrentImageIndex((i) => (i === images.length - 1 ? 0 : i + 1));
-
   return (
     <Layout>
       <SEOHead
@@ -106,7 +149,7 @@ const PartDetail = () => {
 
       <section className="py-12 md:py-20">
         <div className="container">
-          <Link to="/parts" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8">
+          <Link to="/parts" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors">
             <ArrowLeft className="h-4 w-4" /> Back to Parts
           </Link>
 
@@ -114,28 +157,42 @@ const PartDetail = () => {
             {/* Images Section */}
             <div className="space-y-4">
               {/* Main Image */}
-              <div className="relative bg-white rounded-2xl p-8 border group">
+              <div 
+                className="relative bg-white rounded-2xl p-8 border group cursor-zoom-in"
+                onClick={openLightbox}
+              >
                 {images.length > 0 ? (
                   <>
                     <img
                       src={images[currentImageIndex]}
                       alt={`${part.name} - Image ${currentImageIndex + 1}`}
-                      className="w-full h-96 object-contain"
+                      className="w-full h-96 object-contain transition-transform duration-300 group-hover:scale-105"
                     />
+                    
+                    {/* Zoom Indicator */}
+                    <div className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Maximize2 className="h-5 w-5" />
+                    </div>
+
                     {images.length > 1 && (
                       <>
                         <button
-                          onClick={prevImage}
-                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                          onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-background"
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={nextImage}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                          onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-background"
                         >
                           <ChevronRight className="h-5 w-5" />
                         </button>
+                        
+                        {/* Image Counter */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                          {currentImageIndex + 1} / {images.length}
+                        </div>
                       </>
                     )}
                   </>
@@ -153,9 +210,12 @@ const PartDetail = () => {
                     <button
                       key={i}
                       onClick={() => setCurrentImageIndex(i)}
-                      className={`flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all ${
-                        i === currentImageIndex ? 'border-primary' : 'border-transparent hover:border-muted-foreground/50'
-                      }`}
+                      className={cn(
+                        "flex-shrink-0 w-20 h-20 rounded-lg border-2 overflow-hidden transition-all",
+                        i === currentImageIndex 
+                          ? 'border-primary ring-2 ring-primary/30' 
+                          : 'border-transparent hover:border-muted-foreground/50'
+                      )}
                     >
                       <img src={img} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
                     </button>
@@ -199,9 +259,10 @@ const PartDetail = () => {
                   ${part.price.toFixed(2)}
                 </span>
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  className={cn(
+                    "px-3 py-1 rounded-full text-sm font-medium",
                     part.in_stock ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                  }`}
+                  )}
                 >
                   {part.in_stock ? 'In Stock' : 'Out of Stock'}
                 </span>
@@ -274,6 +335,91 @@ const PartDetail = () => {
           </div>
         </div>
       </section>
+
+      {/* Fullscreen Lightbox */}
+      {isLightboxOpen && images.length > 0 && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center animate-fade-in"
+          onClick={closeLightbox}
+        >
+          {/* Close Button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+          >
+            <X className="h-6 w-6 text-white" />
+          </button>
+
+          {/* Image Counter */}
+          {images.length > 1 && (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white font-medium">
+              {currentImageIndex + 1} / {images.length}
+            </div>
+          )}
+
+          {/* Navigation Arrows */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="h-8 w-8 text-white" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="h-8 w-8 text-white" />
+              </button>
+            </>
+          )}
+
+          {/* Main Image */}
+          <div 
+            className="max-w-[90vw] max-h-[85vh] p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={images[currentImageIndex]}
+              alt={part.name}
+              className="max-w-full max-h-[80vh] object-contain mx-auto animate-scale-in"
+            />
+          </div>
+
+          {/* Thumbnail Strip */}
+          {images.length > 1 && (
+            <div 
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-white/10 backdrop-blur-sm p-2 rounded-xl max-w-[90vw] overflow-x-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={cn(
+                    "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all",
+                    currentImageIndex === index 
+                      ? "border-white ring-2 ring-white/50" 
+                      : "border-transparent opacity-60 hover:opacity-100"
+                  )}
+                >
+                  <img 
+                    src={img} 
+                    alt={`View ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Keyboard Hint */}
+          <div className="absolute bottom-4 right-4 text-white/50 text-sm hidden md:block">
+            Use ← → to navigate • ESC to close
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
