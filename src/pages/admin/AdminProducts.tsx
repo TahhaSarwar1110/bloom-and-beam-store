@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
@@ -28,9 +29,15 @@ interface Product {
   created_at: string;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 export default function AdminProducts() {
   const { isAdmin } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -41,13 +48,14 @@ export default function AdminProducts() {
     original_price: '',
     image_url: '',
     image_urls: [] as string[],
-    category: 'Stretchers',
+    category: '',
     features: '',
     in_stock: true
   });
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
@@ -64,6 +72,19 @@ export default function AdminProducts() {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name')
+      .order('sort_order', { ascending: true });
+
+    if (error) {
+      console.error('Failed to fetch categories:', error);
+    } else {
+      setCategories(data || []);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -72,7 +93,7 @@ export default function AdminProducts() {
       original_price: '',
       image_url: '',
       image_urls: [],
-      category: 'Stretchers',
+      category: categories.length > 0 ? categories[0].name : '',
       features: '',
       in_stock: true
     });
@@ -198,11 +219,21 @@ export default function AdminProducts() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input
-                      id="category"
+                    <Select
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    />
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.name}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 <div className="space-y-2">
