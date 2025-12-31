@@ -50,12 +50,12 @@ const ProductGallery = () => {
       const { data, error } = await supabase
         .from('products')
         .select('id, name, image_url, image_urls, price, category, slug')
-        .ilike('category', `%${categoryFilter}%`);
+        .eq('category', categoryFilter);
       
       if (error) throw error;
       return data as Product[];
     },
-    enabled: !!categoryFilter,
+    enabled: !!categoryFilter && categoryFilter.length > 0,
   });
 
   const handleImageClick = (product: Product) => {
