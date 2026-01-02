@@ -322,6 +322,54 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          created_at: string
+          features: string[]
+          hero_title: string
+          icon: string
+          id: string
+          overview: string[]
+          published: boolean
+          short_desc: string
+          slug: string
+          sort_order: number | null
+          title: string
+          updated_at: string
+          why_choose_title: string
+        }
+        Insert: {
+          created_at?: string
+          features?: string[]
+          hero_title: string
+          icon?: string
+          id?: string
+          overview?: string[]
+          published?: boolean
+          short_desc: string
+          slug: string
+          sort_order?: number | null
+          title: string
+          updated_at?: string
+          why_choose_title?: string
+        }
+        Update: {
+          created_at?: string
+          features?: string[]
+          hero_title?: string
+          icon?: string
+          id?: string
+          overview?: string[]
+          published?: boolean
+          short_desc?: string
+          slug?: string
+          sort_order?: number | null
+          title?: string
+          updated_at?: string
+          why_choose_title?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           created_at: string
