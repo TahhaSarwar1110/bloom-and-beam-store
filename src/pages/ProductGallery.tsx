@@ -56,6 +56,7 @@ const ProductGallery = () => {
       return data as Product[];
     },
     enabled: !!categoryFilter && categoryFilter.length > 0,
+    staleTime: 0,
   });
 
   const handleImageClick = (product: Product) => {
