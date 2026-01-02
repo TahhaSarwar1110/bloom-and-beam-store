@@ -22,7 +22,7 @@ const categoryMapping: Record<string, { name: string; categoryFilter: string }> 
   'fully-electric-bed': { name: 'Fully Electric Bed', categoryFilter: 'Fully Electric Bed' },
   'semi-electric-bed': { name: 'Semi Electric Beds', categoryFilter: 'Semi Electric Beds' },
   'bariatric-bed': { name: 'Bariatric Bed', categoryFilter: 'Bariatric Bed' },
-  'burning-bed': { name: 'Burning Bed', categoryFilter: 'Burning Bed' },
+  'burn-bed': { name: 'Burn Bed', categoryFilter: 'Burn Bed' },
   // Stretchers
   'ems-stretcher': { name: 'EMS Stretcher', categoryFilter: 'EMS Stretcher' },
   'er-stretcher': { name: 'ER Stretcher', categoryFilter: 'ER Stretcher' },
