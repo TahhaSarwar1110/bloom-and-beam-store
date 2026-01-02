@@ -64,10 +64,7 @@ export function ServicesCards() {
       <div className="container">
         {/* Header */}
         <div className="text-center mb-16">
-          <span className="text-primary font-medium text-sm uppercase tracking-wider">
-            Our Services
-          </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mt-2">
+          <h2 className="font-display text-3xl md:text-4xl font-bold">
             Medical Equipment Solutions
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
