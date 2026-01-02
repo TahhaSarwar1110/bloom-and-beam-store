@@ -18,7 +18,7 @@ const hospitalBedCategories = [
   { name: 'Fully Electric Bed', slug: 'fully-electric-bed' },
   { name: 'Semi-Electric Bed', slug: 'semi-electric-bed' },
   { name: 'Bariatric Bed', slug: 'bariatric-bed' },
-  { name: 'Burning Bed', slug: 'burning-bed' },
+  { name: 'Burn Bed', slug: 'burn-bed' },
 ];
 
 const navLinks = [

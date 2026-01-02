@@ -365,7 +365,7 @@ const categoryDetails: Record<string, CategoryInfo> = {
     benefits: ['Patient dignity', 'Caregiver safety', 'Durability'],
     useCases: ['Bariatric care units', 'General hospitals', 'Long-term care']
   },
-  'burning-bed': {
+  'burn-bed': {
     overview: [
       'Specialized burn care beds designed for patients with severe burns requiring specialized therapeutic surfaces.',
       'Features advanced air therapy and pressure relief technology for optimal wound healing.'
