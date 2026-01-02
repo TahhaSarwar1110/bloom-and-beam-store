@@ -1,0 +1,48 @@
+-- Create a table for services
+CREATE TABLE public.services (
+  id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  slug TEXT NOT NULL UNIQUE,
+  icon TEXT NOT NULL DEFAULT 'ClipboardCheck',
+  title TEXT NOT NULL,
+  short_desc TEXT NOT NULL,
+  hero_title TEXT NOT NULL,
+  overview TEXT[] NOT NULL DEFAULT '{}',
+  why_choose_title TEXT NOT NULL DEFAULT 'Why Choose Our Services?',
+  features TEXT[] NOT NULL DEFAULT '{}',
+  sort_order INTEGER DEFAULT 0,
+  published BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
+);
+
+-- Enable Row Level Security
+ALTER TABLE public.services ENABLE ROW LEVEL SECURITY;
+
+-- Create policies
+CREATE POLICY "Anyone can view published services" 
+ON public.services 
+FOR SELECT 
+USING (published = true);
+
+CREATE POLICY "Admins can manage services" 
+ON public.services 
+FOR ALL 
+USING (has_role(auth.uid(), 'admin'::app_role));
+
+-- Create trigger for automatic timestamp updates
+CREATE TRIGGER update_services_updated_at
+BEFORE UPDATE ON public.services
+FOR EACH ROW
+EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Insert default services data
+INSERT INTO public.services (slug, icon, title, short_desc, hero_title, overview, why_choose_title, features, sort_order) VALUES
+('biomedical-equipment-inspection', 'ClipboardCheck', 'Biomedical Equipment Inspection', 'Comprehensive safety, functionality, and performance inspections to ensure compliance with medical standards.', 'Comprehensive Biomedical Equipment Inspection', ARRAY['Our biomedical equipment inspection services ensure that all your medical devices meet the highest safety and performance standards. We conduct thorough evaluations covering electrical safety, mechanical integrity, and functional performance to help you maintain compliance with healthcare regulations.', 'Our certified technicians use state-of-the-art testing equipment to identify potential issues before they become critical problems, helping you avoid costly downtime and ensuring patient safety at all times.'], 'Why Choose Our Inspection Services?', ARRAY['FDA & Joint Commission Compliant', 'Quick Turnaround Time', 'Certified Biomedical Technicians', 'Detailed Inspection Reports', 'On-Site & In-House Services', 'Cost-Effective Solutions'], 1),
+('medical-equipment-repair-maintenance', 'Wrench', 'Medical Equipment Repair & Maintenance', 'Reliable on-site and in-house repair and maintenance services to keep equipment operating efficiently.', 'Professional Medical Equipment Repair & Maintenance', ARRAY['Our expert repair and maintenance services are designed to keep your medical equipment running at peak performance. Whether you need emergency repairs or routine maintenance, our team of certified technicians is ready to help minimize downtime and extend the life of your equipment.', 'We service all major brands and types of medical equipment, from diagnostic devices to life-support systems. Our comprehensive approach ensures that your equipment is always ready when you need it most.'], 'Why Choose Our Repair Services?', ARRAY['Fast Emergency Response', '24/7 Technical Support', 'OEM & Quality Parts', 'Multi-Vendor Expertise', 'Warranty on All Repairs', 'Flexible Service Options'], 2),
+('calibration-services', 'Gauge', 'Calibration Services', 'Precise calibration services to maintain accuracy and meet regulatory requirements.', 'Comprehensive Biomedical Equipment Calibration', ARRAY['Accurate calibration is essential for reliable medical equipment performance. Our calibration services ensure that your devices provide precise measurements and readings, which is critical for patient diagnosis and treatment outcomes.', 'We follow strict protocols and use NIST-traceable standards to calibrate a wide range of medical equipment. Our detailed calibration certificates provide the documentation you need for regulatory compliance and quality assurance.'], 'Why Choose Our Calibration?', ARRAY['ISO Certified Process', 'Quick Turnaround Time', 'Expert Certified Technicians', 'Testing Standards', 'Calibration Record Service', 'NIST-Traceable Standards'], 3),
+('preventive-maintenance', 'Calendar', 'Preventive Maintenance (PM Services)', 'Scheduled maintenance programs designed to prevent equipment failure and reduce downtime.', 'Preventive Maintenance Programs', ARRAY['Our preventive maintenance programs are designed to keep your medical equipment in optimal condition, reducing unexpected breakdowns and extending equipment lifespan. We create customized PM schedules based on manufacturer recommendations and your facility''s specific needs.', 'Regular preventive maintenance not only ensures equipment reliability but also helps maintain compliance with healthcare regulations and accreditation standards. Our comprehensive PM services include inspection, cleaning, lubrication, and component replacement as needed.'], 'Why Choose Our PM Services?', ARRAY['Customized PM Schedules', 'Reduced Equipment Downtime', 'Extended Equipment Life', 'Compliance Documentation', 'Cost Savings', 'Priority Response Times'], 4),
+('refurbishing-services', 'RefreshCw', 'Refurbishing Services', 'Restoration of used medical equipment to like-new condition through thorough testing and servicing.', 'Medical Equipment Refurbishing Services', ARRAY['Our refurbishing services restore used medical equipment to like-new condition, providing a cost-effective alternative to purchasing new equipment. Each refurbished unit undergoes rigorous testing and quality checks to ensure it meets original manufacturer specifications.', 'We refurbish a wide range of medical equipment including hospital beds, stretchers, patient monitors, and diagnostic devices. Our refurbishing process includes complete disassembly, cleaning, parts replacement, cosmetic restoration, and comprehensive functional testing.'], 'Why Choose Our Refurbishing?', ARRAY['Like-New Quality', 'Significant Cost Savings', 'Warranty Included', 'Environmentally Friendly', 'Quick Delivery', 'Custom Configurations'], 5),
+('equipment-sales', 'ShoppingCart', 'New & Pre-Owned Medical Equipment Sales', 'Supply of high-quality new and certified pre-owned medical equipment.', 'New & Pre-Owned Medical Equipment Sales', ARRAY['We offer a comprehensive selection of new and certified pre-owned medical equipment to meet every healthcare facility''s needs and budget. Our inventory includes hospital beds, stretchers, patient monitors, diagnostic equipment, and much more.', 'All pre-owned equipment undergoes thorough inspection, refurbishment, and testing before sale. We work with leading manufacturers to provide competitive pricing on new equipment while offering significant savings on quality pre-owned alternatives.'], 'Why Choose Our Equipment Sales?', ARRAY['Wide Selection Available', 'Competitive Pricing', 'Quality Guaranteed', 'Financing Options', 'Installation Services', 'Ongoing Support'], 6),
+('equipment-rental', 'Package', 'Medical Equipment Rental', 'Flexible short-term and long-term rental solutions for healthcare facilities.', 'Flexible Medical Equipment Rental', ARRAY['Our medical equipment rental program provides flexible solutions for healthcare facilities needing temporary equipment. Whether you need equipment for a few days or several months, we have rental options to fit your needs and budget.', 'Rental equipment is ideal for handling patient surges, covering equipment during repairs, or evaluating new technology before purchase. All rental equipment is thoroughly inspected, tested, and sanitized before delivery.'], 'Why Choose Our Rental Services?', ARRAY['Flexible Rental Terms', 'Well-Maintained Equipment', 'Quick Delivery', 'Technical Support Included', 'Rent-to-Own Options', 'No Long-Term Commitment'], 7),
+('disposition-asset-management', 'Trash2', 'Disposition & Asset Management', 'Compliant disposal and effective management of outdated or unused medical equipment assets.', 'Equipment Disposition & Asset Management', ARRAY['Our disposition and asset management services help healthcare facilities properly manage and dispose of outdated, unused, or end-of-life medical equipment. We ensure all disposals comply with environmental regulations and industry standards.', 'We offer comprehensive asset management solutions including equipment tracking, lifecycle analysis, and strategic planning for equipment replacement. Our services help you maximize the value of your equipment investments while maintaining regulatory compliance.'], 'Why Choose Our Asset Management?', ARRAY['Compliant Disposal', 'Data Sanitization', 'Environmental Responsibility', 'Asset Recovery Value', 'Complete Documentation', 'Pickup Services'], 8),
+('service-contracts', 'FileText', 'Service Contracts (AMC / CMC)', 'Annual and comprehensive maintenance contracts for complete equipment support.', 'Service Contracts (AMC / CMC)', ARRAY['Our service contracts provide comprehensive coverage for all your medical equipment maintenance needs. Choose from Annual Maintenance Contracts (AMC) for planned maintenance or Comprehensive Maintenance Contracts (CMC) that include parts and repairs.', 'Service contracts offer predictable budgeting, priority response times, and peace of mind knowing your equipment is covered. Our dedicated team ensures your equipment receives regular maintenance and prompt repairs when needed.'], 'Why Choose Our Service Contracts?', ARRAY['Predictable Costs', 'Priority Response', 'Scheduled Maintenance', 'Parts Coverage (CMC)', 'Dedicated Support Team', 'Customizable Plans'], 9);

@@ -1,25 +1,76 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
 import { Phone, CheckCircle } from 'lucide-react';
-import { getServiceBySlug, services } from '@/data/services';
+import { supabase } from '@/integrations/supabase/client';
+
+interface Service {
+  id: string;
+  slug: string;
+  icon: string;
+  title: string;
+  short_desc: string;
+  hero_title: string;
+  overview: string[];
+  why_choose_title: string;
+  features: string[];
+}
 
 const ServiceDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const service = slug ? getServiceBySlug(slug) : undefined;
+  const [service, setService] = useState<Service | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!service) {
-    return <Navigate to="/services" replace />;
+  useEffect(() => {
+    const fetchService = async () => {
+      if (!slug) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .eq('slug', slug)
+        .eq('published', true)
+        .maybeSingle();
+
+      if (error || !data) {
+        setNotFound(true);
+      } else {
+        setService(data);
+      }
+      setLoading(false);
+    };
+
+    fetchService();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <section className="py-16 md:py-24">
+          <div className="container text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          </div>
+        </section>
+      </Layout>
+    );
   }
 
-  const ServiceIcon = service.icon;
+  if (notFound || !service) {
+    return <Navigate to="/services" replace />;
+  }
 
   return (
     <Layout>
       <SEOHead
         title={`${service.title} | BEDMED Services`}
-        description={service.shortDesc}
+        description={service.short_desc}
         canonicalUrl={`${window.location.origin}/services/${service.slug}`}
       />
 
@@ -36,7 +87,7 @@ const ServiceDetail = () => {
         <div className="container relative h-full flex items-center">
           <div className="max-w-2xl">
             <h1 className="font-display text-3xl md:text-5xl font-bold text-white leading-tight">
-              {service.heroTitle}
+              {service.hero_title}
             </h1>
           </div>
         </div>
@@ -62,13 +113,13 @@ const ServiceDetail = () => {
               {/* Why Choose Section */}
               <div className="mt-12">
                 <h3 className="font-display text-xl md:text-2xl font-bold mb-6">
-                  {service.whyChooseTitle}
+                  {service.why_choose_title}
                 </h3>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {service.features.map((feature, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span className="text-muted-foreground">{feature.text}</span>
+                      <span className="text-muted-foreground">{feature}</span>
                     </div>
                   ))}
                 </div>
