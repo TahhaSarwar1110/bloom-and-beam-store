@@ -63,6 +63,78 @@ const ProductDetail = () => {
     enabled: !!product?.category && !!id,
   });
 
+  // Combine main image with additional images
+  const allImages = [
+    product?.image_url,
+    ...(product?.image_urls || [])
+  ].filter(Boolean) as string[];
+
+  const nextImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev + 1) % Math.max(1, allImages.length));
+  }, [allImages.length]);
+
+  const prevImage = useCallback(() => {
+    setCurrentImageIndex((prev) => (prev - 1 + Math.max(1, allImages.length)) % Math.max(1, allImages.length));
+  }, [allImages.length]);
+
+  const openLightbox = useCallback((index?: number) => {
+    if (typeof index === 'number') {
+      setCurrentImageIndex(index);
+    }
+    setIsLightboxOpen(true);
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setIsLightboxOpen(false);
+  }, []);
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isLightboxOpen) return;
+      
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        prevImage();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isLightboxOpen, nextImage, prevImage, closeLightbox]);
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLightboxOpen]);
+
+  const handleAddToCart = useCallback(() => {
+    if (!product) return;
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url || '/placeholder.svg',
+      category: product.category,
+      description: product.description || '',
+      features: product.features || [],
+      rating: 4.5,
+      reviews: 0,
+      inStock: product.in_stock,
+    }, quantity);
+    toast({ title: 'Added to cart', description: `${quantity}x ${product.name} added.` });
+  }, [product, quantity, addToCart, toast]);
+
   if (isLoading) {
     return (
       <Layout>
@@ -83,77 +155,6 @@ const ProductDetail = () => {
       </Layout>
     );
   }
-
-  // Combine main image with additional images
-  const allImages = [
-    product.image_url,
-    ...(product.image_urls || [])
-  ].filter(Boolean) as string[];
-
-  const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image_url || '/placeholder.svg',
-      category: product.category,
-      description: product.description || '',
-      features: product.features || [],
-      rating: 4.5,
-      reviews: 0,
-      inStock: product.in_stock,
-    }, quantity);
-    toast({ title: 'Added to cart', description: `${quantity}x ${product.name} added.` });
-  };
-
-  const nextImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
-  }, [allImages.length]);
-
-  const prevImage = useCallback(() => {
-    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
-  }, [allImages.length]);
-
-  const openLightbox = (index?: number) => {
-    if (typeof index === 'number') {
-      setCurrentImageIndex(index);
-    }
-    setIsLightboxOpen(true);
-  };
-
-  const closeLightbox = () => {
-    setIsLightboxOpen(false);
-  };
-
-  // Keyboard navigation for lightbox
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isLightboxOpen) return;
-      
-      if (e.key === 'Escape') {
-        closeLightbox();
-      } else if (e.key === 'ArrowRight') {
-        nextImage();
-      } else if (e.key === 'ArrowLeft') {
-        prevImage();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isLightboxOpen, nextImage, prevImage]);
-
-  // Prevent body scroll when lightbox is open
-  useEffect(() => {
-    if (isLightboxOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isLightboxOpen]);
 
   return (
     <Layout>
