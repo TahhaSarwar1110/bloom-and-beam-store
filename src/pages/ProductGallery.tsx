@@ -20,7 +20,7 @@ interface Product {
 const categoryMapping: Record<string, { name: string; categoryFilter: string }> = {
   // Beds
   'fully-electric-bed': { name: 'Fully Electric Bed', categoryFilter: 'Fully Electric Bed' },
-  'semi-electric-bed': { name: 'Semi Electric Bed', categoryFilter: 'Semi Electric Bed' },
+  'semi-electric-bed': { name: 'Semi Electric Beds', categoryFilter: 'Semi Electric Beds' },
   'bariatric-bed': { name: 'Bariatric Bed', categoryFilter: 'Bariatric Bed' },
   'burning-bed': { name: 'Burning Bed', categoryFilter: 'Burning Bed' },
   // Stretchers
