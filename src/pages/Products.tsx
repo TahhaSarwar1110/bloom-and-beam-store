@@ -29,7 +29,7 @@ interface Category {
 // Hospital bed category names to filter by when type=hospital-beds
 const hospitalBedCategories = [
   'Fully Electric Bed',
-  'Semi Electric Bed',
+  'Semi Electric Beds',
   'Bariatric Bed',
   'Low Bed',
   'ICU Bed',
