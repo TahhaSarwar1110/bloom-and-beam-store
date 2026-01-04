@@ -331,13 +331,12 @@ const ProductDetail = () => {
                     className="group cursor-pointer"
                     onClick={() => navigate(`/product/${relProduct.id}`)}
                   >
-                    <div className="bg-muted rounded-xl overflow-hidden aspect-square mb-3 relative">
+                    <div className="bg-muted rounded-xl overflow-hidden aspect-square mb-3 relative perspective-1000">
                       <img 
                         src={relProduct.image_url || '/placeholder.svg'} 
                         alt={relProduct.name}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
                       />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                     </div>
                     <h3 className="font-medium text-sm md:text-base line-clamp-2 group-hover:text-primary transition-colors">
                       {relProduct.name}
