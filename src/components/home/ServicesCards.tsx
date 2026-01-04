@@ -48,9 +48,9 @@ const serviceCategories: ServiceCategory[] = [
     icon: <Armchair className="h-12 w-12" />,
     color: 'from-accent/40 to-accent/10',
     items: [
-      { name: 'Bed Side Table', slug: 'bed-side-table' },
+      { name: 'Bed Side Table', slug: 'bedside-table' },
       { name: 'Bed Over Table', slug: 'bed-over-table' },
-      { name: 'Wheel Chair', slug: 'wheel-chair' },
+      { name: 'Wheel Chair', slug: 'wheelchair' },
       { name: 'Patient Recliner', slug: 'patient-recliner' },
     ],
   },

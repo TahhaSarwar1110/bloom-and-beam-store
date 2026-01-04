@@ -415,7 +415,7 @@ const categoryDetails: Record<string, CategoryInfo> = {
     benefits: ['Emergency ready', 'Easy storage', 'Versatile use'],
     useCases: ['Emergency evacuation', 'Disaster response', 'Building safety']
   },
-  'bed-side-table': {
+  'bedside-table': {
     overview: ['Hospital bedside tables for patient convenience and comfort during their stay.'],
     whyChoose: [{ icon: 'check', title: 'Patient Comfort' }, { icon: 'clock', title: 'Easy Access' }, { icon: 'settings', title: 'Adjustable' }, { icon: 'award', title: 'Durable' }],
     features: ['Height adjustable', 'Tilt top', 'Lockable wheels'],
@@ -429,7 +429,7 @@ const categoryDetails: Record<string, CategoryInfo> = {
     benefits: ['Meal support', 'Activity surface', 'Patient comfort'],
     useCases: ['Hospitals', 'Nursing homes', 'Home care']
   },
-  'wheel-chair': {
+  'wheelchair': {
     overview: ['Medical wheelchairs for patient mobility and transport within healthcare facilities.'],
     whyChoose: [{ icon: 'check', title: 'Mobility Support' }, { icon: 'clock', title: 'Easy Transport' }, { icon: 'settings', title: 'Comfortable' }, { icon: 'award', title: 'Durable' }],
     features: ['Foldable frame', 'Padded armrests', 'Footrests included'],
