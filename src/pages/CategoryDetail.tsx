@@ -647,11 +647,11 @@ export default function CategoryDetail() {
                   <Card key={product.id} className="group hover:shadow-lg transition-shadow">
                     <CardContent className="p-6">
                       {product.image_url && (
-                        <div className="aspect-square mb-4 overflow-hidden rounded-lg bg-muted">
+                        <div className="aspect-square mb-4 overflow-hidden rounded-lg bg-muted perspective-1000">
                           <img 
                             src={product.image_url} 
                             alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
                           />
                         </div>
                       )}

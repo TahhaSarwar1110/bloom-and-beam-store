@@ -131,11 +131,11 @@ const ProductGallery = () => {
                     }}
                   >
                     {/* Image Container */}
-                    <div className="aspect-square bg-muted overflow-hidden">
+                    <div className="aspect-square bg-muted overflow-hidden perspective-1000">
                       <img
                         src={imageUrl}
                         alt={`${product.name} - View ${imgIndex + 1}`}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
                       />
                     </div>
                     
