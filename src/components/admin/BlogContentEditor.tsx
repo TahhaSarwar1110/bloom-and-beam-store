@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Heading1, Heading2, Heading3, Link, List, ListOrdered, Bold, Italic, Quote } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 interface BlogPost {
   id: string;
@@ -22,60 +23,76 @@ interface BlogContentEditorProps {
 
 export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogContentEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
   const [selectedPostId, setSelectedPostId] = useState('');
-  const [selectionStart, setSelectionStart] = useState(0);
-  const [selectionEnd, setSelectionEnd] = useState(0);
+  const [savedSelection, setSavedSelection] = useState({ start: 0, end: 0, text: '' });
 
-  useEffect(() => {
-    fetchBlogPosts();
-  }, []);
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blog-posts-for-linking'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('blog_posts')
+        .select('id, title, slug')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+      return data || [];
+    },
+  });
 
-  const fetchBlogPosts = async () => {
-    const { data } = await supabase
-      .from('blog_posts')
-      .select('id, title, slug')
-      .eq('published', true)
-      .order('created_at', { ascending: false });
-    
-    if (data) {
-      setBlogPosts(data);
-    }
-  };
-
-  const getSelection = () => {
+  const getSelection = useCallback(() => {
     if (textareaRef.current) {
+      const start = textareaRef.current.selectionStart;
+      const end = textareaRef.current.selectionEnd;
       return {
-        start: textareaRef.current.selectionStart,
-        end: textareaRef.current.selectionEnd,
-        text: value.substring(textareaRef.current.selectionStart, textareaRef.current.selectionEnd)
+        start,
+        end,
+        text: value.substring(start, end)
       };
     }
     return { start: 0, end: 0, text: '' };
-  };
+  }, [value]);
 
-  const insertAtCursor = (prefix: string, suffix: string = '', placeholder: string = '') => {
-    const { start, end, text } = getSelection();
-    const selectedText = text || placeholder;
-    const newValue = value.substring(0, start) + prefix + selectedText + suffix + value.substring(end);
+  const insertText = useCallback((newText: string, cursorOffset: number = 0) => {
+    const { start, end } = getSelection();
+    const newValue = value.substring(0, start) + newText + value.substring(end);
     onChange(newValue);
     
-    // Restore focus and cursor position
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
-        const newCursorPos = start + prefix.length + selectedText.length + suffix.length;
-        textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+        const newPos = start + newText.length + cursorOffset;
+        textareaRef.current.setSelectionRange(newPos, newPos);
       }
-    }, 0);
-  };
+    }, 10);
+  }, [value, onChange, getSelection]);
 
-  const insertHeading = (level: 1 | 2 | 3) => {
+  const wrapSelection = useCallback((prefix: string, suffix: string, placeholder: string) => {
+    const { start, end, text } = getSelection();
+    const selectedText = text || placeholder;
+    const newText = prefix + selectedText + suffix;
+    const newValue = value.substring(0, start) + newText + value.substring(end);
+    onChange(newValue);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        if (text) {
+          // Move cursor after the inserted text
+          const newPos = start + newText.length;
+          textareaRef.current.setSelectionRange(newPos, newPos);
+        } else {
+          // Select the placeholder
+          textareaRef.current.setSelectionRange(start + prefix.length, start + prefix.length + placeholder.length);
+        }
+      }
+    }, 10);
+  }, [value, onChange, getSelection]);
+
+  const insertHeading = useCallback((level: 1 | 2 | 3) => {
     const prefix = '#'.repeat(level) + ' ';
-    const { start, text } = getSelection();
+    const { start, end, text } = getSelection();
     
     // Find start of current line
     let lineStart = start;
@@ -83,35 +100,36 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
       lineStart--;
     }
     
-    // If there's selected text, wrap it
-    if (text) {
-      insertAtCursor(`\n${prefix}`, '\n');
-    } else {
-      // Insert at line start
-      const placeholder = `Heading ${level}`;
-      const newValue = value.substring(0, lineStart) + prefix + placeholder + '\n' + value.substring(start);
-      onChange(newValue);
-      
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          textareaRef.current.setSelectionRange(lineStart + prefix.length, lineStart + prefix.length + placeholder.length);
-        }
-      }, 0);
-    }
-  };
+    const placeholder = `Heading ${level}`;
+    const insertedText = text || placeholder;
+    
+    // Add newline before if not at start and previous char isn't newline
+    const needsNewlineBefore = lineStart > 0 && value[lineStart - 1] !== '\n' && lineStart === start;
+    const prefixWithNewline = (needsNewlineBefore ? '\n' : '') + prefix;
+    
+    const newValue = value.substring(0, lineStart) + prefixWithNewline + insertedText + '\n' + value.substring(end);
+    onChange(newValue);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const selectStart = lineStart + prefixWithNewline.length;
+        const selectEnd = selectStart + insertedText.length;
+        textareaRef.current.setSelectionRange(selectStart, selectEnd);
+      }
+    }, 10);
+  }, [value, onChange, getSelection]);
 
-  const handleLinkOpen = () => {
-    const { start, end, text } = getSelection();
-    setSelectionStart(start);
-    setSelectionEnd(end);
-    setLinkText(text);
+  const handleLinkOpen = useCallback(() => {
+    const selection = getSelection();
+    setSavedSelection(selection);
+    setLinkText(selection.text);
     setLinkUrl('');
     setSelectedPostId('');
     setLinkPopoverOpen(true);
-  };
+  }, [getSelection]);
 
-  const handleInternalLinkSelect = (postId: string) => {
+  const handleInternalLinkSelect = useCallback((postId: string) => {
     setSelectedPostId(postId);
     const post = blogPosts.find(p => p.id === postId);
     if (post) {
@@ -121,32 +139,80 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         setLinkText(post.title);
       }
     }
-  };
+  }, [blogPosts, linkText]);
 
-  const insertLink = () => {
+  const insertLink = useCallback(() => {
     if (!linkUrl) return;
     
     const displayText = linkText || linkUrl;
     const markdownLink = `[${displayText}](${linkUrl})`;
     
-    const newValue = value.substring(0, selectionStart) + markdownLink + value.substring(selectionEnd);
+    const newValue = value.substring(0, savedSelection.start) + markdownLink + value.substring(savedSelection.end);
     onChange(newValue);
     setLinkPopoverOpen(false);
     
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
-        const newCursorPos = selectionStart + markdownLink.length;
+        const newCursorPos = savedSelection.start + markdownLink.length;
         textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
-    }, 0);
-  };
+    }, 10);
+  }, [linkUrl, linkText, savedSelection, value, onChange]);
 
-  const insertBold = () => insertAtCursor('**', '**', 'bold text');
-  const insertItalic = () => insertAtCursor('*', '*', 'italic text');
-  const insertQuote = () => insertAtCursor('\n> ', '\n', 'quote');
-  const insertBulletList = () => insertAtCursor('\n- ', '\n', 'list item');
-  const insertNumberedList = () => insertAtCursor('\n1. ', '\n', 'list item');
+  const insertBold = useCallback(() => wrapSelection('**', '**', 'bold text'), [wrapSelection]);
+  const insertItalic = useCallback(() => wrapSelection('*', '*', 'italic text'), [wrapSelection]);
+  
+  const insertQuote = useCallback(() => {
+    const { start, end, text } = getSelection();
+    const quoteText = text || 'quote';
+    const needsNewline = start > 0 && value[start - 1] !== '\n';
+    const prefix = (needsNewline ? '\n' : '') + '> ';
+    const newValue = value.substring(0, start) + prefix + quoteText + '\n' + value.substring(end);
+    onChange(newValue);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const selectStart = start + prefix.length;
+        textareaRef.current.setSelectionRange(selectStart, selectStart + quoteText.length);
+      }
+    }, 10);
+  }, [value, onChange, getSelection]);
+
+  const insertBulletList = useCallback(() => {
+    const { start, end, text } = getSelection();
+    const listText = text || 'list item';
+    const needsNewline = start > 0 && value[start - 1] !== '\n';
+    const prefix = (needsNewline ? '\n' : '') + '- ';
+    const newValue = value.substring(0, start) + prefix + listText + '\n' + value.substring(end);
+    onChange(newValue);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const selectStart = start + prefix.length;
+        textareaRef.current.setSelectionRange(selectStart, selectStart + listText.length);
+      }
+    }, 10);
+  }, [value, onChange, getSelection]);
+
+  const insertNumberedList = useCallback(() => {
+    const { start, end, text } = getSelection();
+    const listText = text || 'list item';
+    const needsNewline = start > 0 && value[start - 1] !== '\n';
+    const prefix = (needsNewline ? '\n' : '') + '1. ';
+    const newValue = value.substring(0, start) + prefix + listText + '\n' + value.substring(end);
+    onChange(newValue);
+    
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+        const selectStart = start + prefix.length;
+        textareaRef.current.setSelectionRange(selectStart, selectStart + listText.length);
+      }
+    }, 10);
+  }, [value, onChange, getSelection]);
 
   return (
     <div className="space-y-2">
@@ -193,7 +259,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={insertBold}
-            title="Bold"
+            title="Bold (**text**)"
             className="h-8 w-8 p-0"
           >
             <Bold className="h-4 w-4" />
@@ -203,7 +269,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={insertItalic}
-            title="Italic"
+            title="Italic (*text*)"
             className="h-8 w-8 p-0"
           >
             <Italic className="h-4 w-4" />
@@ -282,7 +348,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
                   id="link-url"
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://..."
+                  placeholder="https://example.com"
                 />
               </div>
               
@@ -292,7 +358,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
                   id="link-text"
                   value={linkText}
                   onChange={(e) => setLinkText(e.target.value)}
-                  placeholder="Link text"
+                  placeholder="Click here"
                 />
               </div>
               
@@ -319,16 +385,16 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
 
 **Bold text** and *italic text*
 
+[Link text](https://example.com)
+
 - Bullet list item
 1. Numbered list item
 
-> Blockquote
-
-[Link text](https://example.com)"
+> Blockquote"
       />
       
       <p className="text-xs text-muted-foreground">
-        Use the toolbar above or write Markdown directly. Headings: # H1, ## H2, ### H3
+        Use the toolbar or write Markdown directly. Links: [text](url) | Bold: **text** | Italic: *text*
       </p>
     </div>
   );
