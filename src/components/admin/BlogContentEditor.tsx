@@ -1,13 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heading1, Heading2, Heading3, Link, List, ListOrdered, Bold, Italic, Quote } from 'lucide-react';
+import { Heading1, Heading2, Heading3, Link2, List, ListOrdered, Bold, Italic, Quote, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BlogPost {
   id: string;
@@ -23,10 +23,10 @@ interface BlogContentEditorProps {
 
 export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogContentEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
-  const [selectedPostId, setSelectedPostId] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [savedSelection, setSavedSelection] = useState({ start: 0, end: 0, text: '' });
 
   const { data: blogPosts = [] } = useQuery({
@@ -41,6 +41,11 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     },
   });
 
+  // Filter posts based on search query
+  const filteredPosts = blogPosts.filter(post =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const getSelection = useCallback(() => {
     if (textareaRef.current) {
       const start = textareaRef.current.selectionStart;
@@ -54,20 +59,6 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     return { start: 0, end: 0, text: '' };
   }, [value]);
 
-  const insertText = useCallback((newText: string, cursorOffset: number = 0) => {
-    const { start, end } = getSelection();
-    const newValue = value.substring(0, start) + newText + value.substring(end);
-    onChange(newValue);
-    
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-        const newPos = start + newText.length + cursorOffset;
-        textareaRef.current.setSelectionRange(newPos, newPos);
-      }
-    }, 10);
-  }, [value, onChange, getSelection]);
-
   const wrapSelection = useCallback((prefix: string, suffix: string, placeholder: string) => {
     const { start, end, text } = getSelection();
     const selectedText = text || placeholder;
@@ -79,11 +70,9 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
       if (textareaRef.current) {
         textareaRef.current.focus();
         if (text) {
-          // Move cursor after the inserted text
           const newPos = start + newText.length;
           textareaRef.current.setSelectionRange(newPos, newPos);
         } else {
-          // Select the placeholder
           textareaRef.current.setSelectionRange(start + prefix.length, start + prefix.length + placeholder.length);
         }
       }
@@ -94,7 +83,6 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     const prefix = '#'.repeat(level) + ' ';
     const { start, end, text } = getSelection();
     
-    // Find start of current line
     let lineStart = start;
     while (lineStart > 0 && value[lineStart - 1] !== '\n') {
       lineStart--;
@@ -102,8 +90,6 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     
     const placeholder = `Heading ${level}`;
     const insertedText = text || placeholder;
-    
-    // Add newline before if not at start and previous char isn't newline
     const needsNewlineBefore = lineStart > 0 && value[lineStart - 1] !== '\n' && lineStart === start;
     const prefixWithNewline = (needsNewlineBefore ? '\n' : '') + prefix;
     
@@ -120,36 +106,35 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     }, 10);
   }, [value, onChange, getSelection]);
 
-  const handleLinkOpen = useCallback(() => {
+  // Google Docs style: Open link dialog
+  const handleLinkClick = useCallback(() => {
     const selection = getSelection();
     setSavedSelection(selection);
     setLinkText(selection.text);
     setLinkUrl('');
-    setSelectedPostId('');
-    setLinkPopoverOpen(true);
+    setSearchQuery('');
+    setLinkDialogOpen(true);
   }, [getSelection]);
 
-  const handleInternalLinkSelect = useCallback((postId: string) => {
-    setSelectedPostId(postId);
-    const post = blogPosts.find(p => p.id === postId);
-    if (post) {
-      const slug = post.slug || post.id;
-      setLinkUrl(`/blog/${slug}`);
-      if (!linkText) {
-        setLinkText(post.title);
-      }
+  // Select an internal blog post
+  const handleSelectPost = useCallback((post: BlogPost) => {
+    const slug = post.slug || post.id;
+    setLinkUrl(`/blog/${slug}`);
+    if (!linkText) {
+      setLinkText(post.title);
     }
-  }, [blogPosts, linkText]);
+  }, [linkText]);
 
-  const insertLink = useCallback(() => {
+  // Apply the link
+  const applyLink = useCallback(() => {
     if (!linkUrl) return;
     
-    const displayText = linkText || linkUrl;
+    const displayText = linkText.trim() || linkUrl;
     const markdownLink = `[${displayText}](${linkUrl})`;
     
     const newValue = value.substring(0, savedSelection.start) + markdownLink + value.substring(savedSelection.end);
     onChange(newValue);
-    setLinkPopoverOpen(false);
+    setLinkDialogOpen(false);
     
     setTimeout(() => {
       if (textareaRef.current) {
@@ -226,7 +211,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={() => insertHeading(1)}
-            title="Heading 1 (H1)"
+            title="Heading 1"
             className="h-8 w-8 p-0"
           >
             <Heading1 className="h-4 w-4" />
@@ -236,7 +221,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={() => insertHeading(2)}
-            title="Heading 2 (H2)"
+            title="Heading 2"
             className="h-8 w-8 p-0"
           >
             <Heading2 className="h-4 w-4" />
@@ -246,7 +231,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={() => insertHeading(3)}
-            title="Heading 3 (H3)"
+            title="Heading 3"
             className="h-8 w-8 p-0"
           >
             <Heading3 className="h-4 w-4" />
@@ -259,7 +244,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={insertBold}
-            title="Bold (**text**)"
+            title="Bold"
             className="h-8 w-8 p-0"
           >
             <Bold className="h-4 w-4" />
@@ -269,7 +254,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             variant="ghost"
             size="sm"
             onClick={insertItalic}
-            title="Italic (*text*)"
+            title="Italic"
             className="h-8 w-8 p-0"
           >
             <Italic className="h-4 w-4" />
@@ -309,65 +294,16 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
           </Button>
         </div>
 
-        <Popover open={linkPopoverOpen} onOpenChange={setLinkPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleLinkOpen}
-              title="Insert Link"
-              className="h-8 w-8 p-0"
-            >
-              <Link className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80" align="start">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Link to Blog Post (Internal)</Label>
-                <Select value={selectedPostId} onValueChange={handleInternalLinkSelect}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a blog post..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {blogPosts.map((post) => (
-                      <SelectItem key={post.id} value={post.id}>
-                        {post.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="text-center text-sm text-muted-foreground">— or —</div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="link-url">External URL</Label>
-                <Input
-                  id="link-url"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="https://example.com"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="link-text">Display Text</Label>
-                <Input
-                  id="link-text"
-                  value={linkText}
-                  onChange={(e) => setLinkText(e.target.value)}
-                  placeholder="Click here"
-                />
-              </div>
-              
-              <Button type="button" onClick={insertLink} className="w-full" disabled={!linkUrl}>
-                Insert Link
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleLinkClick}
+          title="Insert Link (Ctrl+K)"
+          className="h-8 w-8 p-0"
+        >
+          <Link2 className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Textarea */}
@@ -377,6 +313,12 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         onChange={(e) => onChange(e.target.value)}
         rows={rows}
         className="rounded-t-none font-mono text-sm"
+        onKeyDown={(e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            handleLinkClick();
+          }
+        }}
         placeholder="Write your blog content using Markdown...
 
 # Heading 1
@@ -394,8 +336,89 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
       />
       
       <p className="text-xs text-muted-foreground">
-        Use the toolbar or write Markdown directly. Links: [text](url) | Bold: **text** | Italic: *text*
+        Tip: Select text and press Ctrl+K to insert a link. Use toolbar buttons for formatting.
       </p>
+
+      {/* Link Dialog - Google Docs Style */}
+      <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Insert Link</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Display text */}
+            <div className="space-y-2">
+              <Label htmlFor="display-text">Text to display</Label>
+              <Input
+                id="display-text"
+                value={linkText}
+                onChange={(e) => setLinkText(e.target.value)}
+                placeholder="Enter display text"
+              />
+            </div>
+
+            {/* URL input */}
+            <div className="space-y-2">
+              <Label htmlFor="link-url">Link URL</Label>
+              <Input
+                id="link-url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://example.com or paste URL"
+              />
+            </div>
+
+            {/* Internal posts search */}
+            <div className="space-y-2">
+              <Label>Or link to a blog post</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search blog posts..."
+                  className="pl-9"
+                />
+              </div>
+              
+              {filteredPosts.length > 0 && (
+                <ScrollArea className="h-40 border rounded-md">
+                  <div className="p-2 space-y-1">
+                    {filteredPosts.map((post) => (
+                      <button
+                        key={post.id}
+                        type="button"
+                        onClick={() => handleSelectPost(post)}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors hover:bg-accent ${
+                          linkUrl === `/blog/${post.slug || post.id}` 
+                            ? 'bg-primary/10 text-primary font-medium' 
+                            : 'text-foreground'
+                        }`}
+                      >
+                        {post.title}
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+              
+              {blogPosts.length === 0 && (
+                <p className="text-sm text-muted-foreground py-2">No published blog posts available</p>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="button" variant="outline" onClick={() => setLinkDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={applyLink} disabled={!linkUrl}>
+              Apply
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
