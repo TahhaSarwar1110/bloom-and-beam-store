@@ -12,6 +12,7 @@ import { Plus, Pencil, Trash2 } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
 import ImageUpload from '@/components/admin/ImageUpload';
+import BlogContentEditor from '@/components/admin/BlogContentEditor';
 
 interface BlogPost {
   id: string;
@@ -234,16 +235,11 @@ export default function AdminBlog() {
                     placeholder="Brief summary of the post..."
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="content">Content</Label>
-                  <Textarea
-                    id="content"
-                    value={formData.content}
-                    onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                    rows={10}
-                    required
-                  />
-                </div>
+                <BlogContentEditor
+                  value={formData.content}
+                  onChange={(content) => setFormData({ ...formData, content })}
+                  rows={12}
+                />
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
