@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -27,7 +27,9 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [savedSelection, setSavedSelection] = useState({ start: 0, end: 0, text: '' });
+  
+  // Store selection persistently so it survives focus changes
+  const selectionRef = useRef({ start: 0, end: 0, text: '' });
 
   const { data: blogPosts = [] } = useQuery({
     queryKey: ['blog-posts-for-linking'],
@@ -41,48 +43,64 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     },
   });
 
-  // Filter posts based on search query
-  const filteredPosts = blogPosts.filter(post =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const getSelection = useCallback(() => {
+  // Update selection ref whenever textarea selection changes
+  const updateSelection = useCallback(() => {
     if (textareaRef.current) {
       const start = textareaRef.current.selectionStart;
       const end = textareaRef.current.selectionEnd;
-      return {
+      selectionRef.current = {
         start,
         end,
         text: value.substring(start, end)
       };
     }
-    return { start: 0, end: 0, text: '' };
   }, [value]);
 
-  const wrapSelection = useCallback((prefix: string, suffix: string, placeholder: string) => {
-    const { start, end, text } = getSelection();
+  // Track selection on various events
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const handleSelectionChange = () => updateSelection();
+    
+    textarea.addEventListener('select', handleSelectionChange);
+    textarea.addEventListener('keyup', handleSelectionChange);
+    textarea.addEventListener('mouseup', handleSelectionChange);
+    textarea.addEventListener('focus', handleSelectionChange);
+
+    return () => {
+      textarea.removeEventListener('select', handleSelectionChange);
+      textarea.removeEventListener('keyup', handleSelectionChange);
+      textarea.removeEventListener('mouseup', handleSelectionChange);
+      textarea.removeEventListener('focus', handleSelectionChange);
+    };
+  }, [updateSelection]);
+
+  const filteredPosts = blogPosts.filter(post =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const insertAtSelection = useCallback((getText: (selectedText: string) => string, placeholder: string) => {
+    const { start, end, text } = selectionRef.current;
     const selectedText = text || placeholder;
-    const newText = prefix + selectedText + suffix;
+    const newText = getText(selectedText);
     const newValue = value.substring(0, start) + newText + value.substring(end);
     onChange(newValue);
     
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
-        if (text) {
-          const newPos = start + newText.length;
-          textareaRef.current.setSelectionRange(newPos, newPos);
-        } else {
-          textareaRef.current.setSelectionRange(start + prefix.length, start + prefix.length + placeholder.length);
-        }
+        const newPos = start + newText.length;
+        textareaRef.current.setSelectionRange(newPos, newPos);
       }
-    }, 10);
-  }, [value, onChange, getSelection]);
+    }, 0);
+  }, [value, onChange]);
 
   const insertHeading = useCallback((level: 1 | 2 | 3) => {
+    const { start, end, text } = selectionRef.current;
     const prefix = '#'.repeat(level) + ' ';
-    const { start, end, text } = getSelection();
     
+    // Find line start
     let lineStart = start;
     while (lineStart > 0 && value[lineStart - 1] !== '\n') {
       lineStart--;
@@ -90,7 +108,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     
     const placeholder = `Heading ${level}`;
     const insertedText = text || placeholder;
-    const needsNewlineBefore = lineStart > 0 && value[lineStart - 1] !== '\n' && lineStart === start;
+    const needsNewlineBefore = lineStart > 0 && lineStart === start;
     const prefixWithNewline = (needsNewlineBefore ? '\n' : '') + prefix;
     
     const newValue = value.substring(0, lineStart) + prefixWithNewline + insertedText + '\n' + value.substring(end);
@@ -103,20 +121,17 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         const selectEnd = selectStart + insertedText.length;
         textareaRef.current.setSelectionRange(selectStart, selectEnd);
       }
-    }, 10);
-  }, [value, onChange, getSelection]);
+    }, 0);
+  }, [value, onChange]);
 
-  // Google Docs style: Open link dialog
   const handleLinkClick = useCallback(() => {
-    const selection = getSelection();
-    setSavedSelection(selection);
-    setLinkText(selection.text);
+    const { text } = selectionRef.current;
+    setLinkText(text);
     setLinkUrl('');
     setSearchQuery('');
     setLinkDialogOpen(true);
-  }, [getSelection]);
+  }, []);
 
-  // Select an internal blog post
   const handleSelectPost = useCallback((post: BlogPost) => {
     const slug = post.slug || post.id;
     setLinkUrl(`/blog/${slug}`);
@@ -125,31 +140,36 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
     }
   }, [linkText]);
 
-  // Apply the link
   const applyLink = useCallback(() => {
     if (!linkUrl) return;
     
     const displayText = linkText.trim() || linkUrl;
     const markdownLink = `[${displayText}](${linkUrl})`;
+    const { start, end } = selectionRef.current;
     
-    const newValue = value.substring(0, savedSelection.start) + markdownLink + value.substring(savedSelection.end);
+    const newValue = value.substring(0, start) + markdownLink + value.substring(end);
     onChange(newValue);
     setLinkDialogOpen(false);
     
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
-        const newCursorPos = savedSelection.start + markdownLink.length;
+        const newCursorPos = start + markdownLink.length;
         textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
       }
-    }, 10);
-  }, [linkUrl, linkText, savedSelection, value, onChange]);
+    }, 0);
+  }, [linkUrl, linkText, value, onChange]);
 
-  const insertBold = useCallback(() => wrapSelection('**', '**', 'bold text'), [wrapSelection]);
-  const insertItalic = useCallback(() => wrapSelection('*', '*', 'italic text'), [wrapSelection]);
+  const insertBold = useCallback(() => {
+    insertAtSelection((text) => `**${text}**`, 'bold text');
+  }, [insertAtSelection]);
+
+  const insertItalic = useCallback(() => {
+    insertAtSelection((text) => `*${text}*`, 'italic text');
+  }, [insertAtSelection]);
   
   const insertQuote = useCallback(() => {
-    const { start, end, text } = getSelection();
+    const { start, end, text } = selectionRef.current;
     const quoteText = text || 'quote';
     const needsNewline = start > 0 && value[start - 1] !== '\n';
     const prefix = (needsNewline ? '\n' : '') + '> ';
@@ -162,11 +182,11 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         const selectStart = start + prefix.length;
         textareaRef.current.setSelectionRange(selectStart, selectStart + quoteText.length);
       }
-    }, 10);
-  }, [value, onChange, getSelection]);
+    }, 0);
+  }, [value, onChange]);
 
   const insertBulletList = useCallback(() => {
-    const { start, end, text } = getSelection();
+    const { start, end, text } = selectionRef.current;
     const listText = text || 'list item';
     const needsNewline = start > 0 && value[start - 1] !== '\n';
     const prefix = (needsNewline ? '\n' : '') + '- ';
@@ -179,11 +199,11 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         const selectStart = start + prefix.length;
         textareaRef.current.setSelectionRange(selectStart, selectStart + listText.length);
       }
-    }, 10);
-  }, [value, onChange, getSelection]);
+    }, 0);
+  }, [value, onChange]);
 
   const insertNumberedList = useCallback(() => {
-    const { start, end, text } = getSelection();
+    const { start, end, text } = selectionRef.current;
     const listText = text || 'list item';
     const needsNewline = start > 0 && value[start - 1] !== '\n';
     const prefix = (needsNewline ? '\n' : '') + '1. ';
@@ -196,8 +216,14 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         const selectStart = start + prefix.length;
         textareaRef.current.setSelectionRange(selectStart, selectStart + listText.length);
       }
-    }, 10);
-  }, [value, onChange, getSelection]);
+    }, 0);
+  }, [value, onChange]);
+
+  // Prevent toolbar buttons from stealing focus
+  const handleToolbarMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    updateSelection();
+  };
 
   return (
     <div className="space-y-2">
@@ -210,6 +236,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={() => insertHeading(1)}
             title="Heading 1"
             className="h-8 w-8 p-0"
@@ -220,6 +247,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={() => insertHeading(2)}
             title="Heading 2"
             className="h-8 w-8 p-0"
@@ -230,6 +258,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={() => insertHeading(3)}
             title="Heading 3"
             className="h-8 w-8 p-0"
@@ -243,8 +272,9 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={insertBold}
-            title="Bold"
+            title="Bold (Ctrl+B)"
             className="h-8 w-8 p-0"
           >
             <Bold className="h-4 w-4" />
@@ -253,8 +283,9 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={insertItalic}
-            title="Italic"
+            title="Italic (Ctrl+I)"
             className="h-8 w-8 p-0"
           >
             <Italic className="h-4 w-4" />
@@ -266,6 +297,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={insertBulletList}
             title="Bullet List"
             className="h-8 w-8 p-0"
@@ -276,6 +308,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={insertNumberedList}
             title="Numbered List"
             className="h-8 w-8 p-0"
@@ -286,6 +319,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
             type="button"
             variant="ghost"
             size="sm"
+            onMouseDown={handleToolbarMouseDown}
             onClick={insertQuote}
             title="Block Quote"
             className="h-8 w-8 p-0"
@@ -298,6 +332,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
           type="button"
           variant="ghost"
           size="sm"
+          onMouseDown={handleToolbarMouseDown}
           onClick={handleLinkClick}
           title="Insert Link (Ctrl+K)"
           className="h-8 w-8 p-0"
@@ -316,7 +351,18 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
         onKeyDown={(e) => {
           if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
+            updateSelection();
             handleLinkClick();
+          }
+          if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+            e.preventDefault();
+            updateSelection();
+            insertBold();
+          }
+          if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+            e.preventDefault();
+            updateSelection();
+            insertItalic();
           }
         }}
         placeholder="Write your blog content using Markdown...
@@ -336,10 +382,10 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
       />
       
       <p className="text-xs text-muted-foreground">
-        Tip: Select text and press Ctrl+K to insert a link. Use toolbar buttons for formatting.
+        Tip: Select text then click toolbar buttons. Use Ctrl+K for links, Ctrl+B for bold, Ctrl+I for italic.
       </p>
 
-      {/* Link Dialog - Google Docs Style */}
+      {/* Link Dialog */}
       <Dialog open={linkDialogOpen} onOpenChange={setLinkDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -347,7 +393,6 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            {/* Display text */}
             <div className="space-y-2">
               <Label htmlFor="display-text">Text to display</Label>
               <Input
@@ -358,18 +403,16 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
               />
             </div>
 
-            {/* URL input */}
             <div className="space-y-2">
               <Label htmlFor="link-url">Link URL</Label>
               <Input
                 id="link-url"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                placeholder="https://example.com or paste URL"
+                placeholder="https://example.com or /blog/post-slug"
               />
             </div>
 
-            {/* Internal posts search */}
             <div className="space-y-2">
               <Label>Or link to a blog post</Label>
               <div className="relative">
