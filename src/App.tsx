@@ -29,6 +29,7 @@ import AdminServices from "./pages/admin/AdminServices";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminFAQs from "./pages/admin/AdminFAQs";
 import AdminOrders from "./pages/admin/AdminOrders";
+import AdminMessages from "./pages/admin/AdminMessages";
 import AdminSettings from "./pages/admin/AdminSettings";
 import NotFound from "./pages/NotFound";
 
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/admin/blog" element={<AdminBlog />} />
               <Route path="/admin/faqs" element={<AdminFAQs />} />
               <Route path="/admin/orders" element={<AdminOrders />} />
+              <Route path="/admin/messages" element={<AdminMessages />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

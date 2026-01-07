@@ -12,7 +12,8 @@ import {
   Settings,
   FolderOpen,
   Wrench,
-  HelpCircle
+  HelpCircle,
+  MessageSquare
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -51,6 +52,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/blog', icon: FileText, label: 'Blog Posts' },
     { path: '/admin/faqs', icon: HelpCircle, label: 'FAQs' },
     { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
+    { path: '/admin/messages', icon: MessageSquare, label: 'Messages' },
     { path: '/admin/settings', icon: Settings, label: 'Site Settings' },
   ];
 

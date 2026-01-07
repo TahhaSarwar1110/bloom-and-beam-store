@@ -1,18 +1,66 @@
+import { useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Textarea } from '@/components/ui/textarea';
+import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2 } from 'lucide-react';
 
 const Checkout = () => {
   const { items, getTotal, clearCart } = useCart();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zip: '',
+    notes: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: 'Order Placed!', description: 'Thank you for your order. We\'ll contact you shortly.' });
-    clearCart();
+    setIsSubmitting(true);
+
+    const orderItems = items.map(item => ({
+      name: item.product.name,
+      quantity: item.quantity,
+      price: item.product.price
+    }));
+
+    const { error } = await supabase
+      .from('orders')
+      .insert({
+        customer_name: `${formData.firstName} ${formData.lastName}`,
+        customer_email: formData.email,
+        customer_phone: formData.phone || null,
+        shipping_address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`,
+        items: orderItems,
+        total: getTotal(),
+        notes: formData.notes || null
+      });
+
+    if (error) {
+      toast({ title: 'Error', description: 'Failed to place order. Please try again.', variant: 'destructive' });
+    } else {
+      toast({ title: 'Order Placed!', description: "Thank you for your order. We'll contact you shortly." });
+      clearCart();
+      navigate('/');
+    }
+    setIsSubmitting(false);
   };
 
   if (items.length === 0) {
@@ -35,19 +83,26 @@ const Checkout = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <h2 className="font-display font-bold text-xl">Contact Information</h2>
               <div className="grid sm:grid-cols-2 gap-4">
-                <Input placeholder="First Name" required />
-                <Input placeholder="Last Name" required />
+                <Input name="firstName" placeholder="First Name" required value={formData.firstName} onChange={handleChange} />
+                <Input name="lastName" placeholder="Last Name" required value={formData.lastName} onChange={handleChange} />
               </div>
-              <Input type="email" placeholder="Email" required />
-              <Input placeholder="Phone" required />
+              <Input name="email" type="email" placeholder="Email" required value={formData.email} onChange={handleChange} />
+              <Input name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} />
+              
               <h2 className="font-display font-bold text-xl pt-4">Shipping Address</h2>
-              <Input placeholder="Address" required />
+              <Input name="address" placeholder="Address" required value={formData.address} onChange={handleChange} />
               <div className="grid sm:grid-cols-3 gap-4">
-                <Input placeholder="City" required />
-                <Input placeholder="State" required />
-                <Input placeholder="ZIP" required />
+                <Input name="city" placeholder="City" required value={formData.city} onChange={handleChange} />
+                <Input name="state" placeholder="State" required value={formData.state} onChange={handleChange} />
+                <Input name="zip" placeholder="ZIP" required value={formData.zip} onChange={handleChange} />
               </div>
-              <Button type="submit" className="w-full btn-shine" size="lg">Place Order</Button>
+              
+              <h2 className="font-display font-bold text-xl pt-4">Order Notes (Optional)</h2>
+              <Textarea name="notes" placeholder="Any special instructions or notes for your order..." rows={3} value={formData.notes} onChange={handleChange} />
+              
+              <Button type="submit" className="w-full btn-shine" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Placing Order...</> : 'Place Order'}
+              </Button>
             </form>
             <div className="bg-muted p-6 rounded-xl h-fit">
               <h2 className="font-display font-bold text-xl mb-4">Order Summary</h2>
