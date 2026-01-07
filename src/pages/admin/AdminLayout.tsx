@@ -1,7 +1,8 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Package, 
   FileText, 
@@ -24,12 +25,47 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const { user, loading, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
 
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  // Fetch pending orders and unread messages count
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const [ordersRes, messagesRes] = await Promise.all([
+        supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('contact_messages').select('id', { count: 'exact', head: true }).eq('read', false)
+      ]);
+      
+      setPendingOrdersCount(ordersRes.count || 0);
+      setUnreadMessagesCount(messagesRes.count || 0);
+    };
+
+    if (user && isAdmin) {
+      fetchCounts();
+
+      // Subscribe to realtime updates
+      const ordersChannel = supabase
+        .channel('admin-orders-count')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, fetchCounts)
+        .subscribe();
+
+      const messagesChannel = supabase
+        .channel('admin-messages-count')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_messages' }, fetchCounts)
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(ordersChannel);
+        supabase.removeChannel(messagesChannel);
+      };
+    }
+  }, [user, isAdmin]);
 
   if (loading) {
     return (
@@ -51,8 +87,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/services', icon: Wrench, label: 'Services' },
     { path: '/admin/blog', icon: FileText, label: 'Blog Posts' },
     { path: '/admin/faqs', icon: HelpCircle, label: 'FAQs' },
-    { path: '/admin/orders', icon: ShoppingCart, label: 'Orders' },
-    { path: '/admin/messages', icon: MessageSquare, label: 'Messages' },
+    { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: pendingOrdersCount },
+    { path: '/admin/messages', icon: MessageSquare, label: 'Messages', badge: unreadMessagesCount },
     { path: '/admin/settings', icon: Settings, label: 'Site Settings' },
   ];
 
@@ -80,14 +116,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors ${
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
-                <Icon className="h-5 w-5" />
-                {item.label}
+                <div className="flex items-center gap-3">
+                  <Icon className="h-5 w-5" />
+                  {item.label}
+                </div>
+                {item.badge && item.badge > 0 && (
+                  <span className={`min-w-5 h-5 flex items-center justify-center text-xs font-bold rounded-full ${
+                    isActive ? 'bg-primary-foreground text-primary' : 'bg-primary text-primary-foreground'
+                  }`}>
+                    {item.badge > 99 ? '99+' : item.badge}
+                  </span>
+                )}
               </Link>
             );
           })}
