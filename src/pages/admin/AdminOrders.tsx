@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, Trash2, Bell } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -34,9 +34,68 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [newOrderIds, setNewOrderIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchOrders();
+
+    // Set up real-time subscription for new orders
+    const channel = supabase
+      .channel('orders-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'orders'
+        },
+        (payload) => {
+          const newOrder = {
+            ...payload.new,
+            items: (payload.new.items as unknown) as OrderItem[]
+          } as Order;
+          
+          setOrders(prev => [newOrder, ...prev]);
+          setNewOrderIds(prev => new Set([...prev, newOrder.id]));
+          toast.success('New order received!', {
+            description: `Order from ${newOrder.customer_name}`
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders'
+        },
+        (payload) => {
+          const updatedOrder = {
+            ...payload.new,
+            items: (payload.new.items as unknown) as OrderItem[]
+          } as Order;
+          
+          setOrders(prev => prev.map(order => 
+            order.id === updatedOrder.id ? updatedOrder : order
+          ));
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'orders'
+        },
+        (payload) => {
+          setOrders(prev => prev.filter(order => order.id !== payload.old.id));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchOrders = async () => {
@@ -101,6 +160,12 @@ export default function AdminOrders() {
   const viewOrderDetails = (order: Order) => {
     setSelectedOrder(order);
     setDialogOpen(true);
+    // Clear "new" badge when viewing
+    setNewOrderIds(prev => {
+      const updated = new Set(prev);
+      updated.delete(order.id);
+      return updated;
+    });
   };
 
   const formatDate = (dateString: string) => {
@@ -143,10 +208,17 @@ export default function AdminOrders() {
         ) : (
           <div className="grid gap-4">
             {orders.map((order) => (
-              <Card key={order.id}>
+              <Card key={order.id} className={newOrderIds.has(order.id) ? 'ring-2 ring-primary animate-pulse' : ''}>
                 <CardContent className="flex items-center gap-4 p-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold">{order.customer_name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold">{order.customer_name}</h3>
+                      {newOrderIds.has(order.id) && (
+                        <span className="flex items-center gap-1 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">
+                          <Bell className="h-3 w-3" /> New
+                        </span>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">
                       {order.customer_email} • {formatDate(order.created_at)}
                     </p>
