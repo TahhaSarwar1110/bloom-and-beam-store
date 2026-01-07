@@ -45,7 +45,7 @@ export function Header() {
         <div className="container flex justify-between items-center text-sm">
           <div className="flex items-center gap-2">
             <Phone className="h-4 w-4" />
-            <span>24/7 Support: 1-800-BEDMED-1</span>
+            <span>Call Us: +1 469 767 8853</span>
           </div>
           <div className="hidden md:block">
             <span>Free Shipping on Orders Over $1,000</span>

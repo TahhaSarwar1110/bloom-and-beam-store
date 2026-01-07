@@ -99,17 +99,17 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary mt-0.5" />
                 <span className="text-background/70">
-                  123 Medical Drive, Suite 100<br />
-                  Healthcare City, HC 12345
+                  555 N. 5th St, Suite 109<br />
+                  Garland, TX 75040
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary" />
-                <span className="text-background/70">1-800-BEDMED-1</span>
+                <span className="text-background/70">+1 469 767 8853</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary" />
-                <span className="text-background/70">info@bedmed.com</span>
+                <span className="text-background/70">service@mbmts.com</span>
               </li>
             </ul>
           </div>
