@@ -31,7 +31,7 @@ const categoryMapping: Record<string, { name: string; categoryFilter: string }> 
   'evac-stretcher': { name: 'EVAC Stretcher', categoryFilter: 'EVAC Stretcher' },
   // Accessories
   'bedside-table': { name: 'Bed Side Table', categoryFilter: 'Bed Side Table' },
-  'bed-over-table': { name: 'Bed Over Table', categoryFilter: 'Bed Over Table' },
+  'bed-over-table': { name: 'Bed Over Table', categoryFilter: 'Bed Over' },
   'wheelchair': { name: 'Wheelchairs', categoryFilter: 'Wheelchairs' },
   'patient-recliner': { name: 'Patient Recliner', categoryFilter: 'Patient Recliner' },
 };
