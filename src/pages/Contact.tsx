@@ -4,14 +4,18 @@ import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const Contact = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const productName = searchParams.get('product');
@@ -21,11 +25,24 @@ const Contact = () => {
     }
   }, [searchParams]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({ title: 'Message Sent!', description: 'We\'ll get back to you within 24 hours.' });
-    setSubject('');
-    setMessage('');
+    setIsSubmitting(true);
+
+    const { error } = await supabase
+      .from('contact_messages')
+      .insert({ name, email, subject, message });
+
+    if (error) {
+      toast({ title: 'Error', description: 'Failed to send message. Please try again.', variant: 'destructive' });
+    } else {
+      toast({ title: 'Message Sent!', description: "We'll get back to you within 24 hours." });
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -54,8 +71,14 @@ const Contact = () => {
 
             <form onSubmit={handleSubmit} className="bg-card p-8 rounded-2xl border space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div><label className="text-sm font-medium mb-2 block">Name</label><Input placeholder="Your name" required /></div>
-                <div><label className="text-sm font-medium mb-2 block">Email</label><Input type="email" placeholder="your@email.com" required /></div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Name</label>
+                  <Input placeholder="Your name" required value={name} onChange={(e) => setName(e.target.value)} />
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Email</label>
+                  <Input type="email" placeholder="your@email.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                </div>
               </div>
               <div>
                 <label className="text-sm font-medium mb-2 block">Subject</label>
@@ -76,7 +99,9 @@ const Contact = () => {
                   onChange={(e) => setMessage(e.target.value)}
                 />
               </div>
-              <Button type="submit" className="w-full btn-shine" size="lg">Send Message</Button>
+              <Button type="submit" className="w-full btn-shine" size="lg" disabled={isSubmitting}>
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending...</> : 'Send Message'}
+              </Button>
             </form>
           </div>
         </div>
