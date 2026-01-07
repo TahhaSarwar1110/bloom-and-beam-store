@@ -40,10 +40,10 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-12">
             <div className="space-y-8">
               {[
-                { icon: Phone, title: 'Phone', content: '1-800-BEDMED-1' },
-                { icon: Mail, title: 'Email', content: 'info@bedmed.com' },
-                { icon: MapPin, title: 'Address', content: '123 Medical Drive, Healthcare City, HC 12345' },
-                { icon: Clock, title: 'Hours', content: 'Mon-Fri: 8AM-6PM EST' },
+                { icon: Phone, title: 'Phone', content: '+1 469 767 8853' },
+                { icon: Mail, title: 'Email', content: 'service@mbmts.com' },
+                { icon: MapPin, title: 'Address', content: '555 N. 5th St, Suite 109, Garland, TX 75040' },
+                { icon: Clock, title: 'Hours', content: 'Mon–Fri: 8 AM – 5 PM CST' },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-4 p-6 bg-card rounded-xl border card-hover">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center"><item.icon className="h-6 w-6 text-primary" /></div>

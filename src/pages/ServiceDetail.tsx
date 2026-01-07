@@ -139,7 +139,7 @@ const ServiceDetail = () => {
                 </Button>
                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  <span>(900) 234-5588</span>
+                  <span>+1 469 767 8853</span>
                 </div>
               </div>
             </div>
