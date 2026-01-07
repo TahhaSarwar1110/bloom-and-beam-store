@@ -32,7 +32,7 @@ const categoryMapping: Record<string, { name: string; categoryFilter: string }> 
   // Accessories
   'bedside-table': { name: 'Bed Side Table', categoryFilter: 'Bed Side Table' },
   'bed-over-table': { name: 'Bed Over Table', categoryFilter: 'Bed Over Table' },
-  'wheelchair': { name: 'Wheel Chair', categoryFilter: 'Wheel Chair' },
+  'wheelchair': { name: 'Wheelchairs', categoryFilter: 'Wheelchairs' },
   'patient-recliner': { name: 'Patient Recliner', categoryFilter: 'Patient Recliner' },
 };
 
