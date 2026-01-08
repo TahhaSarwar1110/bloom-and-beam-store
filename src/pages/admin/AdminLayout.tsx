@@ -15,7 +15,8 @@ import {
   Wrench,
   HelpCircle,
   MessageSquare,
-  LayoutGrid
+  LayoutGrid,
+  Phone
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -92,6 +93,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { path: '/admin/orders', icon: ShoppingCart, label: 'Orders', badge: pendingOrdersCount },
     { path: '/admin/messages', icon: MessageSquare, label: 'Messages', badge: unreadMessagesCount },
     { path: '/admin/settings', icon: Settings, label: 'Site Settings' },
+    { path: '/admin/contact-settings', icon: Phone, label: 'Contact Info' },
   ];
 
   const handleSignOut = async () => {
