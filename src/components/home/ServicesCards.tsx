@@ -27,6 +27,7 @@ const serviceCategories: ServiceCategory[] = [
       { name: 'Semi Electric Bed', slug: 'semi-electric-bed' },
       { name: 'Bariatric Bed', slug: 'bariatric-bed' },
       { name: 'Burn Bed', slug: 'burn-bed' },
+      { name: 'Birthing Bed', slug: 'birthing-bed' },
     ],
   },
   {
@@ -40,6 +41,8 @@ const serviceCategories: ServiceCategory[] = [
       { name: 'Surgery Stretcher', slug: 'surgery-stretcher' },
       { name: 'Bariatric Stretcher', slug: 'bariatric-stretcher' },
       { name: 'EVAC Stretcher', slug: 'evac-stretcher' },
+      { name: 'Eye Surgery Stretcher', slug: 'eye-surgery-stretcher' },
+      { name: 'Birthing Stretcher', slug: 'birthing-stretcher' },
     ],
   },
   {
