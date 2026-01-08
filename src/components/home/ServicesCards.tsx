@@ -162,8 +162,8 @@ export function ServicesCards() {
                   {/* Dropdown Items */}
                   <div
                     className={cn(
-                      'overflow-hidden transition-all duration-300 ease-out',
-                      activeCard === category.id ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+                      'transition-all duration-300 ease-out',
+                      activeCard === category.id ? 'max-h-80 opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 overflow-hidden'
                     )}
                   >
                     <div className="pt-4 border-t mt-4 space-y-2">
