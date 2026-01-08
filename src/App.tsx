@@ -32,6 +32,7 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminHomeCards from "./pages/admin/AdminHomeCards";
+import AdminContactSettings from "./pages/admin/AdminContactSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => (
               <Route path="/admin/messages" element={<AdminMessages />} />
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/home-cards" element={<AdminHomeCards />} />
+              <Route path="/admin/contact-settings" element={<AdminContactSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

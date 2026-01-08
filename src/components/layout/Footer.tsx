@@ -2,8 +2,18 @@ import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useContactInfo } from '@/hooks/useContactInfo';
 
 export function Footer() {
+  const { contactInfo } = useContactInfo();
+
+  const socialIcons = [
+    { Icon: Facebook, url: contactInfo.social_links.facebook },
+    { Icon: Twitter, url: contactInfo.social_links.twitter },
+    { Icon: Linkedin, url: contactInfo.social_links.linkedin },
+    { Icon: Instagram, url: contactInfo.social_links.instagram },
+  ];
+
   return (
     <footer className="bg-foreground text-background">
       {/* Newsletter Section */}
@@ -46,10 +56,12 @@ export function Footer() {
               Trusted by healthcare facilities worldwide since 1995.
             </p>
             <div className="flex gap-4">
-              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
+              {socialIcons.map(({ Icon, url }, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={url || '#'}
+                  target={url ? '_blank' : undefined}
+                  rel={url ? 'noopener noreferrer' : undefined}
                   className="w-10 h-10 bg-background/10 rounded-full flex items-center justify-center hover:bg-primary transition-colors"
                 >
                   <Icon className="h-5 w-5" />
@@ -99,17 +111,17 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary mt-0.5" />
                 <span className="text-background/70">
-                  555 N. 5th St, Suite 109<br />
-                  Garland, TX 75040
+                  {contactInfo.address_line1}<br />
+                  {contactInfo.address_line2}
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary" />
-                <span className="text-background/70">+1 469 767 8853</span>
+                <span className="text-background/70">{contactInfo.phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary" />
-                <span className="text-background/70">service@mbmts.com</span>
+                <span className="text-background/70">{contactInfo.email}</span>
               </li>
             </ul>
           </div>

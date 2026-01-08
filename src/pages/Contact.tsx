@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Phone, Mail, MapPin, Clock, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useContactInfo } from '@/hooks/useContactInfo';
 
 const Contact = () => {
   const { toast } = useToast();
@@ -16,6 +17,7 @@ const Contact = () => {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { contactInfo } = useContactInfo();
 
   useEffect(() => {
     const productName = searchParams.get('product');
@@ -45,6 +47,13 @@ const Contact = () => {
     setIsSubmitting(false);
   };
 
+  const contactItems = [
+    { icon: Phone, title: 'Phone', content: contactInfo.phone },
+    { icon: Mail, title: 'Email', content: contactInfo.email },
+    { icon: MapPin, title: 'Address', content: `${contactInfo.address_line1}, ${contactInfo.address_line2}` },
+    { icon: Clock, title: 'Hours', content: contactInfo.working_hours },
+  ];
+
   return (
     <Layout>
       <section className="py-16 md:py-24">
@@ -56,12 +65,7 @@ const Contact = () => {
 
           <div className="grid lg:grid-cols-2 gap-12">
             <div className="space-y-8">
-              {[
-                { icon: Phone, title: 'Phone', content: '+1 469 767 8853' },
-                { icon: Mail, title: 'Email', content: 'service@mbmts.com' },
-                { icon: MapPin, title: 'Address', content: '555 N. 5th St, Suite 109, Garland, TX 75040' },
-                { icon: Clock, title: 'Hours', content: 'Mon–Fri: 8 AM – 5 PM CST' },
-              ].map((item, i) => (
+              {contactItems.map((item, i) => (
                 <div key={i} className="flex items-start gap-4 p-6 bg-card rounded-xl border card-hover">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center"><item.icon className="h-6 w-6 text-primary" /></div>
                   <div><h3 className="font-display font-bold">{item.title}</h3><p className="text-muted-foreground">{item.content}</p></div>
