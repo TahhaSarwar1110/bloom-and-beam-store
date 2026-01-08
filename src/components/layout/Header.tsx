@@ -23,6 +23,11 @@ const hospitalBedCategories = [
 ];
 
 const stretcherCategories = [
+  { name: 'Emergency Stretcher', slug: 'emergency-stretcher' },
+  { name: 'Surgery Stretcher', slug: 'surgery-stretcher' },
+  { name: 'EMS Stretcher', slug: 'ems-stretcher' },
+  { name: 'Bariatric Stretcher', slug: 'bariatric-stretcher' },
+  { name: 'Evacuation Stretcher', slug: 'evacuation-stretcher' },
   { name: 'Eye Surgery Stretcher', slug: 'eye-surgery-stretcher' },
   { name: 'Birthing Stretcher', slug: 'birthing-stretcher' },
 ];
