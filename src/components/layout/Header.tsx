@@ -22,10 +22,20 @@ const hospitalBedCategories = [
   { name: 'Birthing Bed', slug: 'birthing-bed' },
 ];
 
-const navLinks = [
-  { name: 'Home', path: '/' },
+const stretcherCategories = [
+  { name: 'Eye Surgery Stretcher', slug: 'eye-surgery-stretcher' },
+  { name: 'Birthing Stretcher', slug: 'birthing-stretcher' },
+];
+
+const accessoryCategories = [
+  { name: 'Over Bed Table', slug: 'over-bed-table' },
+  { name: 'Bedside Table', slug: 'bedside-table' },
+  { name: 'Patient Recliner', slug: 'patient-recliner' },
+  { name: 'Wheelchair', slug: 'wheelchair' },
+];
+
+const aboutBedmedLinks = [
   { name: 'Services', path: '/services' },
-  { name: 'Parts', path: '/parts' },
   { name: 'Blog', path: '/blog' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },
@@ -33,7 +43,10 @@ const navLinks = [
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
+  const [isMobileHospitalBedsOpen, setIsMobileHospitalBedsOpen] = useState(false);
+  const [isMobileStretchersOpen, setIsMobileStretchersOpen] = useState(false);
+  const [isMobileAccessoriesOpen, setIsMobileAccessoriesOpen] = useState(false);
+  const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
   const { getItemCount, setIsCartOpen } = useCart();
   const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
@@ -88,7 +101,7 @@ export function Header() {
                     className={cn(
                       'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
                       'font-medium transition-colors hover:text-primary px-0',
-                      location.pathname.startsWith('/category/') && 'text-primary'
+                      location.pathname.startsWith('/gallery/') && 'text-primary'
                     )}
                   >
                     Hospital Beds
@@ -123,19 +136,113 @@ export function Header() {
               </NavigationMenuList>
             </NavigationMenu>
 
-            {navLinks.slice(1).map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={cn(
-                  'relative font-medium transition-colors hover:text-primary',
-                  'after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full',
-                  location.pathname === link.path && 'text-primary after:w-full'
-                )}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {/* Stretchers Dropdown */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger 
+                    className={cn(
+                      'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                      'font-medium transition-colors hover:text-primary px-0'
+                    )}
+                  >
+                    Stretchers
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
+                      <div className="space-y-1">
+                        {stretcherCategories.map((category) => (
+                          <NavigationMenuLink key={category.slug} asChild>
+                            <Link
+                              to={`/gallery/${category.slug}`}
+                              className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
+                            >
+                              {category.name}
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Accessories Dropdown */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger 
+                    className={cn(
+                      'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                      'font-medium transition-colors hover:text-primary px-0'
+                    )}
+                  >
+                    Accessories
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
+                      <div className="space-y-1">
+                        {accessoryCategories.map((category) => (
+                          <NavigationMenuLink key={category.slug} asChild>
+                            <Link
+                              to={`/gallery/${category.slug}`}
+                              className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
+                            >
+                              {category.name}
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {/* Parts Link */}
+            <Link
+              to="/parts"
+              className={cn(
+                'relative font-medium transition-colors hover:text-primary',
+                'after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full',
+                location.pathname === '/parts' && 'text-primary after:w-full'
+              )}
+            >
+              Parts
+            </Link>
+
+            {/* About Bedmed Dropdown */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger 
+                    className={cn(
+                      'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
+                      'font-medium transition-colors hover:text-primary px-0'
+                    )}
+                  >
+                    About Bedmed
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[180px] p-3 bg-card border rounded-lg shadow-lg">
+                      <div className="space-y-1">
+                        {aboutBedmedLinks.map((link) => (
+                          <NavigationMenuLink key={link.path} asChild>
+                            <Link
+                              to={link.path}
+                              className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
+                            >
+                              {link.name}
+                            </Link>
+                          </NavigationMenuLink>
+                        ))}
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </nav>
 
           {/* Actions */}
@@ -217,53 +324,118 @@ export function Header() {
               {/* Mobile Hospital Beds Accordion */}
               <div className="animate-fade-in-up" style={{ animationDelay: '50ms' }}>
                 <button
-                  onClick={() => setIsMobileCategoriesOpen(!isMobileCategoriesOpen)}
+                  onClick={() => setIsMobileHospitalBedsOpen(!isMobileHospitalBedsOpen)}
                   className={cn(
-                    'w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between',
-                    location.pathname.startsWith('/category/') && 'bg-accent text-primary'
+                    'w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between'
                   )}
                 >
                   Hospital Beds
-                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileCategoriesOpen && 'rotate-180')} />
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileHospitalBedsOpen && 'rotate-180')} />
                 </button>
-                {isMobileCategoriesOpen && (
+                {isMobileHospitalBedsOpen && (
                   <div className="ml-4 mt-2 space-y-1 max-h-60 overflow-y-auto">
                     {hospitalBedCategories.map((category) => (
                       <Link
                         key={category.slug}
                         to={`/gallery/${category.slug}`}
-                        onClick={() => { setIsMenuOpen(false); setIsMobileCategoriesOpen(false); }}
+                        onClick={() => { setIsMenuOpen(false); setIsMobileHospitalBedsOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
                         {category.name}
                       </Link>
                     ))}
-                    <Link
-                      to="/products"
-                      onClick={() => { setIsMenuOpen(false); setIsMobileCategoriesOpen(false); }}
-                      className="block py-2 px-4 text-sm text-primary font-medium rounded-lg hover:bg-accent transition-colors"
-                    >
-                      View All Products →
-                    </Link>
                   </div>
                 )}
               </div>
 
-              {navLinks.slice(1).map((link, index) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={cn(
-                    'py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent',
-                    'animate-fade-in-up',
-                    location.pathname === link.path && 'bg-accent text-primary'
-                  )}
-                  style={{ animationDelay: `${(index + 2) * 50}ms` }}
+              {/* Mobile Stretchers Accordion */}
+              <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                <button
+                  onClick={() => setIsMobileStretchersOpen(!isMobileStretchersOpen)}
+                  className="w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between"
                 >
-                  {link.name}
-                </Link>
-              ))}
+                  Stretchers
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileStretchersOpen && 'rotate-180')} />
+                </button>
+                {isMobileStretchersOpen && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {stretcherCategories.map((category) => (
+                      <Link
+                        key={category.slug}
+                        to={`/gallery/${category.slug}`}
+                        onClick={() => { setIsMenuOpen(false); setIsMobileStretchersOpen(false); }}
+                        className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile Accessories Accordion */}
+              <div className="animate-fade-in-up" style={{ animationDelay: '150ms' }}>
+                <button
+                  onClick={() => setIsMobileAccessoriesOpen(!isMobileAccessoriesOpen)}
+                  className="w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between"
+                >
+                  Accessories
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileAccessoriesOpen && 'rotate-180')} />
+                </button>
+                {isMobileAccessoriesOpen && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {accessoryCategories.map((category) => (
+                      <Link
+                        key={category.slug}
+                        to={`/gallery/${category.slug}`}
+                        onClick={() => { setIsMenuOpen(false); setIsMobileAccessoriesOpen(false); }}
+                        className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                      >
+                        {category.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Parts Link */}
+              <Link
+                to="/parts"
+                onClick={() => setIsMenuOpen(false)}
+                className={cn(
+                  'py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent',
+                  'animate-fade-in-up',
+                  location.pathname === '/parts' && 'bg-accent text-primary'
+                )}
+                style={{ animationDelay: '200ms' }}
+              >
+                Parts
+              </Link>
+
+              {/* Mobile About Bedmed Accordion */}
+              <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
+                <button
+                  onClick={() => setIsMobileAboutOpen(!isMobileAboutOpen)}
+                  className="w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between"
+                >
+                  About Bedmed
+                  <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileAboutOpen && 'rotate-180')} />
+                </button>
+                {isMobileAboutOpen && (
+                  <div className="ml-4 mt-2 space-y-1">
+                    {aboutBedmedLinks.map((link) => (
+                      <Link
+                        key={link.path}
+                        to={link.path}
+                        onClick={() => { setIsMenuOpen(false); setIsMobileAboutOpen(false); }}
+                        className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
               {user ? (
                 <>
                   {isAdmin && (
