@@ -46,6 +46,7 @@ const hospitalBedCategories = [
 const Products = () => {
   const [searchParams] = useSearchParams();
   const isHospitalBedsFilter = searchParams.get('type') === 'hospital-beds';
+  const searchQuery = searchParams.get('search') || '';
   
   const [activeCategory, setActiveCategory] = useState('All');
   const [products, setProducts] = useState<Product[]>([]);
@@ -76,9 +77,19 @@ const Products = () => {
   }, []);
 
   // Filter products based on hospital beds type if specified
-  const baseProducts = isHospitalBedsFilter
+  let baseProducts = isHospitalBedsFilter
     ? products.filter(p => hospitalBedCategories.includes(p.category))
     : products;
+
+  // Apply search filter if search query exists
+  if (searchQuery) {
+    const query = searchQuery.toLowerCase();
+    baseProducts = baseProducts.filter(p => 
+      p.name.toLowerCase().includes(query) || 
+      (p.description && p.description.toLowerCase().includes(query)) ||
+      p.category.toLowerCase().includes(query)
+    );
+  }
 
   // Get categories for the filtered products
   const productCategories = [...new Set(baseProducts.map(p => p.category))];
@@ -116,12 +127,18 @@ const Products = () => {
         <div className="container">
           <div className="text-center mb-12">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
-              {isHospitalBedsFilter ? 'Hospital Beds' : 'Our Products'}
+              {searchQuery 
+                ? `Search Results for "${searchQuery}"` 
+                : isHospitalBedsFilter 
+                  ? 'Hospital Beds' 
+                  : 'Our Products'}
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              {isHospitalBedsFilter 
-                ? 'Browse our complete range of hospital beds for every medical need.'
-                : 'Explore our complete range of premium medical stretchers and hospital equipment.'}
+              {searchQuery
+                ? `Found ${baseProducts.length} product${baseProducts.length !== 1 ? 's' : ''} matching your search.`
+                : isHospitalBedsFilter 
+                  ? 'Browse our complete range of hospital beds for every medical need.'
+                  : 'Explore our complete range of premium medical stretchers and hospital equipment.'}
             </p>
           </div>
 

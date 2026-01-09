@@ -329,7 +329,7 @@ const ProductDetail = () => {
                   <div 
                     key={relProduct.id}
                     className="group cursor-pointer"
-                    onClick={() => navigate(`/product/${relProduct.id}`)}
+                    onClick={() => navigate(`/products/${relProduct.id}`)}
                   >
                     <div className="bg-muted rounded-xl overflow-hidden aspect-square mb-3 relative perspective-1000">
                       <img 
