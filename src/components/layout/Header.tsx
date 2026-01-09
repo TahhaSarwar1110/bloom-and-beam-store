@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
@@ -13,6 +14,11 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 const hospitalBedCategories = [
   { name: 'Fully Electric Bed', slug: 'fully-electric-bed' },
@@ -40,7 +46,6 @@ const accessoryCategories = [
 ];
 
 const aboutBedmedLinks = [
-  { name: 'Services', path: '/services' },
   { name: 'Blog', path: '/blog' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },
@@ -52,10 +57,22 @@ export function Header() {
   const [isMobileStretchersOpen, setIsMobileStretchersOpen] = useState(false);
   const [isMobileAccessoriesOpen, setIsMobileAccessoriesOpen] = useState(false);
   const [isMobileAboutOpen, setIsMobileAboutOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { getItemCount, setIsCartOpen } = useCart();
   const { user, isAdmin, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const itemCount = getItemCount();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setIsSearchOpen(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -217,6 +234,18 @@ export function Header() {
               Parts
             </Link>
 
+            {/* Services Link */}
+            <Link
+              to="/services"
+              className={cn(
+                'relative font-medium transition-colors hover:text-primary',
+                'after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full',
+                location.pathname.startsWith('/services') && 'text-primary after:w-full'
+              )}
+            >
+              Services
+            </Link>
+
             {/* About Bedmed Dropdown */}
             <NavigationMenu>
               <NavigationMenuList>
@@ -252,9 +281,27 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
-            <Button variant="ghost" size="icon" className="hidden md:flex">
-              <Search className="h-5 w-5" />
-            </Button>
+            <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="hidden md:flex">
+                  <Search className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-2" align="end">
+                <form onSubmit={handleSearch} className="flex gap-2">
+                  <Input
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1"
+                    autoFocus
+                  />
+                  <Button type="submit" size="sm">
+                    Search
+                  </Button>
+                </form>
+              </PopoverContent>
+            </Popover>
             
             <Button
               variant="ghost"
@@ -415,6 +462,20 @@ export function Header() {
                 style={{ animationDelay: '200ms' }}
               >
                 Parts
+              </Link>
+
+              {/* Services Link */}
+              <Link
+                to="/services"
+                onClick={() => setIsMenuOpen(false)}
+                className={cn(
+                  'py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent',
+                  'animate-fade-in-up',
+                  location.pathname.startsWith('/services') && 'bg-accent text-primary'
+                )}
+                style={{ animationDelay: '225ms' }}
+              >
+                Services
               </Link>
 
               {/* Mobile About Bedmed Accordion */}

@@ -33,9 +33,16 @@ export function CTA() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base">
-                <Phone className="mr-2 h-5 w-5" />
-                469-BEDMED-3
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base"
+                asChild
+              >
+                <a href="tel:+14697678853">
+                  <Phone className="mr-2 h-5 w-5" />
+                  +1 469 767 8853
+                </a>
               </Button>
             </div>
           </div>
