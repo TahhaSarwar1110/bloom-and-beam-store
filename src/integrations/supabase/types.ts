@@ -332,6 +332,7 @@ export type Database = {
         Row: {
           category: string
           category_id: string | null
+          condition: string
           created_at: string
           description: string | null
           features: string[] | null
@@ -350,6 +351,7 @@ export type Database = {
         Insert: {
           category?: string
           category_id?: string | null
+          condition?: string
           created_at?: string
           description?: string | null
           features?: string[] | null
@@ -368,6 +370,7 @@ export type Database = {
         Update: {
           category?: string
           category_id?: string | null
+          condition?: string
           created_at?: string
           description?: string | null
           features?: string[] | null

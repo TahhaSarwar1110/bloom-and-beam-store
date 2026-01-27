@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -20,30 +21,23 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-const hospitalBedCategories = [
-  { name: 'Fully Electric Bed', slug: 'fully-electric-bed' },
-  { name: 'Semi-Electric Bed', slug: 'semi-electric-bed' },
-  { name: 'Bariatric Bed', slug: 'bariatric-bed' },
-  { name: 'Burn Bed', slug: 'burn-bed' },
-  { name: 'Birthing Bed', slug: 'birthing-bed' },
-];
+interface CategoryItem {
+  id: string;
+  name: string;
+  slug: string;
+}
 
-const stretcherCategories = [
-  { name: 'EMS Stretcher', slug: 'ems-stretcher' },
-  { name: 'ER Stretcher', slug: 'er-stretcher' },
-  { name: 'Surgery Stretcher', slug: 'surgery-stretcher' },
-  { name: 'Bariatric Stretcher', slug: 'bariatric-stretcher' },
-  { name: 'EVAC Stretcher', slug: 'evac-stretcher' },
-  { name: 'Eye Surgery Stretcher', slug: 'eye-surgery-stretcher' },
-  { name: 'Birthing Stretcher', slug: 'birthing-stretcher' },
-];
+interface HomeServiceCard {
+  id: string;
+  title: string;
+}
 
-const accessoryCategories = [
-  { name: 'Over Bed Table', slug: 'over-bed-table' },
-  { name: 'Bedside Table', slug: 'bedside-table' },
-  { name: 'Patient Recliner', slug: 'patient-recliner' },
-  { name: 'Wheelchair', slug: 'wheelchair' },
-];
+interface HomeServiceCardItem {
+  id: string;
+  card_id: string;
+  name: string;
+  slug: string;
+}
 
 const aboutBedmedLinks = [
   { name: 'Blog', path: '/blog' },
@@ -64,6 +58,48 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const itemCount = getItemCount();
+
+  // State for database categories
+  const [hospitalBedCategories, setHospitalBedCategories] = useState<CategoryItem[]>([]);
+  const [stretcherCategories, setStretcherCategories] = useState<CategoryItem[]>([]);
+  const [accessoryCategories, setAccessoryCategories] = useState<CategoryItem[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      // Fetch home service cards and their items
+      const { data: cards } = await supabase
+        .from('home_service_cards')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      const { data: items } = await supabase
+        .from('home_service_card_items')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (cards && items) {
+        // Find cards by title
+        const bedsCard = cards.find(c => c.title.toLowerCase().includes('bed'));
+        const stretchersCard = cards.find(c => c.title.toLowerCase().includes('stretcher'));
+        const accessoriesCard = cards.find(c => c.title.toLowerCase().includes('accessor'));
+
+        if (bedsCard) {
+          const bedItems = items.filter(i => i.card_id === bedsCard.id);
+          setHospitalBedCategories(bedItems);
+        }
+        if (stretchersCard) {
+          const stretcherItems = items.filter(i => i.card_id === stretchersCard.id);
+          setStretcherCategories(stretcherItems);
+        }
+        if (accessoriesCard) {
+          const accessoryItems = items.filter(i => i.card_id === accessoriesCard.id);
+          setAccessoryCategories(accessoryItems);
+        }
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,8 +167,8 @@ export function Header() {
                   <NavigationMenuContent>
                     <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
                       <div className="space-y-1">
-                      {hospitalBedCategories.map((category) => (
-                          <NavigationMenuLink key={category.slug} asChild>
+                        {hospitalBedCategories.map((category) => (
+                          <NavigationMenuLink key={category.id} asChild>
                             <Link
                               to={`/gallery/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
@@ -174,7 +210,7 @@ export function Header() {
                     <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
                       <div className="space-y-1">
                         {stretcherCategories.map((category) => (
-                          <NavigationMenuLink key={category.slug} asChild>
+                          <NavigationMenuLink key={category.id} asChild>
                             <Link
                               to={`/gallery/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
@@ -206,7 +242,7 @@ export function Header() {
                     <div className="w-[220px] p-3 bg-card border rounded-lg shadow-lg">
                       <div className="space-y-1">
                         {accessoryCategories.map((category) => (
-                          <NavigationMenuLink key={category.slug} asChild>
+                          <NavigationMenuLink key={category.id} asChild>
                             <Link
                               to={`/gallery/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
@@ -320,6 +356,11 @@ export function Header() {
             {/* Admin/User Actions */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
+                <Button asChild variant="ghost" size="icon" title="Order History">
+                  <Link to="/orders">
+                    <Package className="h-5 w-5" />
+                  </Link>
+                </Button>
                 {isAdmin && (
                   <Button asChild variant="outline" size="sm">
                     <Link to="/admin">
@@ -388,7 +429,7 @@ export function Header() {
                   <div className="ml-4 mt-2 space-y-1 max-h-60 overflow-y-auto">
                     {hospitalBedCategories.map((category) => (
                       <Link
-                        key={category.slug}
+                        key={category.id}
                         to={`/gallery/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileHospitalBedsOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
@@ -413,7 +454,7 @@ export function Header() {
                   <div className="ml-4 mt-2 space-y-1">
                     {stretcherCategories.map((category) => (
                       <Link
-                        key={category.slug}
+                        key={category.id}
                         to={`/gallery/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileStretchersOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
@@ -438,7 +479,7 @@ export function Header() {
                   <div className="ml-4 mt-2 space-y-1">
                     {accessoryCategories.map((category) => (
                       <Link
-                        key={category.slug}
+                        key={category.id}
                         to={`/gallery/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileAccessoriesOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
@@ -504,6 +545,14 @@ export function Header() {
               </div>
               {user ? (
                 <>
+                  <Link
+                    to="/orders"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center gap-2"
+                  >
+                    <Package className="h-4 w-4" />
+                    Order History
+                  </Link>
                   {isAdmin && (
                     <Link
                       to="/admin"
@@ -539,5 +588,3 @@ export function Header() {
     </header>
   );
 }
-
-export { hospitalBedCategories };

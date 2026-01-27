@@ -26,6 +26,7 @@ interface Product {
   category: string;
   features: string[];
   in_stock: boolean;
+  condition: string;
   created_at: string;
 }
 
@@ -50,7 +51,8 @@ export default function AdminProducts() {
     image_urls: [] as string[],
     category: '',
     features: '',
-    in_stock: true
+    in_stock: true,
+    condition: 'new'
   });
 
   useEffect(() => {
@@ -92,10 +94,11 @@ export default function AdminProducts() {
       price: '',
       original_price: '',
       image_url: '',
-      image_urls: [],
+      image_urls: [] as string[],
       category: categories.length > 0 ? categories[0].name : '',
       features: '',
-      in_stock: true
+      in_stock: true,
+      condition: 'new'
     });
     setEditingProduct(null);
   };
@@ -111,7 +114,8 @@ export default function AdminProducts() {
       image_urls: product.image_urls || [],
       category: product.category,
       features: product.features?.join(', ') || '',
-      in_stock: product.in_stock
+      in_stock: product.in_stock,
+      condition: product.condition || 'new'
     });
     setDialogOpen(true);
   };
@@ -133,7 +137,8 @@ export default function AdminProducts() {
       image_urls: formData.image_urls,
       category: formData.category,
       features: formData.features.split(',').map(f => f.trim()).filter(Boolean),
-      in_stock: formData.in_stock
+      in_stock: formData.in_stock,
+      condition: formData.condition
     };
 
     if (editingProduct) {
@@ -290,13 +295,31 @@ export default function AdminProducts() {
                     placeholder="Feature 1, Feature 2, Feature 3"
                   />
                 </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="in_stock"
-                    checked={formData.in_stock}
-                    onCheckedChange={(checked) => setFormData({ ...formData, in_stock: checked })}
-                  />
-                  <Label htmlFor="in_stock">In Stock</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="condition">Condition</Label>
+                    <Select
+                      value={formData.condition}
+                      onValueChange={(value) => setFormData({ ...formData, condition: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="new">New</SelectItem>
+                        <SelectItem value="used">Used</SelectItem>
+                        <SelectItem value="refurbished">Refurbished</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex items-center gap-2 pt-8">
+                    <Switch
+                      id="in_stock"
+                      checked={formData.in_stock}
+                      onCheckedChange={(checked) => setFormData({ ...formData, in_stock: checked })}
+                    />
+                    <Label htmlFor="in_stock">In Stock</Label>
+                  </div>
                 </div>
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" onClick={() => { setDialogOpen(false); resetForm(); }}>
