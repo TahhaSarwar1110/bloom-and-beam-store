@@ -1,12 +1,13 @@
-import { X, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Trash2, Package } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 export function CartSidebar() {
   const { items, isCartOpen, setIsCartOpen, removeFromCart, updateQuantity, getTotal } = useCart();
-
+  const { user } = useAuth();
   return (
     <>
       {/* Overlay */}
@@ -128,6 +129,20 @@ export function CartSidebar() {
                 >
                   <Link to="/cart">View Cart</Link>
                 </Button>
+                {user && (
+                  <Button
+                    asChild
+                    variant="ghost"
+                    className="w-full"
+                    size="lg"
+                    onClick={() => setIsCartOpen(false)}
+                  >
+                    <Link to="/orders" className="flex items-center gap-2">
+                      <Package className="h-4 w-4" />
+                      Order History
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           )}
