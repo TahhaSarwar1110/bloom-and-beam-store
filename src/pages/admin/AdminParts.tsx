@@ -24,6 +24,10 @@ interface Part {
   make: string | null;
   model: string | null;
   sku: string | null;
+  condition: string;
+  part_no: string | null;
+  asset_no: string | null;
+  oem_no: string | null;
 }
 
 export default function AdminParts() {
@@ -43,7 +47,11 @@ export default function AdminParts() {
     sort_order: 0,
     make: '',
     model: '',
-    sku: ''
+    sku: '',
+    condition: 'new',
+    part_no: '',
+    asset_no: '',
+    oem_no: ''
   });
 
   useEffect(() => {
@@ -75,7 +83,11 @@ export default function AdminParts() {
       sort_order: parts.length,
       make: '',
       model: '',
-      sku: ''
+      sku: '',
+      condition: 'new',
+      part_no: '',
+      asset_no: '',
+      oem_no: ''
     });
     setEditingPart(null);
   };
@@ -92,7 +104,11 @@ export default function AdminParts() {
       sort_order: part.sort_order,
       make: part.make || '',
       model: part.model || '',
-      sku: part.sku || ''
+      sku: part.sku || '',
+      condition: part.condition || 'new',
+      part_no: part.part_no || '',
+      asset_no: part.asset_no || '',
+      oem_no: part.oem_no || ''
     });
     setDialogOpen(true);
   };
@@ -153,7 +169,11 @@ export default function AdminParts() {
       sort_order: formData.sort_order,
       make: formData.make || null,
       model: formData.model || null,
-      sku: formData.sku || null
+      sku: formData.sku || null,
+      condition: formData.condition,
+      part_no: formData.part_no || null,
+      asset_no: formData.asset_no || null,
+      oem_no: formData.oem_no || null
     };
 
     if (editingPart) {
@@ -247,6 +267,52 @@ export default function AdminParts() {
                   </div>
                 </div>
                 
+                {/* Condition Dropdown */}
+                <div className="space-y-2">
+                  <Label htmlFor="condition">Condition</Label>
+                  <select
+                    id="condition"
+                    value={formData.condition}
+                    onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <option value="new">New</option>
+                    <option value="used">Used</option>
+                    <option value="refurbished">Refurbished</option>
+                  </select>
+                </div>
+
+                {/* Part Numbers Row */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="part_no">Part No.</Label>
+                    <Input
+                      id="part_no"
+                      value={formData.part_no}
+                      onChange={(e) => setFormData({ ...formData, part_no: e.target.value })}
+                      placeholder="e.g., P-12345"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="asset_no">Asset No.</Label>
+                    <Input
+                      id="asset_no"
+                      value={formData.asset_no}
+                      onChange={(e) => setFormData({ ...formData, asset_no: e.target.value })}
+                      placeholder="e.g., A-67890"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="oem_no">OEM No.</Label>
+                    <Input
+                      id="oem_no"
+                      value={formData.oem_no}
+                      onChange={(e) => setFormData({ ...formData, oem_no: e.target.value })}
+                      placeholder="e.g., OEM-11111"
+                    />
+                  </div>
+                </div>
+
                 {/* Make, Model, SKU Fields */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">

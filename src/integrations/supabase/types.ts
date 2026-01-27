@@ -282,7 +282,9 @@ export type Database = {
       }
       parts: {
         Row: {
+          asset_no: string | null
           category: string
+          condition: string
           created_at: string
           description: string | null
           id: string
@@ -291,13 +293,17 @@ export type Database = {
           make: string | null
           model: string | null
           name: string
+          oem_no: string | null
+          part_no: string | null
           price: number
           sku: string | null
           sort_order: number | null
           updated_at: string
         }
         Insert: {
+          asset_no?: string | null
           category?: string
+          condition?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -306,13 +312,17 @@ export type Database = {
           make?: string | null
           model?: string | null
           name: string
+          oem_no?: string | null
+          part_no?: string | null
           price?: number
           sku?: string | null
           sort_order?: number | null
           updated_at?: string
         }
         Update: {
+          asset_no?: string | null
           category?: string
+          condition?: string
           created_at?: string
           description?: string | null
           id?: string
@@ -321,6 +331,8 @@ export type Database = {
           make?: string | null
           model?: string | null
           name?: string
+          oem_no?: string | null
+          part_no?: string | null
           price?: number
           sku?: string | null
           sort_order?: number | null
