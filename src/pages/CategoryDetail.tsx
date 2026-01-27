@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { SEOHead } from '@/components/seo/SEOHead';
-import { hospitalBedCategories } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShoppingCart, Check, Clock, Settings, Award, Phone } from 'lucide-react';
@@ -472,17 +471,34 @@ export default function CategoryDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { addToCart } = useCart();
 
-  const category = hospitalBedCategories.find(cat => cat.slug === slug);
+  // Fetch category info from database
+  const { data: categoryData } = useQuery({
+    queryKey: ['category-item', slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('home_service_card_items')
+        .select('*')
+        .eq('slug', slug)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!slug,
+  });
+
+  const category = categoryData ? { name: categoryData.name, slug: categoryData.slug } : null;
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ['category-products', slug],
+    queryKey: ['category-products', slug, category?.name],
     queryFn: async () => {
       const categoryName = category?.name || '';
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .eq('category', categoryName)
-        .eq('in_stock', true);
+        .eq('in_stock', true)
+        .order('created_at', { ascending: false });
       
       if (error) throw error;
       return data || [];
@@ -490,7 +506,7 @@ export default function CategoryDetail() {
     enabled: !!category,
   });
 
-  if (!category) {
+  if (!slug) {
     return (
       <Layout>
         <div className="container py-16 text-center">
@@ -504,14 +520,23 @@ export default function CategoryDetail() {
     );
   }
 
+  if (!category && !categoryData) {
+    // Show loading or use slug-based fallback for static category pages
+    const formattedName = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    // Allow static category pages to still work
+  }
+
+  // Create a display category with fallback to slug-formatted name
+  const displayName = category?.name || slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') || 'Category';
+  
   const details = categoryDetails[slug || ''] || defaultDetails;
 
   return (
     <Layout>
       <SEOHead 
-        title={`${category.name} | BEDMED Hospital Beds`}
+        title={`${displayName} | BEDMED Hospital Beds`}
         description={details.overview[0]}
-        keywords={`${category.name}, hospital beds, medical beds, healthcare equipment`}
+        keywords={`${displayName}, hospital beds, medical beds, healthcare equipment`}
       />
       
       {/* Hero Section with Background Image */}
@@ -522,7 +547,7 @@ export default function CategoryDetail() {
         />
         <div className="container relative z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold max-w-3xl">
-            {category.name}
+            {displayName}
           </h1>
         </div>
       </section>
@@ -544,7 +569,7 @@ export default function CategoryDetail() {
 
               {/* Why Choose Section */}
               <div>
-                <h2 className="text-2xl font-bold mb-6">Why Choose Our {category.name}?</h2>
+                <h2 className="text-2xl font-bold mb-6">Why Choose Our {displayName}?</h2>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {details.whyChoose.map((item, index) => {
                     const IconComponent = iconMap[item.icon];
@@ -627,7 +652,7 @@ export default function CategoryDetail() {
       {(isLoading || (products && products.length > 0)) && (
         <section className="py-12 md:py-16 bg-accent/30">
           <div className="container">
-            <h2 className="text-3xl font-bold mb-8">Products in {category.name}</h2>
+            <h2 className="text-3xl font-bold mb-8">Products in {displayName}</h2>
             
             {isLoading ? (
               <div className="grid md:grid-cols-3 gap-6">
@@ -699,7 +724,7 @@ export default function CategoryDetail() {
         <div className="container text-center">
           <h2 className="text-3xl font-bold mb-4">Need Help Choosing?</h2>
           <p className="max-w-2xl mx-auto mb-8 text-primary-foreground/80">
-            Our healthcare equipment specialists are ready to help you find the perfect {category.name.toLowerCase()} for your facility.
+            Our healthcare equipment specialists are ready to help you find the perfect {displayName.toLowerCase()} for your facility.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" variant="secondary">
