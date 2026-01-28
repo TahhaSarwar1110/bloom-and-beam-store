@@ -77,6 +77,17 @@ export function Header() {
         .select('*')
         .order('sort_order', { ascending: true });
 
+      // Also fetch unique categories from products table
+      const { data: products } = await supabase
+        .from('products')
+        .select('category')
+        .order('category', { ascending: true });
+
+      // Get unique product categories
+      const productCategories = products 
+        ? [...new Set(products.map(p => p.category))]
+        : [];
+
       if (cards && items) {
         // Find cards by title
         const bedsCard = cards.find(c => c.title.toLowerCase().includes('bed'));
@@ -85,15 +96,31 @@ export function Header() {
 
         if (bedsCard) {
           const bedItems = items.filter(i => i.card_id === bedsCard.id);
-          setHospitalBedCategories(bedItems);
+          // Merge with product categories that contain "bed" 
+          const productBedCategories = productCategories
+            .filter(cat => cat.toLowerCase().includes('bed') && !bedItems.some(item => item.name === cat))
+            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
+          setHospitalBedCategories([...bedItems, ...productBedCategories]);
         }
         if (stretchersCard) {
           const stretcherItems = items.filter(i => i.card_id === stretchersCard.id);
-          setStretcherCategories(stretcherItems);
+          // Merge with product categories that contain "stretcher"
+          const productStretcherCategories = productCategories
+            .filter(cat => cat.toLowerCase().includes('stretcher') && !stretcherItems.some(item => item.name === cat))
+            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
+          setStretcherCategories([...stretcherItems, ...productStretcherCategories]);
         }
         if (accessoriesCard) {
           const accessoryItems = items.filter(i => i.card_id === accessoriesCard.id);
-          setAccessoryCategories(accessoryItems);
+          // Merge with remaining product categories (not beds or stretchers)
+          const productAccessoryCategories = productCategories
+            .filter(cat => 
+              !cat.toLowerCase().includes('bed') && 
+              !cat.toLowerCase().includes('stretcher') && 
+              !accessoryItems.some(item => item.name === cat)
+            )
+            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
+          setAccessoryCategories([...accessoryItems, ...productAccessoryCategories]);
         }
       }
     };

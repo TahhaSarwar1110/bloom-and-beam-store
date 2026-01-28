@@ -7,10 +7,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, X, Upload } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
+
+interface CategoryOption {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 interface Part {
   id: string;
@@ -33,6 +40,7 @@ interface Part {
 export default function AdminParts() {
   const { isAdmin } = useAuth();
   const [parts, setParts] = useState<Part[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<CategoryOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPart, setEditingPart] = useState<Part | null>(null);
@@ -41,7 +49,7 @@ export default function AdminParts() {
     name: '',
     description: '',
     price: '',
-    category: 'General',
+    category: '',
     image_urls: [] as string[],
     in_stock: true,
     sort_order: 0,
@@ -56,6 +64,7 @@ export default function AdminParts() {
 
   useEffect(() => {
     fetchParts();
+    fetchCategoryOptions();
   }, []);
 
   const fetchParts = async () => {
@@ -72,12 +81,24 @@ export default function AdminParts() {
     setLoading(false);
   };
 
+  const fetchCategoryOptions = async () => {
+    // Fetch all categories from home_service_card_items
+    const { data, error } = await supabase
+      .from('home_service_card_items')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (!error && data) {
+      setCategoryOptions(data);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
       description: '',
       price: '',
-      category: 'General',
+      category: categoryOptions.length > 0 ? categoryOptions[0].name : '',
       image_urls: [],
       in_stock: true,
       sort_order: parts.length,
@@ -259,11 +280,21 @@ export default function AdminParts() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input
-                      id="category"
+                    <Select
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    />
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categoryOptions.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.name}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
                 

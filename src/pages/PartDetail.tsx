@@ -20,6 +20,10 @@ interface Part {
   make: string | null;
   model: string | null;
   sku: string | null;
+  condition: string;
+  part_no: string | null;
+  asset_no: string | null;
+  oem_no: string | null;
 }
 
 const PartDetail = () => {
@@ -226,27 +230,6 @@ const PartDetail = () => {
 
             {/* Details Section */}
             <div className="space-y-6">
-              {/* Make & Model Badges */}
-              {(part.make || part.model) && (
-                <div className="flex items-center gap-2">
-                  {part.make && (
-                    <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium">
-                      {part.make}
-                    </span>
-                  )}
-                  {part.model && (
-                    <span className="bg-muted px-3 py-1 rounded-full text-sm font-medium">
-                      {part.model}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* SKU */}
-              {part.sku && (
-                <p className="text-sm text-muted-foreground">SKU: {part.sku}</p>
-              )}
-
               {/* Category */}
               <span className="text-primary font-medium uppercase text-sm">{part.category}</span>
 
@@ -303,10 +286,18 @@ const PartDetail = () => {
                 </Button>
               </div>
 
-              {/* Additional Info */}
+              {/* Product Information */}
               <div className="bg-muted/50 rounded-xl p-6 mt-6">
                 <h3 className="font-display font-bold mb-4">Product Information</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Condition:</span>
+                    <p className="font-medium capitalize">{part.condition}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Category:</span>
+                    <p className="font-medium">{part.category}</p>
+                  </div>
                   {part.make && (
                     <div>
                       <span className="text-muted-foreground">Manufacturer:</span>
@@ -325,10 +316,24 @@ const PartDetail = () => {
                       <p className="font-medium">{part.sku}</p>
                     </div>
                   )}
-                  <div>
-                    <span className="text-muted-foreground">Category:</span>
-                    <p className="font-medium">{part.category}</p>
-                  </div>
+                  {part.part_no && (
+                    <div>
+                      <span className="text-muted-foreground">Part No.:</span>
+                      <p className="font-medium">{part.part_no}</p>
+                    </div>
+                  )}
+                  {part.asset_no && (
+                    <div>
+                      <span className="text-muted-foreground">Asset No.:</span>
+                      <p className="font-medium">{part.asset_no}</p>
+                    </div>
+                  )}
+                  {part.oem_no && (
+                    <div>
+                      <span className="text-muted-foreground">OEM No.:</span>
+                      <p className="font-medium">{part.oem_no}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
