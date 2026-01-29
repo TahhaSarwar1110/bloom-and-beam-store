@@ -28,6 +28,12 @@ interface ServiceCard {
   items?: ServiceCardItem[];
 }
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
+
 const iconOptions = [
   { value: 'Bed', label: 'Bed', icon: Bed },
   { value: 'Ambulance', label: 'Ambulance', icon: Ambulance },
@@ -54,12 +60,15 @@ const getIconComponent = (iconName: string) => {
 export default function AdminHomeCards() {
   const { isAdmin } = useAuth();
   const [cards, setCards] = useState<ServiceCard[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [cardDialogOpen, setCardDialogOpen] = useState(false);
   const [itemDialogOpen, setItemDialogOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<ServiceCard | null>(null);
   const [editingItem, setEditingItem] = useState<ServiceCardItem | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [useExistingCategory, setUseExistingCategory] = useState(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   
   const [cardFormData, setCardFormData] = useState({
     title: '',
@@ -76,7 +85,19 @@ export default function AdminHomeCards() {
 
   useEffect(() => {
     fetchCards();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('id, name, slug')
+      .order('name', { ascending: true });
+
+    if (!error && data) {
+      setCategories(data);
+    }
+  };
 
   const fetchCards = async () => {
     const { data: cardsData, error: cardsError } = await supabase
@@ -131,6 +152,8 @@ export default function AdminHomeCards() {
       sort_order: 0
     });
     setEditingItem(null);
+    setUseExistingCategory(true);
+    setSelectedCategoryId('');
   };
 
   const handleEditCard = (card: ServiceCard) => {
@@ -152,6 +175,15 @@ export default function AdminHomeCards() {
       slug: item.slug,
       sort_order: item.sort_order
     });
+    // Check if the item matches an existing category
+    const matchingCategory = categories.find(c => c.slug === item.slug);
+    if (matchingCategory) {
+      setUseExistingCategory(true);
+      setSelectedCategoryId(matchingCategory.id);
+    } else {
+      setUseExistingCategory(false);
+      setSelectedCategoryId('');
+    }
     setItemDialogOpen(true);
   };
 
@@ -163,7 +195,21 @@ export default function AdminHomeCards() {
       sort_order: itemCount
     });
     setEditingItem(null);
+    setUseExistingCategory(true);
+    setSelectedCategoryId('');
     setItemDialogOpen(true);
+  };
+
+  const handleCategorySelect = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    const category = categories.find(c => c.id === categoryId);
+    if (category) {
+      setItemFormData(prev => ({
+        ...prev,
+        name: category.name,
+        slug: category.slug
+      }));
+    }
   };
 
   const handleSubmitCard = async (e: React.FormEvent) => {
@@ -390,31 +436,91 @@ export default function AdminHomeCards() {
               <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmitItem} className="space-y-4">
+              {/* Category Selection Mode Toggle */}
               <div className="space-y-2">
-                <Label htmlFor="itemName">Name</Label>
-                <Input
-                  id="itemName"
-                  value={itemFormData.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    setItemFormData({ 
-                      ...itemFormData, 
-                      name,
-                      slug: itemFormData.slug || generateSlug(name)
-                    });
-                  }}
-                  required
-                />
+                <Label>Category Source</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={useExistingCategory ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setUseExistingCategory(true);
+                      setSelectedCategoryId('');
+                      setItemFormData(prev => ({ ...prev, name: '', slug: '' }));
+                    }}
+                  >
+                    Select Existing
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={!useExistingCategory ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      setUseExistingCategory(false);
+                      setSelectedCategoryId('');
+                    }}
+                  >
+                    Custom Entry
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="itemSlug">URL Slug</Label>
-                <Input
-                  id="itemSlug"
-                  value={itemFormData.slug}
-                  onChange={(e) => setItemFormData({ ...itemFormData, slug: e.target.value })}
-                  placeholder="auto-generated-from-name"
-                />
-              </div>
+
+              {useExistingCategory ? (
+                <div className="space-y-2">
+                  <Label htmlFor="categorySelect">Select Category</Label>
+                  <Select value={selectedCategoryId} onValueChange={handleCategorySelect}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a category..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.length === 0 ? (
+                        <SelectItem value="none" disabled>No categories available</SelectItem>
+                      ) : (
+                        categories.map((category) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name} (/{category.slug})
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  {selectedCategoryId && (
+                    <p className="text-xs text-muted-foreground">
+                      Will link to: /{categories.find(c => c.id === selectedCategoryId)?.slug}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemName">Name</Label>
+                    <Input
+                      id="itemName"
+                      value={itemFormData.name}
+                      onChange={(e) => {
+                        const name = e.target.value;
+                        setItemFormData({ 
+                          ...itemFormData, 
+                          name,
+                          slug: itemFormData.slug || generateSlug(name)
+                        });
+                      }}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="itemSlug">URL Slug</Label>
+                    <Input
+                      id="itemSlug"
+                      value={itemFormData.slug}
+                      onChange={(e) => setItemFormData({ ...itemFormData, slug: e.target.value })}
+                      placeholder="auto-generated-from-name"
+                    />
+                  </div>
+                </>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="itemSortOrder">Sort Order</Label>
                 <Input
@@ -428,7 +534,7 @@ export default function AdminHomeCards() {
                 <Button type="button" variant="outline" onClick={() => { setItemDialogOpen(false); resetItemForm(); }}>
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" disabled={useExistingCategory && !selectedCategoryId}>
                   {editingItem ? 'Update Item' : 'Create Item'}
                 </Button>
               </div>
