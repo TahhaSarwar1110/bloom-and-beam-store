@@ -101,24 +101,17 @@ const ProductGallery = () => {
             </div>
           )}
 
-          {/* Products Grid - Show all images from all products */}
+          {/* Products Grid - Show one card per product using main image */}
           {!isLoading && products && products.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {products.flatMap((product) => {
-                // Combine main image with additional images
-                const allImages = [
-                  product.image_url,
-                  ...(product.image_urls || [])
-                ].filter(Boolean) as string[];
-                
-                // If no images, show placeholder
-                if (allImages.length === 0) {
-                  allImages.push('/placeholder.svg');
-                }
+              {products.map((product, index) => {
+                // Use main image or fallback to first additional image or placeholder
+                const displayImage = product.image_url || (product.image_urls && product.image_urls[0]) || '/placeholder.svg';
+                const totalImages = [product.image_url, ...(product.image_urls || [])].filter(Boolean).length;
 
-                return allImages.map((imageUrl, imgIndex) => (
+                return (
                   <div
-                    key={`${product.id}-${imgIndex}`}
+                    key={product.id}
                     onClick={() => handleImageClick(product)}
                     className={cn(
                       "group cursor-pointer bg-card rounded-xl border overflow-hidden",
@@ -126,15 +119,15 @@ const ProductGallery = () => {
                       "opacity-0 animate-fade-in"
                     )}
                     style={{ 
-                      animationDelay: `${imgIndex * 50}ms`, 
+                      animationDelay: `${index * 50}ms`, 
                       animationFillMode: 'forwards' 
                     }}
                   >
                     {/* Image Container */}
                     <div className="aspect-square bg-muted overflow-hidden perspective-1000">
                       <img
-                        src={imageUrl}
-                        alt={`${product.name} - View ${imgIndex + 1}`}
+                        src={displayImage}
+                        alt={product.name}
                         className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
                       />
                     </div>
@@ -147,14 +140,14 @@ const ProductGallery = () => {
                       <p className="text-primary font-bold mt-2">
                         ${product.price.toLocaleString()}
                       </p>
-                      {allImages.length > 1 && (
+                      {totalImages > 1 && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          View {imgIndex + 1} of {allImages.length}
+                          {totalImages} images available
                         </p>
                       )}
                     </div>
                   </div>
-                ));
+                );
               })}
             </div>
           )}
