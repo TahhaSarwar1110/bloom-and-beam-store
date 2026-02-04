@@ -16,35 +16,53 @@ interface Product {
   slug: string | null;
 }
 
-// Mapping from URL slug to display name and category filter
-const categoryMapping: Record<string, { name: string; categoryFilter: string }> = {
-  // Beds
-  'fully-electric-bed': { name: 'Fully Electric Bed', categoryFilter: 'Fully Electric Bed' },
-  'semi-electric-bed': { name: 'Semi Electric Beds', categoryFilter: 'Semi Electric Beds' },
-  'bariatric-bed': { name: 'Bariatric Bed', categoryFilter: 'Bariatric Bed' },
-  'burn-bed': { name: 'Burn Bed', categoryFilter: 'Burn Bed' },
-  // Stretchers
-  'ems-stretcher': { name: 'EMS Stretcher', categoryFilter: 'EMS Stretcher' },
-  'er-stretcher': { name: 'ER Stretcher', categoryFilter: 'ER Stretcher' },
-  'surgery-stretcher': { name: 'Surgery Stretcher', categoryFilter: 'Surgery Stretcher' },
-  'bariatric-stretcher': { name: 'Bariatric Stretcher', categoryFilter: 'Bariatric Stretcher' },
-  'evac-stretcher': { name: 'EVAC Stretcher', categoryFilter: 'EVAC Stretcher' },
-  // Accessories
-  'bedside-table': { name: 'Bed Side Table', categoryFilter: 'Bed Side Table' },
-  'bed-over-table': { name: 'Bed Over Table', categoryFilter: 'Bed Over' },
-  'wheelchair': { name: 'Wheelchairs', categoryFilter: 'Wheelchairs' },
-  'patient-recliner': { name: 'Patient Recliner', categoryFilter: 'Patient Recliner' },
-};
-
 const ProductGallery = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   
-  const categoryInfo = slug ? categoryMapping[slug] : null;
-  const categoryName = categoryInfo?.name || 'Products';
-  const categoryFilter = categoryInfo?.categoryFilter || '';
+  // Fetch category info from home_service_card_items (dynamic lookup)
+  const { data: categoryItem, isLoading: categoryLoading } = useQuery({
+    queryKey: ['category-item', slug],
+    queryFn: async () => {
+      if (!slug) return null;
+      
+      // First try to find in home_service_card_items
+      const { data: cardItem } = await supabase
+        .from('home_service_card_items')
+        .select('name, slug')
+        .eq('slug', slug)
+        .maybeSingle();
+      
+      if (cardItem) {
+        return { name: cardItem.name, categoryFilter: cardItem.name };
+      }
+      
+      // If not found, try to find in categories table
+      const { data: category } = await supabase
+        .from('categories')
+        .select('name, slug')
+        .eq('slug', slug)
+        .maybeSingle();
+      
+      if (category) {
+        return { name: category.name, categoryFilter: category.name };
+      }
+      
+      // Fallback: use slug to construct a filter (convert slug to title case)
+      const formattedName = slug
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      
+      return { name: formattedName, categoryFilter: formattedName };
+    },
+    enabled: !!slug,
+  });
+  
+  const categoryName = categoryItem?.name || 'Products';
+  const categoryFilter = categoryItem?.categoryFilter || '';
 
-  const { data: products, isLoading } = useQuery({
+  const { data: products, isLoading: productsLoading } = useQuery({
     queryKey: ['products-gallery', categoryFilter],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -59,8 +77,9 @@ const ProductGallery = () => {
     staleTime: 0,
   });
 
+  const isLoading = categoryLoading || productsLoading;
+
   const handleImageClick = (product: Product) => {
-    // Navigate to product detail page
     navigate(`/products/${product.id}`);
   };
 
