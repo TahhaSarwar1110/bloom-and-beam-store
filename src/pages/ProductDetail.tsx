@@ -20,6 +20,7 @@ interface Product {
   category: string;
   features: string[] | null;
   in_stock: boolean;
+  condition: string;
 }
 
 const ProductDetail = () => {
@@ -255,11 +256,21 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <div className={cn(
-                "inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium",
-                product.in_stock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-              )}>
-                {product.in_stock ? "In Stock" : "Out of Stock"}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className={cn(
+                  "inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium",
+                  product.in_stock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                )}>
+                  {product.in_stock ? "In Stock" : "Out of Stock"}
+                </div>
+                <div className={cn(
+                  "inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium",
+                  product.condition === 'new' && "bg-blue-100 text-blue-700",
+                  product.condition === 'used' && "bg-amber-100 text-amber-700",
+                  product.condition === 'refurbished' && "bg-purple-100 text-purple-700"
+                )}>
+                  {product.condition === 'new' ? 'New' : product.condition === 'used' ? 'Used' : 'Refurbished'}
+                </div>
               </div>
 
               {product.description && (
