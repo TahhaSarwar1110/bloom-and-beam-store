@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown, Package } from 'lucide-react';
+import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown, Package, Settings } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
@@ -15,6 +16,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Popover,
   PopoverContent,
@@ -383,22 +391,53 @@ export function Header() {
             {/* Admin/User Actions */}
             {user ? (
               <div className="hidden md:flex items-center gap-2">
-                <Button asChild variant="ghost" size="icon" title="Order History">
-                  <Link to="/orders">
-                    <Package className="h-5 w-5" />
-                  </Link>
-                </Button>
-                {isAdmin && (
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/admin">
-                      <User className="h-4 w-4 mr-2" />
-                      Admin
-                    </Link>
-                  </Button>
-                )}
-                <Button variant="ghost" size="icon" onClick={signOut} title="Sign out">
-                  <LogOut className="h-5 w-5" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
+                          {user.user_metadata?.full_name
+                            ? user.user_metadata.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+                            : user.email?.[0]?.toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <div className="px-2 py-1.5 text-sm font-medium truncate">
+                      {user.user_metadata?.full_name || user.email}
+                    </div>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/account" className="cursor-pointer">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Account Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/orders" className="cursor-pointer">
+                        <Package className="h-4 w-4 mr-2" />
+                        Order History
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="cursor-pointer">
+                            <User className="h-4 w-4 mr-2" />
+                            Admin Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive">
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ) : (
               <Button asChild variant="ghost" size="sm" className="hidden md:flex">
@@ -572,6 +611,14 @@ export function Header() {
               </div>
               {user ? (
                 <>
+                  <Link
+                    to="/account"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center gap-2"
+                  >
+                    <Settings className="h-4 w-4" />
+                    Account Settings
+                  </Link>
                   <Link
                     to="/orders"
                     onClick={() => setIsMenuOpen(false)}
