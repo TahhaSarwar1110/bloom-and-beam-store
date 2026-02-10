@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +12,7 @@ import { Loader2 } from 'lucide-react';
 
 const Checkout = () => {
   const { items, getTotal, clearCart } = useCart();
+  const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +28,20 @@ const Checkout = () => {
     zip: '',
     notes: ''
   });
+
+  // Auto-fill form with logged-in user's info
+  useEffect(() => {
+    if (user) {
+      const fullName = user.user_metadata?.full_name || '';
+      const nameParts = fullName.split(' ');
+      setFormData(prev => ({
+        ...prev,
+        firstName: nameParts[0] || prev.firstName,
+        lastName: nameParts.slice(1).join(' ') || prev.lastName,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -50,7 +66,8 @@ const Checkout = () => {
         shipping_address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`,
         items: orderItems,
         total: getTotal(),
-        notes: formData.notes || null
+        notes: formData.notes || null,
+        user_id: user?.id || null
       });
 
     if (error) {

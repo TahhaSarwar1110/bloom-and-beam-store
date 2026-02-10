@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, FileText, ShoppingCart, DollarSign, FolderOpen, Wrench, HelpCircle, Settings } from 'lucide-react';
+import { Package, FileText, ShoppingCart, DollarSign, FolderOpen, Wrench, HelpCircle, Settings, Users } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { Link } from 'react-router-dom';
 
@@ -13,10 +13,11 @@ interface Stats {
   faqs: number;
   orders: number;
   revenue: number;
+  users: number;
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState<Stats>({ products: 0, categories: 0, parts: 0, blogPosts: 0, faqs: 0, orders: 0, revenue: 0 });
+  const [stats, setStats] = useState<Stats>({ products: 0, categories: 0, parts: 0, blogPosts: 0, faqs: 0, orders: 0, revenue: 0, users: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,13 +26,14 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const [productsRes, categoriesRes, partsRes, blogRes, faqsRes, ordersRes] = await Promise.all([
+      const [productsRes, categoriesRes, partsRes, blogRes, faqsRes, ordersRes, profilesRes] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('categories').select('id', { count: 'exact', head: true }),
         supabase.from('parts').select('id', { count: 'exact', head: true }),
         supabase.from('blog_posts').select('id', { count: 'exact', head: true }),
         supabase.from('faqs').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id, total')
+        supabase.from('orders').select('id, total'),
+        supabase.from('profiles').select('id', { count: 'exact', head: true })
       ]);
 
       const revenue = ordersRes.data?.reduce((sum, order) => sum + Number(order.total), 0) || 0;
@@ -43,7 +45,8 @@ export default function AdminDashboard() {
         blogPosts: blogRes.count || 0,
         faqs: faqsRes.count || 0,
         orders: ordersRes.data?.length || 0,
-        revenue
+        revenue,
+        users: profilesRes.count || 0
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -60,6 +63,7 @@ export default function AdminDashboard() {
     { title: 'FAQs', value: stats.faqs, icon: HelpCircle, color: 'text-cyan-500' },
     { title: 'Total Orders', value: stats.orders, icon: ShoppingCart, color: 'text-purple-500' },
     { title: 'Revenue', value: `$${stats.revenue.toLocaleString()}`, icon: DollarSign, color: 'text-yellow-500' },
+    { title: 'Registered Users', value: stats.users, icon: Users, color: 'text-pink-500' },
   ];
 
   const quickActions = [

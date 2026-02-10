@@ -115,7 +115,13 @@ export default function Auth() {
           }
         } else {
           toast.success('Welcome back!');
-          navigate('/admin');
+          // Check if user is admin to redirect appropriately
+          const { data: roleData } = await supabase
+            .from('user_roles')
+            .select('role')
+            .eq('role', 'admin')
+            .maybeSingle();
+          navigate(roleData ? '/admin' : '/');
         }
       } else {
         const { error } = await signUp(email, password, fullName);
@@ -161,10 +167,10 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            {isLogin ? 'Admin Login' : 'Create Account'}
+            {isLogin ? 'Welcome Back' : 'Create Account'}
           </CardTitle>
           <CardDescription>
-            {isLogin ? 'Sign in to access the admin dashboard' : 'Create an account to get started'}
+            {isLogin ? 'Sign in to your BEDMED account' : 'Create an account to shop and track your orders'}
           </CardDescription>
         </CardHeader>
         <CardContent>
