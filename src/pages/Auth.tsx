@@ -167,7 +167,7 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            {isLogin ? 'Welcome Back' : 'Create Account'}
+            {isLogin ? 'Welcome Back' : 'Create Your Account'}
           </CardTitle>
           <CardDescription>
             {isLogin ? 'Sign in to your BEDMED account' : 'Create an account to shop and track your orders'}
