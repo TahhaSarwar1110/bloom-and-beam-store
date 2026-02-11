@@ -170,7 +170,7 @@ export default function Auth() {
             {isLogin ? 'Welcome Back' : 'Create Your Account'}
           </CardTitle>
           <CardDescription>
-            {isLogin ? 'Sign in to your BEDMED account' : 'Create an account to shop and track your orders'}
+            {isLogin ? 'Sign in to your BEDMED account to continue' : 'Create an account to shop and track your orders'}
           </CardDescription>
         </CardHeader>
         <CardContent>
