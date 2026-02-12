@@ -115,8 +115,8 @@ const Products = () => {
     <Layout>
       <SEOHead
         title={isHospitalBedsFilter 
-          ? "Hospital Beds & Medical Beds | BEDMED Products" 
-          : "Medical Equipment & Hospital Stretchers | BEDMED Products"}
+          ? "Hospital Beds & Medical Beds | Mr.Bedmed Products" 
+          : "Medical Equipment & Hospital Stretchers | Mr.Bedmed Products"}
         description={isHospitalBedsFilter
           ? "Browse our complete range of hospital beds including electric, ICU, bariatric, and home care beds."
           : "Explore our complete range of premium medical stretchers and hospital equipment. Emergency, ICU, transport, and recovery stretchers."}

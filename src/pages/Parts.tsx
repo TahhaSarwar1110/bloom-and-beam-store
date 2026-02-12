@@ -159,8 +159,8 @@ const Parts = () => {
   return (
     <Layout>
       <SEOHead
-        title="Spare Parts - OEM Replacement Parts | BEDMED"
-        description="OEM replacement parts for all BEDMED medical equipment. Search by manufacturer, model, or part number."
+        title="Spare Parts - OEM Replacement Parts | Mr.Bedmed"
+        description="OEM replacement parts for all Mr.Bedmed medical equipment. Search by manufacturer, model, or part number."
         canonicalUrl={`${window.location.origin}/parts`}
       />
 

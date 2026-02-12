@@ -146,8 +146,8 @@ const PartDetail = () => {
   return (
     <Layout>
       <SEOHead
-        title={`${part.name} | BEDMED Parts`}
-        description={part.description || `${part.name} - OEM replacement part from BEDMED`}
+        title={`${part.name} | Mr.Bedmed Parts`}
+        description={part.description || `${part.name} - OEM replacement part from Mr.Bedmed`}
         canonicalUrl={`${window.location.origin}/part/${part.id}`}
       />
 

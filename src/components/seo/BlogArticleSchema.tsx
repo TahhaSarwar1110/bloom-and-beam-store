@@ -45,7 +45,7 @@ export function BlogArticleSchema({
       url: url,
       publisher: {
         '@type': 'Organization',
-        name: 'BEDMED',
+        name: 'Mr.Bedmed',
         logo: {
           '@type': 'ImageObject',
           url: `${window.location.origin}/favicon.ico`

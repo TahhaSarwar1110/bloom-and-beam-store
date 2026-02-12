@@ -55,7 +55,7 @@ const Blog = () => {
   return (
     <Layout>
       <SEOHead
-        title="BEDMED Blog - Medical Equipment Insights"
+        title="Mr.Bedmed Blog - Medical Equipment Insights"
         description="Expert insights, maintenance tips, and industry news for healthcare professionals"
         canonicalUrl={`${window.location.origin}/blog`}
       />
@@ -65,7 +65,7 @@ const Blog = () => {
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              BEDMED <span className="text-primary">Blog</span>
+              Mr.Bedmed <span className="text-primary">Blog</span>
             </h1>
             <p className="text-lg text-muted-foreground">
               Expert insights, maintenance tips, and industry news for healthcare professionals

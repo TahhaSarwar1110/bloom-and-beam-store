@@ -7,7 +7,7 @@ const testimonials = [
     hospital: 'Metro General Hospital',
     image: '👩‍⚕️',
     rating: 5,
-    text: 'BEDMED stretchers have significantly improved our patient transport efficiency. The build quality is exceptional, and the 24/7 support team is incredibly responsive.'
+    text: 'Mr.Bedmed stretchers have significantly improved our patient transport efficiency. The build quality is exceptional, and the 24/7 support team is incredibly responsive.'
   },
   {
     name: 'Michael Rodriguez',
@@ -15,7 +15,7 @@ const testimonials = [
     hospital: 'Valley Medical Center',
     image: '👨‍💼',
     rating: 5,
-    text: 'We\'ve outfitted our entire facility with BEDMED equipment. The durability and ease of maintenance have reduced our operating costs substantially.'
+    text: 'We\'ve outfitted our entire facility with Mr.Bedmed equipment. The durability and ease of maintenance have reduced our operating costs substantially.'
   },
   {
     name: 'Dr. Emily Watson',

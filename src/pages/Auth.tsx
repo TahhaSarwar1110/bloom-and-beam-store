@@ -115,10 +115,12 @@ export default function Auth() {
           }
         } else {
           toast.success('Welcome back!');
-          // Check if user is admin to redirect appropriately
+          // Check if current user is admin to redirect appropriately
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
           const { data: roleData } = await supabase
             .from('user_roles')
             .select('role')
+            .eq('user_id', currentUser?.id ?? '')
             .eq('role', 'admin')
             .maybeSingle();
           navigate(roleData ? '/admin' : '/');
@@ -167,10 +169,10 @@ export default function Auth() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-primary">
-            {isLogin ? 'Welcome Back' : 'Create Your Account'}
+            {isLogin ? 'Welcome to Mr.Bedmed' : 'Create Your Account'}
           </CardTitle>
           <CardDescription>
-            {isLogin ? 'Sign in to your BEDMED account to continue' : 'Create an account to shop and track your orders'}
+            {isLogin ? 'Sign in to your Mr.Bedmed account to continue' : 'Create an account to shop and track your orders'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -206,7 +208,7 @@ export default function Auth() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@bedmed.com"
+                placeholder="you@email.com"
                 required
               />
             </div>

@@ -85,17 +85,6 @@ export function Header() {
         .select('*')
         .order('sort_order', { ascending: true });
 
-      // Also fetch unique categories from products table
-      const { data: products } = await supabase
-        .from('products')
-        .select('category')
-        .order('category', { ascending: true });
-
-      // Get unique product categories
-      const productCategories = products 
-        ? [...new Set(products.map(p => p.category))]
-        : [];
-
       if (cards && items) {
         // Find cards by title
         const bedsCard = cards.find(c => c.title.toLowerCase().includes('bed'));
@@ -103,32 +92,13 @@ export function Header() {
         const accessoriesCard = cards.find(c => c.title.toLowerCase().includes('accessor'));
 
         if (bedsCard) {
-          const bedItems = items.filter(i => i.card_id === bedsCard.id);
-          // Merge with product categories that contain "bed" 
-          const productBedCategories = productCategories
-            .filter(cat => cat.toLowerCase().includes('bed') && !bedItems.some(item => item.name === cat))
-            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
-          setHospitalBedCategories([...bedItems, ...productBedCategories]);
+          setHospitalBedCategories(items.filter(i => i.card_id === bedsCard.id));
         }
         if (stretchersCard) {
-          const stretcherItems = items.filter(i => i.card_id === stretchersCard.id);
-          // Merge with product categories that contain "stretcher"
-          const productStretcherCategories = productCategories
-            .filter(cat => cat.toLowerCase().includes('stretcher') && !stretcherItems.some(item => item.name === cat))
-            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
-          setStretcherCategories([...stretcherItems, ...productStretcherCategories]);
+          setStretcherCategories(items.filter(i => i.card_id === stretchersCard.id));
         }
         if (accessoriesCard) {
-          const accessoryItems = items.filter(i => i.card_id === accessoriesCard.id);
-          // Merge with remaining product categories (not beds or stretchers)
-          const productAccessoryCategories = productCategories
-            .filter(cat => 
-              !cat.toLowerCase().includes('bed') && 
-              !cat.toLowerCase().includes('stretcher') && 
-              !accessoryItems.some(item => item.name === cat)
-            )
-            .map(cat => ({ id: `prod-${cat}`, name: cat, slug: cat.toLowerCase().replace(/\s+/g, '-') }));
-          setAccessoryCategories([...accessoryItems, ...productAccessoryCategories]);
+          setAccessoryCategories(items.filter(i => i.card_id === accessoriesCard.id));
         }
       }
     };
@@ -166,10 +136,10 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center transition-transform group-hover:scale-110">
-              <span className="text-primary-foreground font-display font-bold text-xl">B</span>
+            <span className="text-primary-foreground font-display font-bold text-xl">M</span>
             </div>
             <span className="font-display font-bold text-2xl text-foreground">
-              BED<span className="text-primary">MED</span>
+              Mr.<span className="text-primary">Bedmed</span>
             </span>
           </Link>
 
@@ -327,7 +297,7 @@ export function Header() {
                       'font-medium transition-colors hover:text-primary px-0'
                     )}
                   >
-                    About Bedmed
+                    About Mr.Bedmed
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-[180px] p-3 bg-card border rounded-lg shadow-lg">
@@ -585,13 +555,13 @@ export function Header() {
                 Services
               </Link>
 
-              {/* Mobile About Bedmed Accordion */}
+              {/* Mobile About Mr.Bedmed Accordion */}
               <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
                 <button
                   onClick={() => setIsMobileAboutOpen(!isMobileAboutOpen)}
                   className="w-full py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent flex items-center justify-between"
                 >
-                  About Bedmed
+                  About Mr.Bedmed
                   <ChevronDown className={cn('h-4 w-4 transition-transform', isMobileAboutOpen && 'rotate-180')} />
                 </button>
                 {isMobileAboutOpen && (
@@ -646,7 +616,7 @@ export function Header() {
                 <Button asChild variant="outline" className="mt-2">
                   <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
                     <User className="h-4 w-4 mr-2" />
-                    Admin Login
+                    Login
                   </Link>
                 </Button>
               )}
