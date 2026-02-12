@@ -12,3 +12,12 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account-settings
+Disallow: /order-history
+Disallow: /auth
+
+Sitemap: https://bloom-and-beam-store.lovable.app/sitemap.xml
