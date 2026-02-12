@@ -40,6 +40,10 @@ Deno.serve(async (req) => {
       { loc: '/contact-us', priority: '0.6', changefreq: 'monthly' },
       { loc: '/faq', priority: '0.7', changefreq: 'weekly' },
       { loc: '/blog', priority: '0.8', changefreq: 'daily' },
+      { loc: '/gallery/er-stretcher', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/gallery/ems-stretcher', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/gallery/ICU-bed', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/gallery/patient-recliner', priority: '0.8', changefreq: 'weekly' },
     ]
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
