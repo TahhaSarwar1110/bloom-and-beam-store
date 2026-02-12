@@ -36,8 +36,8 @@ Deno.serve(async (req) => {
       { loc: '/products', priority: '0.9', changefreq: 'daily' },
       { loc: '/parts', priority: '0.8', changefreq: 'weekly' },
       { loc: '/services', priority: '0.7', changefreq: 'monthly' },
-      { loc: '/about', priority: '0.6', changefreq: 'monthly' },
-      { loc: '/contact', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/about-us', priority: '0.6', changefreq: 'monthly' },
+      { loc: '/contact-us', priority: '0.6', changefreq: 'monthly' },
       { loc: '/faq', priority: '0.7', changefreq: 'weekly' },
       { loc: '/blog', priority: '0.8', changefreq: 'daily' },
     ]

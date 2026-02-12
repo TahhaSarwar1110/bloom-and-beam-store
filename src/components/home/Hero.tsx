@@ -101,7 +101,7 @@ export function Hero() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-base">
-                <Link to="/contact">Request Quote</Link>
+                <Link to="/contact-us">Request Quote</Link>
               </Button>
             </div>
 

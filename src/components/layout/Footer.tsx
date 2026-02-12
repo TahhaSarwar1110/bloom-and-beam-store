@@ -74,13 +74,19 @@ export function Footer() {
           <div>
             <h4 className="font-display font-bold text-lg mb-6">Quick Links</h4>
             <ul className="space-y-3">
-              {['Products', 'Services', 'Parts', 'About Us', 'Contact'].map((link) => (
-                <li key={link}>
+              {[
+                { name: 'Products', to: '/products' },
+                { name: 'Services', to: '/services' },
+                { name: 'Parts', to: '/parts' },
+                { name: 'About Us', to: '/about-us' },
+                { name: 'Contact', to: '/contact-us' },
+              ].map((link) => (
+                <li key={link.name}>
                   <Link
-                    to={`/${link.toLowerCase().replace(' ', '-')}`}
+                    to={link.to}
                     className="text-background/70 hover:text-primary transition-colors"
                   >
-                    {link}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -91,13 +97,19 @@ export function Footer() {
           <div>
             <h4 className="font-display font-bold text-lg mb-6">Products</h4>
             <ul className="space-y-3">
-              {['Hospital Stretchers', 'Transport Gurneys', 'ICU Beds', 'Emergency Equipment', 'Spare Parts'].map((item) => (
-                <li key={item}>
+              {[
+                { name: 'ER Stretchers', to: '/gallery/er-stretcher' },
+                { name: 'EMS Stretcher', to: '/gallery/ems-stretcher' },
+                { name: 'ICU Beds', to: '/gallery/ICU-bed' },
+                { name: 'Patients Recliner', to: '/gallery/patient-recliner' },
+                { name: 'Spare Parts', to: '/parts' },
+              ].map((item) => (
+                <li key={item.name}>
                   <Link
-                    to="/products"
+                    to={item.to}
                     className="text-background/70 hover:text-primary transition-colors"
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 </li>
               ))}

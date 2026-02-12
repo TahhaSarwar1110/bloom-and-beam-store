@@ -121,7 +121,7 @@ const Services = () => {
               Get in touch with our team of experts for reliable biomedical equipment services tailored to your healthcare facility's needs.
             </p>
             <Button asChild size="lg" className="btn-shine">
-              <Link to="/contact">Request a Service / Contact Us</Link>
+              <Link to="/contact-us">Request a Service / Contact Us</Link>
             </Button>
           </div>
         </div>

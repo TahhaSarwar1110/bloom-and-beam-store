@@ -632,7 +632,7 @@ export default function CategoryDetail() {
                   <h3 className="text-xl font-bold mb-6">Service Summary</h3>
                   
                   <Button asChild className="w-full mb-4" size="lg">
-                    <Link to="/contact">Request a Quote</Link>
+                    <Link to="/contact-us">Request a Quote</Link>
                   </Button>
                   
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
@@ -728,7 +728,7 @@ export default function CategoryDetail() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button asChild size="lg" variant="secondary">
-              <Link to="/contact">Contact Our Experts</Link>
+              <Link to="/contact-us">Contact Our Experts</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
               <a href="tel:1-800-BEDMED-1">Call 1-800-BEDMED-1</a>
