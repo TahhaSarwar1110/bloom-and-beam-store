@@ -28,7 +28,7 @@ export function CTA() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" variant="secondary" className="btn-shine text-base">
-                <Link to="/contact">
+                <Link to="/contact-us">
                   Get a Quote
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>

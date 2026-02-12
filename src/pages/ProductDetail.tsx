@@ -319,7 +319,7 @@ const ProductDetail = () => {
                   </Button>
                 </div>
                 <Button 
-                  onClick={() => navigate(`/contact?product=${encodeURIComponent(product.name)}`)}
+                  onClick={() => navigate(`/contact-us?product=${encodeURIComponent(product.name)}`)}
                   size="lg" 
                   variant="outline"
                   className="w-full"

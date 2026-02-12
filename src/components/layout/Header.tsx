@@ -49,8 +49,8 @@ interface HomeServiceCardItem {
 
 const aboutBedmedLinks = [
   { name: 'Blog', path: '/blog' },
-  { name: 'About', path: '/about' },
-  { name: 'Contact', path: '/contact' },
+  { name: 'About', path: '/about-us' },
+  { name: 'Contact', path: '/contact-us' },
 ];
 
 export function Header() {
@@ -419,7 +419,7 @@ export function Header() {
             )}
 
             <Button asChild className="hidden lg:flex btn-shine">
-              <Link to="/contact">Get Quote</Link>
+              <Link to="/contact-us">Get Quote</Link>
             </Button>
 
             {/* Mobile Menu Button */}
@@ -621,7 +621,7 @@ export function Header() {
                 </Button>
               )}
               <Button asChild className="mt-2 btn-shine">
-                <Link to="/contact" onClick={() => setIsMenuOpen(false)}>
+                <Link to="/contact-us" onClick={() => setIsMenuOpen(false)}>
                   Get Quote
                 </Link>
               </Button>

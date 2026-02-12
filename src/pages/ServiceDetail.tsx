@@ -133,7 +133,7 @@ const ServiceDetail = () => {
                   Service Summary
                 </h3>
                 <Button asChild size="lg" className="w-full btn-shine mb-4">
-                  <Link to={`/contact?service=${encodeURIComponent(service.title)}`}>
+                  <Link to={`/contact-us?service=${encodeURIComponent(service.title)}`}>
                     Request a Quote
                   </Link>
                 </Button>
@@ -158,7 +158,7 @@ const ServiceDetail = () => {
               Contact our team today to discuss your {service.title.toLowerCase()} needs.
             </p>
             <Button asChild size="lg" className="btn-shine">
-              <Link to={`/contact?service=${encodeURIComponent(service.title)}`}>
+              <Link to={`/contact-us?service=${encodeURIComponent(service.title)}`}>
                 Contact Us Today
               </Link>
             </Button>

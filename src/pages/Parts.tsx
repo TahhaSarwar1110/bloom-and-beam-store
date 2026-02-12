@@ -327,7 +327,7 @@ const Parts = () => {
 
           <div className="text-center mt-12">
             <Button asChild variant="outline" size="lg">
-              <Link to="/contact">Request Custom Part</Link>
+              <Link to="/contact-us">Request Custom Part</Link>
             </Button>
           </div>
         </div>
