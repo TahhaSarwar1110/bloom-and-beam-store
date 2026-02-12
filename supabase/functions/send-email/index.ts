@@ -31,12 +31,16 @@ Deno.serve(async (req) => {
       },
     });
 
-    let subject = "";
-    let html = "";
+    let adminSubject = "";
+    let adminHtml = "";
+    let customerEmail = "";
+    let customerSubject = "";
+    let customerHtml = "";
 
     if (type === "contact") {
-      subject = `New Contact: ${data.subject}`;
-      html = `
+      customerEmail = data.email;
+      adminSubject = `New Contact: ${data.subject}`;
+      adminHtml = `
         <h2>New Contact Form Submission</h2>
         <p><strong>Name:</strong> ${data.name}</p>
         <p><strong>Email:</strong> ${data.email}</p>
@@ -44,7 +48,17 @@ Deno.serve(async (req) => {
         <p><strong>Message:</strong></p>
         <p>${data.message.replace(/\n/g, "<br>")}</p>
       `;
+      customerSubject = `We received your message — Mr.BedMed`;
+      customerHtml = `
+        <h2>Thank you for contacting us, ${data.name}!</h2>
+        <p>We've received your message regarding "<strong>${data.subject}</strong>" and will get back to you within 24 hours.</p>
+        <p>Here's a copy of your message:</p>
+        <blockquote style="border-left: 3px solid #0066cc; padding-left: 12px; color: #555;">${data.message.replace(/\n/g, "<br>")}</blockquote>
+        <br>
+        <p>Best regards,<br><strong>Mr.BedMed Team</strong><br>contact@mrbedmed.com</p>
+      `;
     } else if (type === "order") {
+      customerEmail = data.customer_email;
       const itemsList = data.items
         .map(
           (item: { name: string; quantity: number; price: number }) =>
@@ -52,8 +66,8 @@ Deno.serve(async (req) => {
         )
         .join("");
 
-      subject = `New Order from ${data.customer_name}`;
-      html = `
+      adminSubject = `New Order from ${data.customer_name}`;
+      adminHtml = `
         <h2>New Order Received</h2>
         <p><strong>Customer:</strong> ${data.customer_name}</p>
         <p><strong>Email:</strong> ${data.customer_email}</p>
@@ -64,16 +78,40 @@ Deno.serve(async (req) => {
         <ul>${itemsList}</ul>
         <p><strong>Total: $${data.total.toLocaleString()}</strong></p>
       `;
+      customerSubject = `Order Confirmation — Mr.BedMed`;
+      customerHtml = `
+        <h2>Thank you for your order, ${data.customer_name}!</h2>
+        <p>We've received your order and will be in touch shortly with next steps.</p>
+        <h3>Order Summary:</h3>
+        <ul>${itemsList}</ul>
+        <p><strong>Total: $${data.total.toLocaleString()}</strong></p>
+        <p><strong>Shipping to:</strong> ${data.shipping_address}</p>
+        ${data.notes ? `<p><strong>Notes:</strong> ${data.notes}</p>` : ""}
+        <br>
+        <p>If you have any questions, reply to this email or call us.</p>
+        <p>Best regards,<br><strong>Mr.BedMed Team</strong><br>contact@mrbedmed.com</p>
+      `;
     } else {
       throw new Error("Invalid email type");
     }
 
+    // Send admin notification
     await transporter.sendMail({
       from: ZOHO_EMAIL,
       to: ZOHO_EMAIL,
-      subject,
-      html,
+      subject: adminSubject,
+      html: adminHtml,
     });
+
+    // Send customer confirmation
+    if (customerEmail) {
+      await transporter.sendMail({
+        from: ZOHO_EMAIL,
+        to: customerEmail,
+        subject: customerSubject,
+        html: customerHtml,
+      });
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
