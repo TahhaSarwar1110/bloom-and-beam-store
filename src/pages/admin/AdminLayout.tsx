@@ -108,7 +108,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="mb-8">
           <Link to="/" className="flex items-center gap-2 text-xl font-bold text-primary">
             <span className="text-2xl">🏥</span>
-            BEDMED Admin
+            Mr.Bedmed Admin
           </Link>
         </div>
 

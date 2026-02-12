@@ -45,10 +45,10 @@ export function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-2 mb-6">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-display font-bold text-xl">B</span>
+              <span className="text-primary-foreground font-display font-bold text-xl">M</span>
               </div>
               <span className="font-display font-bold text-2xl">
-                BED<span className="text-primary">MED</span>
+                Mr.<span className="text-primary">Bedmed</span>
               </span>
             </Link>
             <p className="text-background/70 mb-6">
@@ -132,7 +132,7 @@ export function Footer() {
       <div className="border-t border-background/10">
         <div className="container py-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/50 text-sm">
-            © {new Date().getFullYear()} BEDMED. All rights reserved.
+            © {new Date().getFullYear()} Mr.Bedmed. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-background/50">
             <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>

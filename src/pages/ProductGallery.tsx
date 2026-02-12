@@ -86,7 +86,7 @@ const ProductGallery = () => {
   return (
     <Layout>
       <SEOHead
-        title={`${categoryName} Gallery | BEDMED`}
+        title={`${categoryName} Gallery | Mr.Bedmed`}
         description={`Browse our collection of ${categoryName}. Click on any image to view detailed product information.`}
       />
       

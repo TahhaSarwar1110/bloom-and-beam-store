@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Shield, CheckCircle, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import stretcherOrange from '@/assets/products/stretcher-orange.png';
+import heroHospitalBed from '@/assets/products/hero-hospital-bed.png';
 
 interface HeroSettings {
   badge: string;
@@ -60,7 +60,7 @@ export function Hero() {
     fetchHeroSettings();
   }, []);
 
-  const heroImage = settings.hero_image_url || stretcherOrange;
+  const heroImage = settings.hero_image_url || heroHospitalBed;
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background via-accent/30 to-background">

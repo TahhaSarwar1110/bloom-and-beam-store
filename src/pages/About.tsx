@@ -6,7 +6,7 @@ const About = () => (
     <section className="py-16 md:py-24">
       <div className="container">
         <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">About BEDMED</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">About Mr.Bedmed</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">Leading provider of premium medical equipment since 1995.</p>
         </div>
         

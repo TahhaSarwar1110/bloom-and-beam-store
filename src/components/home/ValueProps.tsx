@@ -39,7 +39,7 @@ export function ValueProps() {
       <div className="container">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <span className="text-primary font-medium text-sm uppercase tracking-wider">
-            Why Choose BEDMED
+            Why Choose Mr.Bedmed
           </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold mt-3">
             Healthcare Excellence, Delivered
