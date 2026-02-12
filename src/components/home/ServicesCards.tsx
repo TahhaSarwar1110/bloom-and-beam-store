@@ -116,7 +116,7 @@ export function ServicesCards() {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="font-display text-3xl md:text-4xl font-bold">
-            Medical Equipment Solutions
+            Hospital Beds & Stretcher Solutions
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
             Explore our comprehensive range of medical beds, stretchers, and accessories 
