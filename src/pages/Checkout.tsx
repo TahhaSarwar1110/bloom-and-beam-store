@@ -74,6 +74,21 @@ const Checkout = () => {
       toast({ title: 'Error', description: 'Failed to place order. Please try again.', variant: 'destructive' });
     } else {
       toast({ title: 'Order Placed!', description: "Thank you for your order. We'll contact you shortly." });
+      // Send email notification (fire-and-forget)
+      supabase.functions.invoke('send-email', {
+        body: {
+          type: 'order',
+          data: {
+            customer_name: `${formData.firstName} ${formData.lastName}`,
+            customer_email: formData.email,
+            customer_phone: formData.phone || null,
+            shipping_address: `${formData.address}, ${formData.city}, ${formData.state} ${formData.zip}`,
+            items: orderItems,
+            total: getTotal(),
+            notes: formData.notes || null,
+          }
+        }
+      }).catch(console.error);
       clearCart();
       navigate('/');
     }

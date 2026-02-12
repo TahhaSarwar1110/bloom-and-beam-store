@@ -39,6 +39,10 @@ const Contact = () => {
       toast({ title: 'Error', description: 'Failed to send message. Please try again.', variant: 'destructive' });
     } else {
       toast({ title: 'Message Sent!', description: "We'll get back to you within 24 hours." });
+      // Send email notification (fire-and-forget)
+      supabase.functions.invoke('send-email', {
+        body: { type: 'contact', data: { name, email, subject, message } }
+      }).catch(console.error);
       setName('');
       setEmail('');
       setSubject('');
