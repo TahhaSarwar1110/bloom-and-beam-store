@@ -69,7 +69,7 @@ const ServiceDetail = () => {
   return (
     <Layout>
       <SEOHead
-        title={`${service.title} | BEDMED Services`}
+        title={`${service.title} | Mr.Bedmed Services`}
         description={service.short_desc}
         canonicalUrl={`${window.location.origin}/services/${service.slug}`}
       />

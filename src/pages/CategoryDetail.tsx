@@ -446,7 +446,7 @@ const categoryDetails: Record<string, CategoryInfo> = {
 
 const defaultDetails: CategoryInfo = {
   overview: [
-    'BEDMED offers premium quality hospital beds designed to meet the highest standards of patient care. Our beds are built with durable materials and advanced features to ensure optimal comfort and safety for patients in any healthcare setting.',
+    'Mr.Bedmed offers premium quality hospital beds designed to meet the highest standards of patient care. Our beds are built with durable materials and advanced features to ensure optimal comfort and safety for patients in any healthcare setting.',
     'Each bed in our collection undergoes rigorous quality testing and is backed by our industry-leading warranty and dedicated customer support team.'
   ],
   whyChoose: [
@@ -534,7 +534,7 @@ export default function CategoryDetail() {
   return (
     <Layout>
       <SEOHead 
-        title={`${displayName} | BEDMED Hospital Beds`}
+        title={`${displayName} | Mr.Bedmed Hospital Beds & Stretcher Solutions`}
         description={details.overview[0]}
         keywords={`${displayName}, hospital beds, medical beds, healthcare equipment`}
       />
@@ -637,8 +637,8 @@ export default function CategoryDetail() {
                   
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
                     <Phone className="h-4 w-4" />
-                    <a href="tel:1-800-BEDMED-1" className="hover:text-primary transition-colors font-medium">
-                      (900) 234-5588
+                    <a href="tel:+14697678853" className="hover:text-primary transition-colors font-medium">
+                      +1 469 767 8853
                     </a>
                   </div>
                 </CardContent>
@@ -731,7 +731,7 @@ export default function CategoryDetail() {
               <Link to="/contact-us">Contact Our Experts</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-              <a href="tel:1-800-BEDMED-1">Call 1-800-BEDMED-1</a>
+              <a href="tel:+14697678853">Call +1 469 767 8853</a>
             </Button>
           </div>
         </div>
