@@ -15,8 +15,8 @@ interface SEOHeadProps {
 }
 
 export function SEOHead({
-  title = 'BEDMED - Premium Medical Equipment',
-  description = 'Quality hospital stretchers, medical beds, and healthcare equipment. Trusted by 500+ healthcare facilities.',
+  title = 'Mr.Bedmed | Hospital Beds & Stretcher Solutions',
+  description = 'Your trusted partner for hospital beds and stretcher solutions. Sales, rentals, and expert service for healthcare facilities.',
   keywords,
   canonicalUrl,
   ogImage,
