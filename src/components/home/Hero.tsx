@@ -18,8 +18,8 @@ interface HeroSettings {
 
 const defaultHeroSettings: HeroSettings = {
   badge: 'Trusted by 500+ Healthcare Facilities',
-  title_line1: 'Premium Medical',
-  title_line2: 'Equipment',
+  title_line1: 'Hospital Beds &',
+  title_line2: 'Stretcher Solutions',
   title_line3: 'Modern Healthcare',
   description: 'Industry-leading hospital stretchers and transport equipment. Engineered for patient comfort, built for healthcare professionals.',
   hero_image_url: '',
