@@ -20,4 +20,4 @@ Disallow: /account-settings
 Disallow: /order-history
 Disallow: /auth
 
-Sitemap: https://bloom-and-beam-store.lovable.app/sitemap.xml
+Sitemap: https://mrbedmed.com/sitemap.xml
