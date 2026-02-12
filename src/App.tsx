@@ -37,6 +37,7 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminHomeCards from "./pages/admin/AdminHomeCards";
 import AdminContactSettings from "./pages/admin/AdminContactSettings";
 import NotFound from "./pages/NotFound";
+import SitemapXml from "./pages/SitemapXml";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/sitemap.xml" element={<SitemapXml />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/gallery/:slug" element={<ProductGallery />} />
