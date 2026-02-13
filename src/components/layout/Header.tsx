@@ -49,6 +49,7 @@ interface HomeServiceCardItem {
 
 const aboutBedmedLinks = [
   { name: 'Blog', path: '/blog' },
+  { name: 'FAQ', path: '/faq' },
   { name: 'About', path: '/about-us' },
   { name: 'Contact', path: '/contact-us' },
 ];

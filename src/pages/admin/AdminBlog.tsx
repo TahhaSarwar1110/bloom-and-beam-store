@@ -264,6 +264,39 @@ export default function AdminBlog() {
                   onImageChange={(url) => setFormData({ ...formData, image_url: url })}
                   label="Featured Image"
                 />
+                <div className="space-y-2">
+                  <Label htmlFor="meta_title">
+                    Meta Title <span className="text-destructive">*</span>
+                    <span className={`ml-2 text-xs ${formData.meta_title.length > 60 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {formData.meta_title.length}/60
+                    </span>
+                  </Label>
+                  <Input
+                    id="meta_title"
+                    value={formData.meta_title}
+                    onChange={(e) => setFormData({ ...formData, meta_title: e.target.value.slice(0, 60) })}
+                    maxLength={60}
+                    required
+                    placeholder="SEO title (max 60 characters)"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="meta_description">
+                    Meta Description <span className="text-destructive">*</span>
+                    <span className={`ml-2 text-xs ${formData.meta_description.length > 160 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                      {formData.meta_description.length}/160
+                    </span>
+                  </Label>
+                  <Textarea
+                    id="meta_description"
+                    value={formData.meta_description}
+                    onChange={(e) => setFormData({ ...formData, meta_description: e.target.value.slice(0, 160) })}
+                    maxLength={160}
+                    required
+                    rows={2}
+                    placeholder="SEO description (max 160 characters)"
+                  />
+                </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     id="published"
