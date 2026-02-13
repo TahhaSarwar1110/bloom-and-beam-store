@@ -36,6 +36,9 @@ import AdminMessages from "./pages/admin/AdminMessages";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminHomeCards from "./pages/admin/AdminHomeCards";
 import AdminContactSettings from "./pages/admin/AdminContactSettings";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import SitemapXml from "./pages/SitemapXml";
 
@@ -82,6 +85,9 @@ const App = () => (
               <Route path="/admin/settings" element={<AdminSettings />} />
               <Route path="/admin/home-cards" element={<AdminHomeCards />} />
               <Route path="/admin/contact-settings" element={<AdminContactSettings />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/warranty" element={<Warranty />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
