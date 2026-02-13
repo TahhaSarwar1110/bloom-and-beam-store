@@ -78,6 +78,7 @@ export function Footer() {
                 { name: 'Products', to: '/products' },
                 { name: 'Services', to: '/services' },
                 { name: 'Parts', to: '/parts' },
+                { name: 'FAQ', to: '/faq' },
                 { name: 'About Us', to: '/about-us' },
                 { name: 'Contact', to: '/contact-us' },
               ].map((link) => (
