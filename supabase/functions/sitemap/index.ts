@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const baseUrl = req.headers.get('origin') || 'https://bedmed.com'
+    const baseUrl = req.headers.get('origin') || 'https://mrbedmed.com'
 
     // Fetch published blog posts
     const { data: posts } = await supabase
