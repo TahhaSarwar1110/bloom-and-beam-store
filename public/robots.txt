@@ -20,4 +20,4 @@ Disallow: /account-settings
 Disallow: /order-history
 Disallow: /auth
 
-Sitemap: https://mrbedmed.com/sitemap.xml
+Sitemap: https://gcjfehjajaoiajfkfyho.supabase.co/functions/v1/sitemap
