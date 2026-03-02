@@ -288,6 +288,16 @@ export function Header() {
               Services
             </Link>
 
+            {/* Home Health External Link */}
+            <a
+              href="https://www.mrbiomedtechservices.com/services"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative font-medium transition-colors hover:text-primary after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+            >
+              Home Health
+            </a>
+
             {/* About Bedmed Dropdown */}
             <NavigationMenu>
               <NavigationMenuList>
@@ -555,6 +565,18 @@ export function Header() {
               >
                 Services
               </Link>
+
+              {/* Home Health External Link */}
+              <a
+                href="https://www.mrbiomedtechservices.com/services"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsMenuOpen(false)}
+                className="py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent animate-fade-in-up"
+                style={{ animationDelay: '237ms' }}
+              >
+                Home Health
+              </a>
 
               {/* Mobile About Mr.Bedmed Accordion */}
               <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
