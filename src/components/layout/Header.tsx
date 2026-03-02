@@ -52,6 +52,7 @@ const aboutBedmedLinks = [
   { name: 'FAQ', path: '/faq' },
   { name: 'About', path: '/about-us' },
   { name: 'Contact', path: '/contact-us' },
+  { name: 'Home Health', path: 'https://www.mrbiomedtechservices.com/services', external: true },
 ];
 
 export function Header() {
@@ -288,15 +289,6 @@ export function Header() {
               Services
             </Link>
 
-            {/* Home Health External Link */}
-            <a
-              href="https://www.mrbiomedtechservices.com/services"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="relative font-medium transition-colors hover:text-primary after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
-            >
-              Home Health
-            </a>
 
             {/* About Bedmed Dropdown */}
             <NavigationMenu>
@@ -315,12 +307,23 @@ export function Header() {
                       <div className="space-y-1">
                         {aboutBedmedLinks.map((link) => (
                           <NavigationMenuLink key={link.path} asChild>
-                            <Link
-                              to={link.path}
-                              className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
-                            >
-                              {link.name}
-                            </Link>
+                            {'external' in link && link.external ? (
+                              <a
+                                href={link.path}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
+                              >
+                                {link.name}
+                              </a>
+                            ) : (
+                              <Link
+                                to={link.path}
+                                className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
+                              >
+                                {link.name}
+                              </Link>
+                            )}
                           </NavigationMenuLink>
                         ))}
                       </div>
@@ -566,17 +569,8 @@ export function Header() {
                 Services
               </Link>
 
-              {/* Home Health External Link */}
-              <a
-                href="https://www.mrbiomedtechservices.com/services"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setIsMenuOpen(false)}
-                className="py-3 px-4 rounded-lg font-medium transition-colors hover:bg-accent animate-fade-in-up"
-                style={{ animationDelay: '237ms' }}
-              >
-                Home Health
-              </a>
+
+
 
               {/* Mobile About Mr.Bedmed Accordion */}
               <div className="animate-fade-in-up" style={{ animationDelay: '250ms' }}>
@@ -590,14 +584,27 @@ export function Header() {
                 {isMobileAboutOpen && (
                   <div className="ml-4 mt-2 space-y-1">
                     {aboutBedmedLinks.map((link) => (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={() => { setIsMenuOpen(false); setIsMobileAboutOpen(false); }}
-                        className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
-                      >
-                        {link.name}
-                      </Link>
+                      'external' in link && link.external ? (
+                        <a
+                          key={link.path}
+                          href={link.path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => { setIsMenuOpen(false); setIsMobileAboutOpen(false); }}
+                          className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                        >
+                          {link.name}
+                        </a>
+                      ) : (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => { setIsMenuOpen(false); setIsMobileAboutOpen(false); }}
+                          className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
+                        >
+                          {link.name}
+                        </Link>
+                      )
                     ))}
                   </div>
                 )}
