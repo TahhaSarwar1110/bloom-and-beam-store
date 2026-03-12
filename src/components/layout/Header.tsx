@@ -251,7 +251,7 @@ export function Header() {
                         {accessoryCategories.map((category) => (
                           <NavigationMenuLink key={category.id} asChild>
                             <Link
-                              to={`/gallery/${category.slug}`}
+                              to={`/category/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
                               {category.name}
