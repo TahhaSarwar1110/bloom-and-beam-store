@@ -49,6 +49,7 @@ export default function AdminParts() {
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     price: '',
     category: '',
