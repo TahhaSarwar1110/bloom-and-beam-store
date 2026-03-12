@@ -99,6 +99,7 @@ export default function AdminParts() {
   const resetForm = () => {
     setFormData({
       name: '',
+      slug: '',
       description: '',
       price: '',
       category: categoryOptions.length > 0 ? categoryOptions[0].name : '',
