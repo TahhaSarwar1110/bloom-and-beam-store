@@ -42,6 +42,12 @@ import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import SitemapXml from "./pages/SitemapXml";
 
+// Redirect old /gallery/ URLs to /category/
+const GalleryRedirect = () => {
+  const slug = window.location.pathname.split('/gallery/')[1];
+  return <Navigate to={`/category/${slug}`} replace />;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
