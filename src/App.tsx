@@ -57,7 +57,7 @@ const App = () => (
               <Route path="/sitemap.xml" element={<SitemapXml />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/gallery/:slug" element={<ProductGallery />} />
+              <Route path="/gallery/:slug" element={<GalleryRedirect />} />
               <Route path="/category/:slug" element={<CategoryDetail />} />
               <Route path="/services" element={<Services />} />
               <Route path="/services/:slug" element={<ServiceDetail />} />
