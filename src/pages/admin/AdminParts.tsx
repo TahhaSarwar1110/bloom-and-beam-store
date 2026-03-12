@@ -290,7 +290,7 @@ export default function AdminParts() {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => handleNameChange(e.target.value)}
                       required
                     />
                   </div>
