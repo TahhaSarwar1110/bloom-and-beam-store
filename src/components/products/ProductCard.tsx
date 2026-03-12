@@ -54,7 +54,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
         {/* Product Image with 360° rotation */}
-        <Link to={`/products/${product.id}`} className="block h-full">
+        <Link to={`/products/${product.slug || product.id}`} className="block h-full">
           <img
             src={product.image}
             alt={product.name}
@@ -73,7 +73,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             Add to Cart
           </Button>
           <Button asChild variant="secondary" size="icon" className="flex-shrink-0">
-            <Link to={`/products/${product.id}`}>
+            <Link to={`/products/${product.slug || product.id}`}>
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
@@ -101,7 +101,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           {product.category}
         </span>
 
-        <Link to={`/products/${product.id}`}>
+        <Link to={`/products/${product.slug || product.id}`}>
           <h3 className="font-display font-bold text-lg mt-1 mb-2 hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>

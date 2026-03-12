@@ -14,10 +14,12 @@ import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
 import ImageUpload from '@/components/admin/ImageUpload';
 import MultiImageUpload from '@/components/admin/MultiImageUpload';
+import { generateSlug } from '@/lib/slugify';
 
 interface Product {
   id: string;
   name: string;
+  slug: string | null;
   description: string | null;
   price: number;
   original_price: number | null;
@@ -44,6 +46,7 @@ export default function AdminProducts() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     price: '',
     original_price: '',
@@ -90,6 +93,7 @@ export default function AdminProducts() {
   const resetForm = () => {
     setFormData({
       name: '',
+      slug: '',
       description: '',
       price: '',
       original_price: '',
@@ -107,6 +111,7 @@ export default function AdminProducts() {
     setEditingProduct(product);
     setFormData({
       name: product.name,
+      slug: product.slug || '',
       description: product.description || '',
       price: product.price.toString(),
       original_price: product.original_price?.toString() || '',
@@ -120,6 +125,15 @@ export default function AdminProducts() {
     setDialogOpen(true);
   };
 
+  const handleNameChange = (name: string) => {
+    const newData: typeof formData = { ...formData, name };
+    // Auto-generate slug only if slug is empty or was auto-generated from old name
+    if (!editingProduct && (!formData.slug || formData.slug === generateSlug(formData.name))) {
+      newData.slug = generateSlug(name);
+    }
+    setFormData(newData);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -128,8 +142,11 @@ export default function AdminProducts() {
       return;
     }
 
+    const slug = formData.slug || generateSlug(formData.name);
+
     const productData = {
       name: formData.name,
+      slug,
       description: formData.description || null,
       price: parseFloat(formData.price) || 0,
       original_price: formData.original_price ? parseFloat(formData.original_price) : null,
@@ -218,7 +235,7 @@ export default function AdminProducts() {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => handleNameChange(e.target.value)}
                       required
                     />
                   </div>
@@ -240,6 +257,18 @@ export default function AdminProducts() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="slug">URL Slug</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: generateSlug(e.target.value) })}
+                    placeholder="auto-generated-from-name"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    URL preview: /products/{formData.slug || 'auto-generated'}
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
@@ -356,7 +385,7 @@ export default function AdminProducts() {
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground">{product.category}</p>
+                    <p className="text-sm text-muted-foreground">{product.category} • /{product.slug || 'no-slug'}</p>
                     <p className="text-primary font-medium">${product.price}</p>
                   </div>
                   <div className="flex items-center gap-2">

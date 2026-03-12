@@ -10,6 +10,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 
 interface Product {
   id: string;
+  slug: string | null;
   name: string;
   description: string | null;
   price: number;
@@ -193,6 +194,7 @@ const Products = () => {
                   key={product.id} 
                   product={{
                     id: product.id,
+                    slug: product.slug || undefined,
                     name: product.name,
                     description: product.description || '',
                     price: product.price,

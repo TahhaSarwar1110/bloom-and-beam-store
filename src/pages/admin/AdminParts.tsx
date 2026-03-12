@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, X, Upload } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
+import { generateSlug } from '@/lib/slugify';
 
 interface CategoryOption {
   id: string;
@@ -22,6 +23,7 @@ interface CategoryOption {
 interface Part {
   id: string;
   name: string;
+  slug: string | null;
   description: string | null;
   price: number;
   category: string;
@@ -47,6 +49,7 @@ export default function AdminParts() {
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     description: '',
     price: '',
     category: '',
@@ -96,6 +99,7 @@ export default function AdminParts() {
   const resetForm = () => {
     setFormData({
       name: '',
+      slug: '',
       description: '',
       price: '',
       category: categoryOptions.length > 0 ? categoryOptions[0].name : '',
@@ -117,6 +121,7 @@ export default function AdminParts() {
     setEditingPart(part);
     setFormData({
       name: part.name,
+      slug: part.slug || '',
       description: part.description || '',
       price: part.price.toString(),
       category: part.category,
@@ -132,6 +137,14 @@ export default function AdminParts() {
       oem_no: part.oem_no || ''
     });
     setDialogOpen(true);
+  };
+
+  const handleNameChange = (name: string) => {
+    const newData: typeof formData = { ...formData, name };
+    if (!editingPart && (!formData.slug || formData.slug === generateSlug(formData.name))) {
+      newData.slug = generateSlug(name);
+    }
+    setFormData(newData);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,8 +193,11 @@ export default function AdminParts() {
       return;
     }
 
+    const slug = formData.slug || generateSlug(formData.name);
+
     const partData = {
       name: formData.name,
+      slug,
       description: formData.description || null,
       price: parseFloat(formData.price) || 0,
       category: formData.category,
@@ -274,7 +290,7 @@ export default function AdminParts() {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) => handleNameChange(e.target.value)}
                       required
                     />
                   </div>
@@ -296,6 +312,18 @@ export default function AdminParts() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="slug">URL Slug</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: generateSlug(e.target.value) })}
+                    placeholder="auto-generated-from-name"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    URL preview: /part/{formData.slug || 'auto-generated'}
+                  </p>
                 </div>
                 
                 {/* Condition Dropdown */}
@@ -485,7 +513,7 @@ export default function AdminParts() {
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold">{part.name}</h3>
-                    <p className="text-sm text-muted-foreground">{part.category} • {part.image_urls?.length || 0} images</p>
+                    <p className="text-sm text-muted-foreground">{part.category} • /{part.slug || 'no-slug'}</p>
                     <p className="text-primary font-medium">${part.price}</p>
                   </div>
                   <div className="flex items-center gap-2">
