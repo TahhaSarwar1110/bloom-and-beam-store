@@ -266,7 +266,7 @@ const Parts = () => {
                     style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'forwards' }}
                   >
                     {/* Image */}
-                    <Link to={`/part/${part.id}`}>
+                    <Link to={`/part/${(part as any).slug || part.id}`}>
                       <PartImageCarousel images={part.image_urls} name={part.name} />
                     </Link>
 
