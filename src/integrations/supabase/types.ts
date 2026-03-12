@@ -297,6 +297,7 @@ export type Database = {
           part_no: string | null
           price: number
           sku: string | null
+          slug: string | null
           sort_order: number | null
           updated_at: string
         }
@@ -316,6 +317,7 @@ export type Database = {
           part_no?: string | null
           price?: number
           sku?: string | null
+          slug?: string | null
           sort_order?: number | null
           updated_at?: string
         }
@@ -335,6 +337,7 @@ export type Database = {
           part_no?: string | null
           price?: number
           sku?: string | null
+          slug?: string | null
           sort_order?: number | null
           updated_at?: string
         }
