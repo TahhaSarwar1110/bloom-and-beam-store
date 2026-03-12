@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, X, Upload } from 'lucide-react';
 import AdminLayout from './AdminLayout';
 import { useAuth } from '@/hooks/useAuth';
+import { generateSlug } from '@/lib/slugify';
 
 interface CategoryOption {
   id: string;
