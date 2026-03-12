@@ -101,7 +101,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           {product.category}
         </span>
 
-        <Link to={`/products/${product.id}`}>
+        <Link to={`/products/${product.slug || product.id}`}>
           <h3 className="font-display font-bold text-lg mt-1 mb-2 hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>

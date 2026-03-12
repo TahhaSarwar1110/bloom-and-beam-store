@@ -8,6 +8,7 @@ import stretcherYellow from '@/assets/products/stretcher-yellow.png';
 
 export interface Product {
   id: string;
+  slug?: string;
   name: string;
   description: string;
   price: number;
