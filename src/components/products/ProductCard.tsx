@@ -54,7 +54,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
         {/* Product Image with 360° rotation */}
-        <Link to={`/products/${product.id}`} className="block h-full">
+        <Link to={`/products/${product.slug || product.id}`} className="block h-full">
           <img
             src={product.image}
             alt={product.name}
