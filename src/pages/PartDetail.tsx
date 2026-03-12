@@ -40,6 +40,19 @@ const PartDetail = () => {
     const fetchPart = async () => {
       if (!id) return;
       
+      // Try slug first, then fallback to UUID
+      const { data: bySlug } = await supabase
+        .from('parts')
+        .select('*')
+        .eq('slug', id)
+        .maybeSingle();
+
+      if (bySlug) {
+        setPart(bySlug);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('parts')
         .select('*')

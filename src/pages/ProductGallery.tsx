@@ -80,7 +80,7 @@ const ProductGallery = () => {
   const isLoading = categoryLoading || productsLoading;
 
   const handleImageClick = (product: Product) => {
-    navigate(`/products/${product.id}`);
+    navigate(`/products/${product.slug || product.id}`);
   };
 
   return (

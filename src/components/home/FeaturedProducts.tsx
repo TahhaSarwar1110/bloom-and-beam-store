@@ -168,7 +168,7 @@ export function FeaturedProducts() {
 
                   <div 
                     className="cursor-pointer"
-                    onClick={() => navigate(`/products/${product.id}`)}
+                    onClick={() => navigate(`/products/${product.slug || product.id}`)}
                   >
                     <h3 className="font-display font-bold text-lg mt-1 mb-2 hover:text-primary transition-colors line-clamp-1">
                       {product.name}

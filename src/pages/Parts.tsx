@@ -286,7 +286,7 @@ const Parts = () => {
                       )}
 
                       {/* Name */}
-                      <Link to={`/part/${part.id}`}>
+                      <Link to={`/part/${(part as any).slug || part.id}`}>
                         <h3 className="font-display font-bold text-lg hover:text-primary transition-colors line-clamp-2">
                           {part.name}
                         </h3>
