@@ -480,7 +480,7 @@ export function Header() {
                     {hospitalBedCategories.map((category) => (
                       <Link
                         key={category.id}
-                        to={`/gallery/${category.slug}`}
+                        to={`/category/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileHospitalBedsOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
