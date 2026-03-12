@@ -116,7 +116,7 @@ export function FeaturedProducts() {
                   {/* Product Image */}
                   <div 
                     className="block h-full cursor-pointer"
-                    onClick={() => navigate(`/products/${product.id}`)}
+                    onClick={() => navigate(`/products/${product.slug || product.id}`)}
                   >
                     <img
                       src={product.image_url || '/placeholder.svg'}
