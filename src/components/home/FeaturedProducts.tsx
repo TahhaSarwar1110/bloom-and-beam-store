@@ -140,7 +140,7 @@ export function FeaturedProducts() {
                       variant="secondary" 
                       size="icon" 
                       className="flex-shrink-0"
-                      onClick={() => navigate(`/products/${product.id}`)}
+                      onClick={() => navigate(`/products/${product.slug || product.id}`)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
