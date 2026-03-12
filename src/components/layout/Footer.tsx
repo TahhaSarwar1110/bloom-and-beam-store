@@ -99,10 +99,10 @@ export function Footer() {
             <h4 className="font-display font-bold text-lg mb-6">Products</h4>
             <ul className="space-y-3">
               {[
-                { name: 'ER Stretchers', to: '/gallery/er-stretcher' },
-                { name: 'EMS Stretcher', to: '/gallery/ems-stretcher' },
-                { name: 'ICU Beds', to: '/gallery/ICU-bed' },
-                { name: 'Patients Recliner', to: '/gallery/patient-recliner' },
+                { name: 'ER Stretchers', to: '/category/er-stretcher' },
+                { name: 'EMS Stretcher', to: '/category/ems-stretcher' },
+                { name: 'ICU Beds', to: '/category/ICU-bed' },
+                { name: 'Patients Recliner', to: '/category/patient-recliner' },
                 { name: 'Spare Parts', to: '/parts' },
               ].map((item) => (
                 <li key={item.name}>
