@@ -166,7 +166,7 @@ export function Header() {
                     className={cn(
                       'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
                       'font-medium transition-colors hover:text-primary px-0',
-                      location.pathname.startsWith('/gallery/') && 'text-primary'
+                      location.pathname.startsWith('/category/') && 'text-primary'
                     )}
                   >
                     Hospital Beds
