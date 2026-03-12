@@ -27,6 +27,7 @@ interface Part {
   make: string | null;
   model: string | null;
   sku: string | null;
+  slug: string | null;
 }
 
 const PartImageCarousel = ({ images, name }: { images: string[]; name: string }) => {
