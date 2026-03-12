@@ -121,6 +121,7 @@ export default function AdminParts() {
     setEditingPart(part);
     setFormData({
       name: part.name,
+      slug: part.slug || '',
       description: part.description || '',
       price: part.price.toString(),
       category: part.category,
@@ -136,6 +137,14 @@ export default function AdminParts() {
       oem_no: part.oem_no || ''
     });
     setDialogOpen(true);
+  };
+
+  const handleNameChange = (name: string) => {
+    const newData: typeof formData = { ...formData, name };
+    if (!editingPart && (!formData.slug || formData.slug === generateSlug(formData.name))) {
+      newData.slug = generateSlug(name);
+    }
+    setFormData(newData);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
