@@ -23,6 +23,7 @@ interface CategoryOption {
 interface Part {
   id: string;
   name: string;
+  slug: string | null;
   description: string | null;
   price: number;
   category: string;
