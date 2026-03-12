@@ -85,6 +85,23 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Fetch parts
+    const { data: parts } = await supabase
+      .from('parts')
+      .select('id, slug, updated_at')
+
+    if (parts) {
+      for (const part of parts) {
+        xml += `
+  <url>
+    <loc>${baseUrl}/part/${part.slug || part.id}</loc>
+    <lastmod>${new Date(part.updated_at).toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>`
+      }
+    }
+
     xml += `
 </urlset>`
 
