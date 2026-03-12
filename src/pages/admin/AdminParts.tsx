@@ -513,7 +513,7 @@ export default function AdminParts() {
                   )}
                   <div className="flex-1">
                     <h3 className="font-semibold">{part.name}</h3>
-                    <p className="text-sm text-muted-foreground">{part.category} • {part.image_urls?.length || 0} images</p>
+                    <p className="text-sm text-muted-foreground">{part.category} • /{part.slug || 'no-slug'}</p>
                     <p className="text-primary font-medium">${part.price}</p>
                   </div>
                   <div className="flex items-center gap-2">
