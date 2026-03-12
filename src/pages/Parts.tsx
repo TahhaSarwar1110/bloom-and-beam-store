@@ -27,6 +27,7 @@ interface Part {
   make: string | null;
   model: string | null;
   sku: string | null;
+  slug: string | null;
 }
 
 const PartImageCarousel = ({ images, name }: { images: string[]; name: string }) => {
@@ -266,7 +267,7 @@ const Parts = () => {
                     style={{ animationDelay: `${i * 50}ms`, animationFillMode: 'forwards' }}
                   >
                     {/* Image */}
-                    <Link to={`/part/${part.id}`}>
+                    <Link to={`/part/${part.slug || part.id}`}>
                       <PartImageCarousel images={part.image_urls} name={part.name} />
                     </Link>
 
@@ -286,7 +287,7 @@ const Parts = () => {
                       )}
 
                       {/* Name */}
-                      <Link to={`/part/${part.id}`}>
+                      <Link to={`/part/${part.slug || part.id}`}>
                         <h3 className="font-display font-bold text-lg hover:text-primary transition-colors line-clamp-2">
                           {part.name}
                         </h3>

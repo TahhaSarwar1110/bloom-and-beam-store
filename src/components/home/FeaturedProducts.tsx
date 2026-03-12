@@ -17,6 +17,7 @@ interface DBProduct {
   category: string;
   features: string[] | null;
   in_stock: boolean;
+  slug: string | null;
 }
 
 export function FeaturedProducts() {
@@ -115,7 +116,7 @@ export function FeaturedProducts() {
                   {/* Product Image */}
                   <div 
                     className="block h-full cursor-pointer"
-                    onClick={() => navigate(`/products/${product.id}`)}
+                    onClick={() => navigate(`/products/${product.slug || product.id}`)}
                   >
                     <img
                       src={product.image_url || '/placeholder.svg'}
@@ -139,7 +140,7 @@ export function FeaturedProducts() {
                       variant="secondary" 
                       size="icon" 
                       className="flex-shrink-0"
-                      onClick={() => navigate(`/products/${product.id}`)}
+                      onClick={() => navigate(`/products/${product.slug || product.id}`)}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -167,7 +168,7 @@ export function FeaturedProducts() {
 
                   <div 
                     className="cursor-pointer"
-                    onClick={() => navigate(`/products/${product.id}`)}
+                    onClick={() => navigate(`/products/${product.slug || product.id}`)}
                   >
                     <h3 className="font-display font-bold text-lg mt-1 mb-2 hover:text-primary transition-colors line-clamp-1">
                       {product.name}

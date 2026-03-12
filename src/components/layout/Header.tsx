@@ -166,7 +166,7 @@ export function Header() {
                     className={cn(
                       'bg-transparent hover:bg-transparent focus:bg-transparent data-[state=open]:bg-transparent',
                       'font-medium transition-colors hover:text-primary px-0',
-                      location.pathname.startsWith('/gallery/') && 'text-primary'
+                      location.pathname.startsWith('/category/') && 'text-primary'
                     )}
                   >
                     Hospital Beds
@@ -177,7 +177,7 @@ export function Header() {
                         {hospitalBedCategories.map((category) => (
                           <NavigationMenuLink key={category.id} asChild>
                             <Link
-                              to={`/gallery/${category.slug}`}
+                              to={`/category/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
                               {category.name}
@@ -219,7 +219,7 @@ export function Header() {
                         {stretcherCategories.map((category) => (
                           <NavigationMenuLink key={category.id} asChild>
                             <Link
-                              to={`/gallery/${category.slug}`}
+                              to={`/category/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
                               {category.name}
@@ -251,7 +251,7 @@ export function Header() {
                         {accessoryCategories.map((category) => (
                           <NavigationMenuLink key={category.id} asChild>
                             <Link
-                              to={`/gallery/${category.slug}`}
+                              to={`/category/${category.slug}`}
                               className="block py-2 px-3 rounded-lg hover:bg-accent transition-colors text-sm font-medium hover:text-primary"
                             >
                               {category.name}
@@ -480,7 +480,7 @@ export function Header() {
                     {hospitalBedCategories.map((category) => (
                       <Link
                         key={category.id}
-                        to={`/gallery/${category.slug}`}
+                        to={`/category/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileHospitalBedsOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
@@ -505,7 +505,7 @@ export function Header() {
                     {stretcherCategories.map((category) => (
                       <Link
                         key={category.id}
-                        to={`/gallery/${category.slug}`}
+                        to={`/category/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileStretchersOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
@@ -530,7 +530,7 @@ export function Header() {
                     {accessoryCategories.map((category) => (
                       <Link
                         key={category.id}
-                        to={`/gallery/${category.slug}`}
+                        to={`/category/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileAccessoriesOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >

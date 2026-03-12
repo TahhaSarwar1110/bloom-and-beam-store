@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
@@ -42,6 +42,12 @@ import Warranty from "./pages/Warranty";
 import NotFound from "./pages/NotFound";
 import SitemapXml from "./pages/SitemapXml";
 
+// Redirect old /gallery/ URLs to /category/
+const GalleryRedirect = () => {
+  const slug = window.location.pathname.split('/gallery/')[1];
+  return <Navigate to={`/category/${slug}`} replace />;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -57,7 +63,7 @@ const App = () => (
               <Route path="/sitemap.xml" element={<SitemapXml />} />
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
-              <Route path="/gallery/:slug" element={<ProductGallery />} />
+              <Route path="/gallery/:slug" element={<GalleryRedirect />} />
               <Route path="/category/:slug" element={<CategoryDetail />} />
               <Route path="/services" element={<Services />} />
               <Route path="/services/:slug" element={<ServiceDetail />} />

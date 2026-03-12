@@ -40,6 +40,19 @@ const PartDetail = () => {
     const fetchPart = async () => {
       if (!id) return;
       
+      // Try slug first, then fallback to UUID
+      const { data: bySlug } = await supabase
+        .from('parts')
+        .select('*')
+        .eq('slug', id)
+        .maybeSingle();
+
+      if (bySlug) {
+        setPart(bySlug);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('parts')
         .select('*')
@@ -148,7 +161,7 @@ const PartDetail = () => {
       <SEOHead
         title={`${part.name} | Mr.Bedmed Parts`}
         description={part.description || `${part.name} - OEM replacement part from Mr.Bedmed`}
-        canonicalUrl={`${window.location.origin}/part/${part.id}`}
+        canonicalUrl={`${window.location.origin}/part/${id}`}
       />
 
       <section className="py-12 md:py-20">

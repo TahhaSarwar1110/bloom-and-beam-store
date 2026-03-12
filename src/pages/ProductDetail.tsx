@@ -35,14 +35,23 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Try slug first, then fallback to UUID
+      const { data: bySlug } = await supabase
+        .from('products')
+        .select('*')
+        .eq('slug', id)
+        .maybeSingle();
+      
+      if (bySlug) return bySlug as Product;
+
+      const { data: byId, error } = await supabase
         .from('products')
         .select('*')
         .eq('id', id)
         .maybeSingle();
       
       if (error) throw error;
-      return data as Product | null;
+      return byId as Product | null;
     },
     enabled: !!id,
   });
@@ -340,7 +349,7 @@ const ProductDetail = () => {
                   <div 
                     key={relProduct.id}
                     className="group cursor-pointer"
-                    onClick={() => navigate(`/products/${relProduct.id}`)}
+                    onClick={() => navigate(`/products/${relProduct.slug || relProduct.id}`)}
                   >
                     <div className="bg-muted rounded-xl overflow-hidden aspect-square mb-3 relative perspective-1000">
                       <img 

@@ -40,10 +40,10 @@ Deno.serve(async (req) => {
       { loc: '/contact-us', priority: '0.6', changefreq: 'monthly' },
       { loc: '/faq', priority: '0.7', changefreq: 'weekly' },
       { loc: '/blog', priority: '0.8', changefreq: 'daily' },
-      { loc: '/gallery/er-stretcher', priority: '0.8', changefreq: 'weekly' },
-      { loc: '/gallery/ems-stretcher', priority: '0.8', changefreq: 'weekly' },
-      { loc: '/gallery/ICU-bed', priority: '0.8', changefreq: 'weekly' },
-      { loc: '/gallery/patient-recliner', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/category/er-stretcher', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/category/ems-stretcher', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/category/ICU-bed', priority: '0.8', changefreq: 'weekly' },
+      { loc: '/category/patient-recliner', priority: '0.8', changefreq: 'weekly' },
     ]
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -81,6 +81,23 @@ Deno.serve(async (req) => {
     <lastmod>${new Date(product.updated_at).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>`
+      }
+    }
+
+    // Fetch parts
+    const { data: parts } = await supabase
+      .from('parts')
+      .select('id, slug, updated_at')
+
+    if (parts) {
+      for (const part of parts) {
+        xml += `
+  <url>
+    <loc>${baseUrl}/part/${part.slug || part.id}</loc>
+    <lastmod>${new Date(part.updated_at).toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>`
       }
     }
