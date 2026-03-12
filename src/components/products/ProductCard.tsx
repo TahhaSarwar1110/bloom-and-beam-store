@@ -73,7 +73,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             Add to Cart
           </Button>
           <Button asChild variant="secondary" size="icon" className="flex-shrink-0">
-            <Link to={`/products/${product.id}`}>
+            <Link to={`/products/${product.slug || product.id}`}>
               <Eye className="h-4 w-4" />
             </Link>
           </Button>
