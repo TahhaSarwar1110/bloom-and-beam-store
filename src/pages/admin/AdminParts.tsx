@@ -313,6 +313,18 @@ export default function AdminParts() {
                     </Select>
                   </div>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="slug">URL Slug</Label>
+                  <Input
+                    id="slug"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: generateSlug(e.target.value) })}
+                    placeholder="auto-generated-from-name"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    URL preview: /part/{formData.slug || 'auto-generated'}
+                  </p>
+                </div>
                 
                 {/* Condition Dropdown */}
                 <div className="space-y-2">
