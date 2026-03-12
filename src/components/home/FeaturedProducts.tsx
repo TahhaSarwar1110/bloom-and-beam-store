@@ -17,6 +17,7 @@ interface DBProduct {
   category: string;
   features: string[] | null;
   in_stock: boolean;
+  slug: string | null;
 }
 
 export function FeaturedProducts() {
