@@ -530,7 +530,7 @@ export function Header() {
                     {accessoryCategories.map((category) => (
                       <Link
                         key={category.id}
-                        to={`/gallery/${category.slug}`}
+                        to={`/category/${category.slug}`}
                         onClick={() => { setIsMenuOpen(false); setIsMobileAccessoriesOpen(false); }}
                         className="block py-2 px-4 text-sm rounded-lg hover:bg-accent transition-colors"
                       >
