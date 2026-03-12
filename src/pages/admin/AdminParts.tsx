@@ -193,8 +193,11 @@ export default function AdminParts() {
       return;
     }
 
+    const slug = formData.slug || generateSlug(formData.name);
+
     const partData = {
       name: formData.name,
+      slug,
       description: formData.description || null,
       price: parseFloat(formData.price) || 0,
       category: formData.category,
