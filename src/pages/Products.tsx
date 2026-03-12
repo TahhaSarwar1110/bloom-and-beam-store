@@ -10,6 +10,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 
 interface Product {
   id: string;
+  slug: string | null;
   name: string;
   description: string | null;
   price: number;
