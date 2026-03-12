@@ -161,7 +161,7 @@ const PartDetail = () => {
       <SEOHead
         title={`${part.name} | Mr.Bedmed Parts`}
         description={part.description || `${part.name} - OEM replacement part from Mr.Bedmed`}
-        canonicalUrl={`${window.location.origin}/part/${(part as any).slug || part.id}`}
+        canonicalUrl={`${window.location.origin}/part/${id}`}
       />
 
       <section className="py-12 md:py-20">
