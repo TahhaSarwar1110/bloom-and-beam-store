@@ -1,22 +1,38 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Phone } from 'lucide-react';
+import { ArrowRight, Phone, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function CTA() {
   return (
     <section className="py-20">
       <div className="container">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-8 md:p-16">
+        <div className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground p-8 md:p-16 transition-all duration-700 hover:shadow-[0_30px_80px_-20px_hsl(var(--primary)/0.6)]">
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-secondary/0 via-secondary/20 to-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+          {/* Shine sweep */}
+          <div className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1400ms] ease-out">
+            <div className="h-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
+          </div>
+
           {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-10 transition-opacity duration-700 group-hover:opacity-20">
             <div className="absolute inset-0" style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)`,
               backgroundSize: '30px 30px'
             }} />
           </div>
 
+          {/* Floating orbs */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-secondary/30 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:translate-x-6 group-hover:-translate-y-6" />
+          <div className="pointer-events-none absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:-translate-x-4 group-hover:translate-y-4" />
+
+          {/* Sparkles */}
+          <Sparkles className="pointer-events-none absolute top-8 right-12 h-5 w-5 text-white/60 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:animate-pulse" />
+          <Sparkles className="pointer-events-none absolute bottom-10 right-1/3 h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-all duration-700 delay-150 group-hover:animate-pulse" />
+
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="text-center lg:text-left">
+            <div className="text-center lg:text-left transition-transform duration-500 group-hover:translate-x-1">
               <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
                 Ready to Upgrade Your Medical Equipment?
               </h2>
@@ -27,20 +43,25 @@ export function CTA() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild size="lg" variant="secondary" className="btn-shine text-base">
-                <Link to="/contact-us">
+              <Button
+                asChild
+                size="lg"
+                variant="secondary"
+                className="btn-shine text-base relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-5px_hsl(var(--secondary)/0.7)]"
+              >
+                <Link to="/contact-us" className="group/btn">
                   Get a Quote
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
                 </Link>
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base"
+                className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base transition-all duration-300 hover:scale-105 hover:border-primary-foreground"
                 asChild
               >
-                <a href="tel:+14697678853">
-                  <Phone className="mr-2 h-5 w-5" />
+                <a href="tel:+14697678853" className="group/btn">
+                  <Phone className="mr-2 h-5 w-5 transition-transform duration-500 group-hover/btn:rotate-12" />
                   +1 469 767 8853
                 </a>
               </Button>
