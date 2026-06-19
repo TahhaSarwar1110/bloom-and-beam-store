@@ -294,3 +294,40 @@
 .animation-delay-500 {
   animation-delay: 500ms;
 }
+
+/* CTA continuous hover animations */
+@keyframes cta-shine {
+  0% { transform: translateX(-100%) skewX(12deg); }
+  100% { transform: translateX(200%) skewX(12deg); }
+}
+
+@keyframes cta-float-1 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(24px, -18px); }
+}
+
+@keyframes cta-float-2 {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-16px, 12px); }
+}
+
+@keyframes cta-sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+}
+
+.animate-cta-shine {
+  animation: cta-shine 2.2s linear infinite;
+}
+
+.animate-cta-float-1 {
+  animation: cta-float-1 4s ease-in-out infinite;
+}
+
+.animate-cta-float-2 {
+  animation: cta-float-2 5s ease-in-out infinite;
+}
+
+.animate-cta-sparkle {
+  animation: cta-sparkle 2s ease-in-out infinite;
+}
