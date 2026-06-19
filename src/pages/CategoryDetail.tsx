@@ -668,51 +668,58 @@ export default function CategoryDetail() {
               </div>
             ) : (
               <div className="grid md:grid-cols-3 gap-6">
-                {products?.map((product) => (
-                  <Card key={product.id} className="group hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      {product.image_url && (
-                        <div className="aspect-square mb-4 overflow-hidden rounded-lg bg-muted perspective-1000">
-                          <img 
-                            src={product.image_url} 
-                            alt={product.name}
-                            className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
-                          />
-                        </div>
-                      )}
-                      <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-                      <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-primary">
-                          ${product.price.toLocaleString()}
-                        </span>
-                        <Button 
-                          size="sm"
-                          onClick={() => {
-                            const cartProduct: Product = {
-                              id: product.id,
-                              name: product.name,
-                              description: product.description || '',
-                              price: product.price,
-                              image: product.image_url || '',
-                              category: product.category,
-                              features: product.features || [],
-                              inStock: product.in_stock,
-                              rating: 4.5,
-                              reviews: 0
-                            };
-                            addToCart(cartProduct);
-                          }}
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                {products?.map((product) => {
+                  const productHref = `/products/${(product as any).slug || product.id}`;
+                  return (
+                    <Link key={product.id} to={productHref} className="block group">
+                      <Card className="hover:shadow-lg transition-shadow h-full">
+                        <CardContent className="p-6">
+                          {product.image_url && (
+                            <div className="aspect-square mb-4 overflow-hidden rounded-lg bg-muted perspective-1000">
+                              <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="w-full h-full object-contain p-4 rotate-360-hover preserve-3d"
+                              />
+                            </div>
+                          )}
+                          <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
+                          <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+                            {product.description}
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-2xl font-bold text-primary">
+                              ${product.price.toLocaleString()}
+                            </span>
+                            <Button
+                              size="sm"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                const cartProduct: Product = {
+                                  id: product.id,
+                                  name: product.name,
+                                  description: product.description || '',
+                                  price: product.price,
+                                  image: product.image_url || '',
+                                  category: product.category,
+                                  features: product.features || [],
+                                  inStock: product.in_stock,
+                                  rating: 4.5,
+                                  reviews: 0
+                                };
+                                addToCart(cartProduct);
+                              }}
+                            >
+                              <ShoppingCart className="h-4 w-4 mr-2" />
+                              Add
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>

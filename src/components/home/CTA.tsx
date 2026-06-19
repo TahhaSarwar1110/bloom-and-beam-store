@@ -10,9 +10,9 @@ export function CTA() {
           {/* Animated gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-secondary/0 via-secondary/20 to-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          {/* Shine sweep — loops on hover */}
-          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:animate-cta-shine" />
+          {/* Shine sweep — loops continuously, revealed on hover */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-cta-shine" />
           </div>
 
           {/* Background Pattern */}
@@ -23,14 +23,14 @@ export function CTA() {
             }} />
           </div>
 
-          {/* Floating orbs — loop on hover */}
-          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-secondary/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-1 [animation-play-state:paused] group-hover:[animation-play-state:running]" />
-          <div className="pointer-events-none absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-2 [animation-play-state:paused] group-hover:[animation-play-state:running]" />
+          {/* Floating orbs — animate forever, fade in on hover */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-secondary/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-1" />
+          <div className="pointer-events-none absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-2" />
 
-          {/* Sparkles — loop on hover */}
-          <Sparkles className="pointer-events-none absolute top-8 right-12 h-5 w-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running]" />
-          <Sparkles className="pointer-events-none absolute bottom-10 right-1/3 h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running] [animation-delay:0.7s]" />
-          <Sparkles className="pointer-events-none absolute top-16 left-20 h-3 w-3 text-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-500 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running] [animation-delay:1.3s]" />
+          {/* Sparkles — animate forever, fade in on hover */}
+          <Sparkles className="pointer-events-none absolute top-8 right-12 h-5 w-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-cta-sparkle" />
+          <Sparkles className="pointer-events-none absolute bottom-10 right-1/3 h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-cta-sparkle [animation-delay:0.7s]" />
+          <Sparkles className="pointer-events-none absolute top-16 left-20 h-3 w-3 text-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-cta-sparkle [animation-delay:1.3s]" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left transition-transform duration-500 group-hover:translate-x-1">
@@ -38,7 +38,7 @@ export function CTA() {
                 Ready to Upgrade Your Medical Equipment?
               </h2>
               <p className="text-primary-foreground/80 text-lg max-w-xl">
-                Get a personalized quote for your healthcare facility. 
+                Get a personalized quote for your healthcare facility.
                 Our team is ready to help you find the perfect solutions.
               </p>
             </div>
@@ -55,9 +55,9 @@ export function CTA() {
                   <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
                 </Link>
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base transition-all duration-300 hover:scale-105 hover:border-primary-foreground"
                 asChild
               >
