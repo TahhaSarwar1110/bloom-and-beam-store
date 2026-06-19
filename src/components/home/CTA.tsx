@@ -10,9 +10,9 @@ export function CTA() {
           {/* Animated gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-secondary/0 via-secondary/20 to-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          {/* Shine sweep */}
-          <div className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-[1400ms] ease-out">
-            <div className="h-full w-1/2 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
+          {/* Shine sweep — loops on hover */}
+          <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="h-full w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover:animate-cta-shine" />
           </div>
 
           {/* Background Pattern */}
@@ -23,13 +23,14 @@ export function CTA() {
             }} />
           </div>
 
-          {/* Floating orbs */}
-          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-secondary/30 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:translate-x-6 group-hover:-translate-y-6" />
-          <div className="pointer-events-none absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-all duration-1000 group-hover:-translate-x-4 group-hover:translate-y-4" />
+          {/* Floating orbs — loop on hover */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-secondary/30 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-1 [animation-play-state:paused] group-hover:[animation-play-state:running]" />
+          <div className="pointer-events-none absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-white/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 animate-cta-float-2 [animation-play-state:paused] group-hover:[animation-play-state:running]" />
 
-          {/* Sparkles */}
-          <Sparkles className="pointer-events-none absolute top-8 right-12 h-5 w-5 text-white/60 opacity-0 group-hover:opacity-100 transition-all duration-500 group-hover:animate-pulse" />
-          <Sparkles className="pointer-events-none absolute bottom-10 right-1/3 h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-all duration-700 delay-150 group-hover:animate-pulse" />
+          {/* Sparkles — loop on hover */}
+          <Sparkles className="pointer-events-none absolute top-8 right-12 h-5 w-5 text-white/60 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running]" />
+          <Sparkles className="pointer-events-none absolute bottom-10 right-1/3 h-4 w-4 text-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running] [animation-delay:0.7s]" />
+          <Sparkles className="pointer-events-none absolute top-16 left-20 h-3 w-3 text-white/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-500 animate-cta-sparkle [animation-play-state:paused] group-hover:[animation-play-state:running] [animation-delay:1.3s]" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="text-center lg:text-left transition-transform duration-500 group-hover:translate-x-1">
