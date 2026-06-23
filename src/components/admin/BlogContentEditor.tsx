@@ -238,7 +238,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10, label = 
 
   return (
     <div className="space-y-2">
-      <Label>Content</Label>
+      <Label>{label}</Label>
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border rounded-t-md bg-muted/50">
