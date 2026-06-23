@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
+import { QuoteButton } from '@/components/QuoteButton';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, Maximize2, MessageSquareQuote } from 'lucide-react';
@@ -327,15 +328,15 @@ const ProductDetail = () => {
                     Add to Cart
                   </Button>
                 </div>
-                <Button 
-                  onClick={() => navigate(`/contact-us?product=${encodeURIComponent(product.name)}`)}
-                  size="lg" 
+                <QuoteButton
+                  to={`/contact-us?product=${encodeURIComponent(product.name)}`}
                   variant="outline"
                   className="w-full"
+                  showArrow={false}
                 >
                   <MessageSquareQuote className="mr-2 h-5 w-5" />
                   Get Quote
-                </Button>
+                </QuoteButton>
               </div>
             </div>
           </div>

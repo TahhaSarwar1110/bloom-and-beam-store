@@ -1,8 +1,8 @@
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { SEOHead } from '@/components/seo/SEOHead';
-import { Button } from '@/components/ui/button';
+import { QuoteButton } from '@/components/QuoteButton';
 import { Phone, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -132,11 +132,13 @@ const ServiceDetail = () => {
                 <h3 className="font-display text-xl font-bold text-center mb-6">
                   Service Summary
                 </h3>
-                <Button asChild size="lg" className="w-full btn-shine mb-4">
-                  <Link to={`/contact-us?service=${encodeURIComponent(service.title)}`}>
-                    Request a Quote
-                  </Link>
-                </Button>
+                <QuoteButton
+                  to={`/contact-us?service=${encodeURIComponent(service.title)}`}
+                  className="w-full mb-4"
+                  showArrow={false}
+                >
+                  Request a Quote
+                </QuoteButton>
                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
                   <span>+1 469 767 8853</span>
@@ -157,11 +159,12 @@ const ServiceDetail = () => {
             <p className="text-muted-foreground mb-6">
               Contact our team today to discuss your {service.title.toLowerCase()} needs.
             </p>
-            <Button asChild size="lg" className="btn-shine">
-              <Link to={`/contact-us?service=${encodeURIComponent(service.title)}`}>
-                Contact Us Today
-              </Link>
-            </Button>
+            <QuoteButton
+              to={`/contact-us?service=${encodeURIComponent(service.title)}`}
+              showArrow={false}
+            >
+              Contact Us Today
+            </QuoteButton>
           </div>
         </div>
       </section>

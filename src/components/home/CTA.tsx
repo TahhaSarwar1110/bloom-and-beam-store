@@ -1,6 +1,5 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, Phone, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Phone, Sparkles } from 'lucide-react';
+import { QuoteButton } from '@/components/QuoteButton';
 
 export function CTA() {
   return (
@@ -44,20 +43,9 @@ export function CTA() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                asChild
-                size="lg"
-                variant="secondary"
-                className="text-base relative overflow-hidden transition-all duration-300 hover:scale-105 hover:animate-btn-pulse-glow"
-              >
-                <Link to="/contact-us" className="group/btn relative">
-                  <span className="btn-shine-sweep" />
-                  <span className="relative z-10 inline-flex items-center">
-                    Get a Quote
-                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
-                  </span>
-                </Link>
-              </Button>
+              <QuoteButton to="/contact-us" variant="secondary" size="lg" className="text-base">
+                Get a Quote
+              </QuoteButton>
               <Button
                 size="lg"
                 variant="outline"

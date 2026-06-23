@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, ShoppingCart, Phone, Search, User, LogOut, ChevronDown, Package, Settings } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { QuoteButton } from '@/components/QuoteButton';
 import { Input } from '@/components/ui/input';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -432,9 +433,9 @@ export function Header() {
               </Button>
             )}
 
-            <Button asChild className="hidden lg:flex btn-shine">
-              <Link to="/contact-us">Get Quote</Link>
-            </Button>
+            <QuoteButton to="/contact-us" className="hidden lg:flex" showArrow={false}>
+              Get Quote
+            </QuoteButton>
 
             {/* Mobile Menu Button */}
             <Button
@@ -650,11 +651,14 @@ export function Header() {
                   </Link>
                 </Button>
               )}
-              <Button asChild className="mt-2 btn-shine">
-                <Link to="/contact-us" onClick={() => setIsMenuOpen(false)}>
-                  Get Quote
-                </Link>
-              </Button>
+              <QuoteButton
+                to="/contact-us"
+                className="mt-2"
+                showArrow={false}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Get Quote
+              </QuoteButton>
             </div>
           </nav>
         )}

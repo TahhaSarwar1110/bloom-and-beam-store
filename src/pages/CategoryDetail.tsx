@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Layout } from '@/components/layout/Layout';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Button } from '@/components/ui/button';
+import { QuoteButton } from '@/components/QuoteButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { ShoppingCart, Check, Clock, Settings, Award, Phone } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -631,9 +632,9 @@ export default function CategoryDetail() {
                 <CardContent className="p-6">
                   <h3 className="text-xl font-bold mb-6">Service Summary</h3>
                   
-                  <Button asChild className="w-full mb-4" size="lg">
-                    <Link to="/contact-us">Request a Quote</Link>
-                  </Button>
+                  <QuoteButton to="/contact-us" className="w-full mb-4" showArrow={false}>
+                    Request a Quote
+                  </QuoteButton>
                   
                   <div className="flex items-center justify-center gap-2 text-muted-foreground">
                     <Phone className="h-4 w-4" />

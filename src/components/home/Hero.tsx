@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { QuoteButton } from '@/components/QuoteButton';
 import { ArrowRight, Shield, CheckCircle, Truck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -100,9 +101,9 @@ export function Hero() {
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="text-base">
-                <Link to="/contact-us">Request Quote</Link>
-              </Button>
+              <QuoteButton to="/contact-us" variant="outline" size="lg" className="text-base" showArrow={false}>
+                Request Quote
+              </QuoteButton>
             </div>
 
             {/* Trust Badges */}
