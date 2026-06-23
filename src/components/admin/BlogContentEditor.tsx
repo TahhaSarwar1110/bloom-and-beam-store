@@ -19,9 +19,10 @@ interface BlogContentEditorProps {
   value: string;
   onChange: (value: string) => void;
   rows?: number;
+  label?: string;
 }
 
-export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogContentEditorProps) {
+export default function BlogContentEditor({ value, onChange, rows = 10, label = 'Content' }: BlogContentEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
