@@ -1,4 +1,5 @@
 import { Phone, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { QuoteButton } from '@/components/QuoteButton';
 
 export function CTA() {
