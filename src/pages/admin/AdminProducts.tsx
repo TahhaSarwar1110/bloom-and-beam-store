@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ImageUpload from '@/components/admin/ImageUpload';
 import MultiImageUpload from '@/components/admin/MultiImageUpload';
 import { generateSlug } from '@/lib/slugify';
+import BlogContentEditor from '@/components/admin/BlogContentEditor';
 
 interface Product {
   id: string;
@@ -271,12 +272,11 @@ export default function AdminProducts() {
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
+                  <BlogContentEditor
+                    label="Description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
+                    onChange={(val) => setFormData({ ...formData, description: val })}
+                    rows={8}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">

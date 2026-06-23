@@ -331,3 +331,29 @@
 .animate-cta-sparkle {
   animation: cta-sparkle 2s ease-in-out infinite;
 }
+
+/* CTA button loop animations on hover */
+@keyframes btn-pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(var(--secondary) / 0.6); }
+  50% { box-shadow: 0 0 0 12px hsl(var(--secondary) / 0); }
+}
+@keyframes btn-shine-loop {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  100% { transform: translateX(250%) skewX(-20deg); }
+}
+@keyframes btn-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.hover\:animate-btn-pulse-glow:hover { animation: btn-pulse-glow 1.6s ease-in-out infinite; }
+.hover\:animate-btn-bob:hover { animation: btn-bob 1.4s ease-in-out infinite; }
+.btn-shine-sweep {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+  opacity: 0; transition: opacity .3s;
+}
+.group\/btn:hover .btn-shine-sweep { opacity: 1; }
+.btn-shine-sweep::before {
+  content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 40%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+  animation: btn-shine-loop 1.4s linear infinite;
+}

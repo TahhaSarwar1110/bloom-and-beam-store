@@ -48,22 +48,28 @@ export function CTA() {
                 asChild
                 size="lg"
                 variant="secondary"
-                className="btn-shine text-base relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_10px_30px_-5px_hsl(var(--secondary)/0.7)]"
+                className="text-base relative overflow-hidden transition-all duration-300 hover:scale-105 hover:animate-btn-pulse-glow"
               >
-                <Link to="/contact-us" className="group/btn">
-                  Get a Quote
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
+                <Link to="/contact-us" className="group/btn relative">
+                  <span className="btn-shine-sweep" />
+                  <span className="relative z-10 inline-flex items-center">
+                    Get a Quote
+                    <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
+                  </span>
                 </Link>
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 text-base transition-all duration-300 hover:scale-105 hover:border-primary-foreground"
+                className="relative overflow-hidden bg-primary-foreground/10 border-primary-foreground/60 text-primary-foreground hover:bg-primary-foreground hover:text-primary text-base transition-all duration-300 hover:scale-105 hover:animate-btn-bob"
                 asChild
               >
-                <a href="tel:+14697678853" className="group/btn">
-                  <Phone className="mr-2 h-5 w-5 transition-transform duration-500 group-hover/btn:rotate-12" />
-                  +1 469 767 8853
+                <a href="tel:+14697678853" className="group/btn relative">
+                  <span className="btn-shine-sweep" />
+                  <span className="relative z-10 inline-flex items-center">
+                    <Phone className="mr-2 h-5 w-5 transition-transform duration-500 group-hover/btn:rotate-12" />
+                    +1 469 767 8853
+                  </span>
                 </a>
               </Button>
             </div>

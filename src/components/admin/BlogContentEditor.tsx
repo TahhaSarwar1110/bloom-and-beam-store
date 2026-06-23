@@ -19,9 +19,10 @@ interface BlogContentEditorProps {
   value: string;
   onChange: (value: string) => void;
   rows?: number;
+  label?: string;
 }
 
-export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogContentEditorProps) {
+export default function BlogContentEditor({ value, onChange, rows = 10, label = 'Content' }: BlogContentEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -237,7 +238,7 @@ export default function BlogContentEditor({ value, onChange, rows = 10 }: BlogCo
 
   return (
     <div className="space-y-2">
-      <Label>Content</Label>
+      <Label>{label}</Label>
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-1 p-2 border rounded-t-md bg-muted/50">
