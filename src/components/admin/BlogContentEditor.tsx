@@ -8,6 +8,8 @@ import { Heading1, Heading2, Heading3, Link2, List, ListOrdered, Bold, Italic, Q
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import MarkdownContent from '@/components/MarkdownContent';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface BlogPost {
   id: string;
@@ -291,34 +293,65 @@ export default function BlogContentEditor({ value, onChange, rows = 10, label = 
       </div>
 
       {/* Textarea */}
-      <Textarea
-        ref={textareaRef}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        rows={rows}
-        className="rounded-t-none font-mono text-sm"
-        onKeyDown={(e) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); saveSelection(); handleLinkClick(); }
-          if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); saveSelection(); insertBold(); }
-          if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); saveSelection(); insertItalic(); }
-        }}
-        placeholder={`Write your blog content using Markdown...
+      <Tabs defaultValue="write" className="w-full">
+        <TabsList className="rounded-b-none">
+          <TabsTrigger value="write">Write</TabsTrigger>
+          <TabsTrigger value="preview">Live Preview</TabsTrigger>
+          <TabsTrigger value="split">Split</TabsTrigger>
+        </TabsList>
 
-# Heading 1
-## Heading 2
-### Heading 3
+        <TabsContent value="write" className="mt-0">
+          <Textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            rows={rows}
+            className="rounded-t-none font-mono text-sm"
+            onKeyDown={(e) => {
+              if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); saveSelection(); handleLinkClick(); }
+              if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); saveSelection(); insertBold(); }
+              if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); saveSelection(); insertItalic(); }
+            }}
+            placeholder={`Write using Markdown...
 
-**Bold text** and *italic text*
+**Bold** *italic* [link](/path)
 
-Regular paragraph text — use the ¶ button to convert any heading/quote back to a paragraph.
+- Bullet
+1. Numbered
+> Quote`}
+          />
+        </TabsContent>
 
-[Link text](https://example.com)
+        <TabsContent value="preview" className="mt-0">
+          <div className="border rounded-b-md rounded-tr-md p-4 bg-background min-h-[200px]" style={{ minHeight: `${rows * 1.5}rem` }}>
+            {value ? (
+              <MarkdownContent content={value} className="max-w-none" />
+            ) : (
+              <p className="text-sm text-muted-foreground italic">Nothing to preview yet — start writing.</p>
+            )}
+          </div>
+        </TabsContent>
 
-- Bullet list item
-1. Numbered list item
+        <TabsContent value="split" className="mt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <Textarea
+              value={value}
+              onChange={(e) => onChange(e.target.value)}
+              rows={rows}
+              className="rounded-t-none font-mono text-sm"
+              placeholder="Write Markdown here..."
+            />
+            <div className="border rounded-b-md rounded-tr-md p-4 bg-background overflow-auto" style={{ maxHeight: `${rows * 1.75}rem` }}>
+              {value ? (
+                <MarkdownContent content={value} className="max-w-none" />
+              ) : (
+                <p className="text-sm text-muted-foreground italic">Live preview appears here.</p>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
-> Blockquote`}
-      />
 
       <p className="text-xs text-muted-foreground">
         Tip: Select text then click toolbar buttons to toggle formatting. Use ¶ (Pilcrow) to convert to paragraph. Ctrl+K for links, Ctrl+B for bold, Ctrl+I for italic.
