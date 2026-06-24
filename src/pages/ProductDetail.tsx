@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, Maximize2, MessageSquareQuote } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import MarkdownContent from '@/components/MarkdownContent';
 
 interface Product {
   id: string;
