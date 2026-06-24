@@ -8,6 +8,8 @@ import { Heading1, Heading2, Heading3, Link2, List, ListOrdered, Bold, Italic, Q
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import MarkdownContent from '@/components/MarkdownContent';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 interface BlogPost {
   id: string;
