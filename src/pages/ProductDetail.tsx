@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Minus, Plus, Check, ArrowLeft, ChevronLeft, ChevronRight, Loader2, X, Maximize2, MessageSquareQuote } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import MarkdownContent from '@/components/MarkdownContent';
 
 interface Product {
   id: string;
@@ -284,10 +285,7 @@ const ProductDetail = () => {
               </div>
 
               {product.description && (
-                <div
-                  className="prose prose-lg max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
+                <MarkdownContent content={product.description} className="max-w-none" />
               )}
 
               {product.features && product.features.length > 0 && (
