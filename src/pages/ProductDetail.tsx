@@ -284,10 +284,7 @@ const ProductDetail = () => {
               </div>
 
               {product.description && (
-                <div
-                  className="prose prose-lg max-w-none text-muted-foreground prose-headings:text-foreground prose-strong:text-foreground prose-a:text-primary"
-                  dangerouslySetInnerHTML={{ __html: product.description }}
-                />
+                <MarkdownContent content={product.description} className="max-w-none" />
               )}
 
               {product.features && product.features.length > 0 && (
